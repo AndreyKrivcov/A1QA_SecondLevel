@@ -48,15 +48,8 @@ class Time {
         this.h = h;
         this.m = m;
     }
-    public Time(int h, int m) {
-        try {
-            this.h = new Hour(h); 
-            this.m = new Minute(m);
-            
-        } catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
-        
+    public Time(int h, int m) throws Exception {
+        this(new Hour(h), new Minute(m));
     }
     
     private TimeItem h, m;
@@ -95,7 +88,7 @@ class TwentyFourHours {
         System.out.println(message + t.toString());
     }
     
-    public PeriodsOfTheDay getPeriod() {
+    public PeriodsOfTheDay getPeriod() throws Exception {
         return getPeriod(t);
     }
     
@@ -109,15 +102,19 @@ class TwentyFourHours {
         public final PeriodsOfTheDay period;
     }
             
-    static final PeriodsItem[] periods = new PeriodsItem[]{
-            new PeriodsItem(new Time(6,0), new Time(11,0), PeriodsOfTheDay.Morning),
-            new PeriodsItem(new Time(11,0), new Time(17,0), PeriodsOfTheDay.Day),
-            new PeriodsItem(new Time(17,0), new Time(22,0), PeriodsOfTheDay.Evening),
-            new PeriodsItem(new Time(22,0), new Time(6,0), PeriodsOfTheDay.Night)
-        };
+    static PeriodsItem[] periods = null ;
     
-    public static PeriodsOfTheDay getPeriod (Time t) {
+    public static PeriodsOfTheDay getPeriod (Time t) throws Exception {
                 
+        if(periods == null) {
+            periods = new PeriodsItem[]{
+                new PeriodsItem(new Time(6,0), new Time(11,0), PeriodsOfTheDay.Morning),
+                new PeriodsItem(new Time(11,0), new Time(17,0), PeriodsOfTheDay.Day),
+                new PeriodsItem(new Time(17,0), new Time(22,0), PeriodsOfTheDay.Evening),
+                new PeriodsItem(new Time(22,0), new Time(6,0), PeriodsOfTheDay.Night)
+            };
+        }
+        
         for (PeriodsItem period : periods) {
             
             boolean up = t.compare(period.upBorder) >= 0;
