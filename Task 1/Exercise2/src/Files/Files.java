@@ -77,10 +77,25 @@ public class Files {
     }
     
     public static void main(String args[]) {
-        var removedData = removeLines("/home/andrey/Документы/MyTestFile", 2, 4);
         
-        removedData.forEach((string) -> {
-            System.out.println(string);
-        });
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        
+        try {
+            System.out.print("Enter path to file : ");
+            String path = reader.readLine(); 
+            System.out.print("Enter n value : ");
+            int n = Integer.parseInt(reader.readLine());
+            System.out.print("Enter m value : ");
+            int m = Integer.parseInt(reader.readLine());
+            
+            var removedData = removeLines(path, n, m);
+        
+            removedData.forEach((string) -> {
+                System.out.println(string);
+            });
+            
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
