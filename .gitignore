@@ -427,3 +427,6 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/java,linux,windows,netbeans,visualstudio
+
+./nbproject/
+./manifest.mf
