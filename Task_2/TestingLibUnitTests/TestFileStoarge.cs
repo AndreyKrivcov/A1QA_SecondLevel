@@ -37,12 +37,20 @@ namespace TestingLibUnitTests
         }
 
         [TestOf("FileStorage.write(File file)")]
-        [TestCase(10,5)]
+        [TestCase(10, 5)]
         public void Test_CorrectWriteCollection(int filesQuality, int maxPossibleFileContentSize)
         {
             var files = TestData.GetFileCollection(filesQuality, maxPossibleFileContentSize);
 
             GetFilledStorage(files);
+        }
+
+        [TestOf("FileStorage.write(File file)")]
+        [Test]
+        public void Test_WriteExistingFile()
+        {
+            var data = GetFilledStorage();
+            Assert.Throws<FileSystem.exception.FileNameAlreadyExistsException>(() => data.Value.write(data.Key));
         }
 
         [TestOf("FileStorage.write(File file)")]
