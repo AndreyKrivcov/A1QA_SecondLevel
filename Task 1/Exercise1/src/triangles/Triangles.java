@@ -118,6 +118,19 @@ public class Triangles {
         
         return Angle.C;
     }
+
+    private static void printTrangles(ArrayList<Triangle> triangles) {
+        triangles.forEach(x-> {
+                Angle closestPointToOX = getClosestPointToOX(x);
+                Angle rightAngle = getRightAngle(x);
+
+                System.out.println("Right angle = " + rightAngle.toString() + 
+                                   x.getPoint(rightAngle).toString() + 
+                                   " | S = " + Double.toString(x.getArea()) + 
+                                   " | Closest to OX point = " + 
+                                   closestPointToOX.toString() + x.getPoint(closestPointToOX).toString());
+    }
+
     /**
      * Main method
      * @param args arguments (do not used) 
@@ -149,15 +162,7 @@ public class Triangles {
             }
             
             // Print data for the finded triangles
-            triangles.forEach(x-> {
-                Angle closestPointToOX = getClosestPointToOX(x);
-                Angle rightAngle = getRightAngle(x);
-                
-                System.out.println("Right angle = " + rightAngle.toString() + 
-                                   x.getPoint(rightAngle).toString() + 
-                                   " | S = " + Double.toString(x.getArea()) + 
-                                   " | Closest to OX point = " + 
-                                   closestPointToOX.toString() + x.getPoint(closestPointToOX).toString());
+            printTrangles(triangles);
             });
             
         } catch (IOException e) {
