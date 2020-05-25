@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 
 namespace TestingLibUnitTests
@@ -21,5 +20,6 @@ namespace TestingLibUnitTests
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+       
     }
 }

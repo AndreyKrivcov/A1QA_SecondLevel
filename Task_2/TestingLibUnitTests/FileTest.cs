@@ -31,7 +31,7 @@ namespace TestingLibUnitTests
         [TestCaseSource(typeof(TestData), "GetFileNames")]
         public void Test_getFilename(string fileName)
         {
-            if(fileName != null)
+            if(!string.IsNullOrEmpty(fileName) || !string.IsNullOrWhiteSpace(fileName))
             {
                 File file = new File(fileName, "");
 
@@ -48,7 +48,7 @@ namespace TestingLibUnitTests
         [TestCaseSource(typeof(TestData), "GetInputData")]
         public void Test_Constructor(KeyValuePair<string, string> data)
         {
-            if (data.Value == null || data.Key == null)
+            if (data.Value == null || string.IsNullOrEmpty(data.Key) || string.IsNullOrWhiteSpace(data.Key))
             {
                 Assert.That(() => new File(data.Key, data.Value), Throws.Exception);
             }
