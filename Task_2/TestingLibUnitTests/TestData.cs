@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ConsoleApp1;
 
 namespace TestingLibUnitTests
@@ -8,7 +9,7 @@ namespace TestingLibUnitTests
     {
         #region Data
 
-        private static readonly string[] filePaths = new[] { "", "C://" };
+        private static readonly string[] filePaths = new[] { "", "C://"};
         public static string FileName => "MyFile";
         private static readonly string[] extention = new[] { "", ".txt" };
         public static string[] Content => new string[] { "", null, "This is non empry content" };
@@ -45,7 +46,10 @@ namespace TestingLibUnitTests
             {
                 foreach (var content in Content)
                 {
-                    ans.Add(new KeyValuePair<string, string>(file, content));
+                    if (!ans.Any(x => x.Key == file && x.Value == content))
+                    {
+                        ans.Add(new KeyValuePair<string, string>(file, content));
+                    }
                 }
             }
 

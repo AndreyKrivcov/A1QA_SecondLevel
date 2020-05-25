@@ -23,7 +23,7 @@ namespace TestingLibUnitTests
             }
             else
             {
-                Assert.Throws<NullReferenceException>(() => new File(TestData.FileName, content));
+                Assert.That(()=>new File(TestData.FileName, content), Throws.Exception);
             }
         }
 
@@ -31,7 +31,7 @@ namespace TestingLibUnitTests
         [TestCaseSource(typeof(TestData), "GetFileNames")]
         public void Test_getFilename(string fileName)
         {
-            if (fileName != null)
+            if(fileName != null)
             {
                 File file = new File(fileName, "");
 
@@ -40,7 +40,7 @@ namespace TestingLibUnitTests
             }
             else
             {
-                Assert.Throws<NullReferenceException>(()=>new File(fileName, ""));
+                Assert.That(() => new File(fileName, ""), Throws.Exception);
             }
         }
 
@@ -50,7 +50,7 @@ namespace TestingLibUnitTests
         {
             if (data.Value == null || data.Key == null)
             {
-                Assert.Throws<NullReferenceException>(()=>new File(data.Key, data.Value));
+                Assert.That(() => new File(data.Key, data.Value), Throws.Exception);
             }
             else
             {
