@@ -363,4 +363,4 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/monodevelop,visualstudio
 *.sln
 *.csproj
-/*Properties/
+*/Properties/
