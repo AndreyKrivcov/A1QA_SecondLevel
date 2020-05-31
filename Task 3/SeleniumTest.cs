@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using WebDriverManager;
+using OpenQA.Selenium;
 
 namespace Task_3
 {
