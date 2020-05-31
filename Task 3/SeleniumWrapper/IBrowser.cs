@@ -10,12 +10,16 @@ namespace SeleniumWrapper
         void Quit();
         string BrowserName { get; }
 
-        ReadOnlyCollection<IBrowserWindow> Windows{ get; }
+        ReadOnlyCollection<string> OpenedWindows { get; }
 
-        IBrowserWindow NewWindow(string url);
-        IBrowserWindow NewWindow();
+        event Action<IBrowser> WindowChanged;
+        event Action<IBrowser> BrowserClosed;
+
+        IBrowserWindow Window{ get; }
+        void NewWindow(string url);
+        void NewWindow();
         void CloseWindow(string windowHandle);
-        IBrowserWindow SwitchToWindow(string windowHandle);
+        void SwitchToWindow(string windowHandle);
     }
 
 }

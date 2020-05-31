@@ -15,89 +15,114 @@ namespace SeleniumWrapper
     {
         public BrowserBase(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
         {
-            driverManager.SetUpDriver(config,version);
+            new DriverManager().SetUpDriver(config,version);
             BrowserName = $"{browserName} {version}";
+            
             this.driverCreator = driverCreator;
+            driver = driverCreator();
+
+            Window = new BrowserWindow(driver);
         }
-
-        #region Drivers collection
-        protected readonly List<IWebDriver> webDrivers = new List<IWebDriver>();
-
-        protected readonly DriverManager driverManager = new DriverManager();
-
-        Func<IWebDriver> driverCreator;
-        #endregion
-
+        
         public string BrowserName { get; }
 
-        public ReadOnlyCollection<IBrowserWindow> Windows => 
-            webDrivers.Select(x=>(IBrowserWindow)new BrowserWindow(x)).ToList().AsReadOnly();
+        private readonly Func<IWebDriver> driverCreator;
+
+        protected IWebDriver driver;
+        public ReadOnlyCollection<string> OpenedWindows => 
+            (driver == null ? new List<string>().AsReadOnly() : driver.WindowHandles);
+
+        public IBrowserWindow Window { get; private set; } 
+
+        public event Action<IBrowser> WindowChanged;
+        public event Action<IBrowser> BrowserClosed;
+
+        private void BrowserClosedInvoke()
+        {
+            driver = null;
+            Window = null;
+
+            BrowserClosed?.Invoke(this);
+        }
+        
+        public void CloseWindow(string windowHandle)
+        {
+            if(!OpenedWindows.Contains(windowHandle))
+            {
+                throw new ArgumentException($"Can`t find window with handle = {windowHandle}");
+            }
+            if(OpenedWindows.Count == 1)
+            {
+                Quit();
+                return;
+            }
+
+            string currentHash = driver.CurrentWindowHandle;
+            
+            driver.SwitchTo().Window(windowHandle);
+            WindowChanged?.Invoke(this);
+            driver.Close();
+            
+            driver.SwitchTo().Window((currentHash == windowHandle ? OpenedWindows.Last() : currentHash));
+            WindowChanged?.Invoke(this);
+        }
 
         public void Dispose()
         {
-            webDrivers.ForEach(x=>x.Dispose());
+            if(driver != null)
+            {
+                driver.Dispose();
+                BrowserClosedInvoke();
+            }
         }
 
-        public IBrowserWindow NewWindow(string url)
+        public void NewWindow(string url)
         {
-            IWebDriver window = OpenNewWindowTab(webDrivers.Count == 0 ? null : webDrivers.Last());
-            window.Navigate().GoToUrl(url);
-            return new BrowserWindow(window);
+            OpenNewWindowTab();
+            driver.Navigate().GoToUrl(url);
+            WindowChanged?.Invoke(this);
         }
 
-        public IBrowserWindow NewWindow()
+        public void NewWindow()
         {
-            return new BrowserWindow(OpenNewWindowTab(webDrivers.Count == 0 ? null : webDrivers.Last()));
+            OpenNewWindowTab();
+            WindowChanged?.Invoke(this);
         }
 
-        protected virtual IWebDriver OpenNewWindowTab(IWebDriver driver)
+        protected virtual void OpenNewWindowTab()
         {
-            IWebDriver window;
             if(driver == null)
             {
-                window = driverCreator();
+                driver = driverCreator();
             }
             else
             {
                 ((IJavaScriptExecutor)driver).ExecuteScript("window.open();");
-                window = driver.SwitchTo().Window(driver.WindowHandles.Last());
+                driver.SwitchTo().Window(driver.WindowHandles.Last());
             }
-
-            webDrivers.Add(window);
-            return window;
         }
 
         public void Quit()
         {
-            webDrivers.ForEach(x=>x.Quit());
+            if(driver != null)
+            {
+                driver.Quit();
+                BrowserClosedInvoke();
+            }
         }
 
-        public IBrowserWindow SwitchToWindow(string windowHandle)
+        public void SwitchToWindow(string windowHandle)
         {
-            if(webDrivers.Count == 0)
+            if(driver != null)
             {
-                throw new System.Exception("Can`t find any windows");
-            }
+                if(!OpenedWindows.Contains(windowHandle))
+                {
+                    throw new ArgumentException($"Can`t find window with handle = {windowHandle}");
+                }
 
-            int ind = webDrivers.FindIndex(x=>x.CurrentWindowHandle == windowHandle);
-            if(ind == -1)
-            {
-                throw new ArgumentException($"Can`t find window {windowHandle}");
+                driver.SwitchTo().Window(windowHandle);
+                WindowChanged?.Invoke(this);
             }
-            
-            return new BrowserWindow(webDrivers.First().SwitchTo().Window(windowHandle));
-        }
-
-        public void CloseWindow(string windowHandle)
-        {
-            int ind = webDrivers.FindIndex(x=>x.CurrentWindowHandle == windowHandle);
-            if(ind == -1)
-            {
-                throw new ArgumentException($"Can`t find window {windowHandle}");
-            }
-            
-            webDrivers[ind].Close();
-            webDrivers.RemoveAt(ind);
         }
     }
 }
