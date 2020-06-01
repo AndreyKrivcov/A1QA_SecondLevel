@@ -1,10 +1,6 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
-using SeleniumWrapper.BrowserFabrics;
-
-namespace SeleniumWrapper
+namespace SeleniumWrapper.BrowserFabrics
 {
     class BrowserFabric
     {
