@@ -1,6 +1,12 @@
 using NUnit.Framework;
 using WebDriverManager;
 using OpenQA.Selenium;
+using SeleniumWrapper;
+
+
+using WebDriverManager.DriverConfigs;
+using WebDriverManager.DriverConfigs.Impl;
+using System;
 
 namespace Task_3
 {
@@ -14,7 +20,6 @@ namespace Task_3
         [Test]
         public void Test1()
         {
-            Assert.Pass();
         }
 
         [Test]

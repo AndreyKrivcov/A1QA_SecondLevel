@@ -15,12 +15,11 @@ namespace SeleniumWrapper
     {
         private Browser(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
         {
-            new DriverManager().SetUpDriver(config,version);
-            BrowserName = $"{browserName} {version}";
-            
             this.driverCreator = driverCreator;
-            driver = driverCreator();
+            BrowserName = $"{browserName} {version}";
 
+            new DriverManager().SetUpDriver(config,version);
+            driver = driverCreator();
             Window = new BrowserWindow(driver);
         }
 
@@ -58,6 +57,10 @@ namespace SeleniumWrapper
         
         public void CloseWindow(string windowHandle)
         {
+            if(driver == null)
+            {
+                return;
+            }
             if(!OpenedWindows.Contains(windowHandle))
             {
                 throw new ArgumentException($"Can`t find window with handle = {windowHandle}");
@@ -68,14 +71,19 @@ namespace SeleniumWrapper
                 return;
             }
 
-            string currentHash = driver.CurrentWindowHandle;
+            string currentHandle = driver.CurrentWindowHandle;
             
-            driver.SwitchTo().Window(windowHandle);
-            WindowChanged?.Invoke(this);
-            driver.Close();
-            
-            driver.SwitchTo().Window((currentHash == windowHandle ? OpenedWindows.Last() : currentHash));
-            WindowChanged?.Invoke(this);
+            if(currentHandle != windowHandle)
+            {
+                driver.SwitchTo().Window(windowHandle).Close();
+                driver.SwitchTo().Window(currentHandle);
+            }
+            else
+            {
+                driver.Close();
+                driver.SwitchTo().Window(OpenedWindows.Last());
+                WindowChanged?.Invoke(this);
+            }
         }
 
         public void Dispose()
@@ -105,6 +113,7 @@ namespace SeleniumWrapper
             if(driver == null)
             {
                 driver = driverCreator();
+                Window = new BrowserWindow(driver);
             }
             else
             {

@@ -18,7 +18,7 @@ namespace SeleniumWrapper
         public string Url 
         { 
             get => driver.Url; 
-            set => Url = value; 
+            set => driver.Url = value; 
         }
 
         public string Title => driver.Title;
@@ -28,12 +28,12 @@ namespace SeleniumWrapper
         public Point Position 
         { 
             get => driver.Manage().Window.Position; 
-            set => Position = value; 
+            set => driver.Manage().Window.Position = value; 
         }
         public Size Size 
         { 
             get => driver.Manage().Window.Size; 
-            set => Size = value; 
+            set => driver.Manage().Window.Size = value; 
         }
 
         public void Back() => driver.Navigate().Back(); 
