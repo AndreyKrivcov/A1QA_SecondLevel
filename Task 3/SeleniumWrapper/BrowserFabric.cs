@@ -1,17 +1,29 @@
-using SeleniumWrapper.Browsers;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+
+using SeleniumWrapper.BrowserFabrics;
 
 namespace SeleniumWrapper
 {
     class BrowserFabric
     {
-        public static IBrowser GetBrowser(BrowserType type, string version = "Latest")
+
+        private readonly List<Fabric> fabrics = new List<Fabric>
         {
-            switch(type)
+            new ChromeFabric(),
+            new FireFoxFabric()
+        };
+
+        public IBrowser GetBrowser(BrowserType type, string version = "Latest")
+        {
+            int i = fabrics.FindIndex(x=>x.Type == type);
+            if(i > -1)
             {
-                case BrowserType.Chrome : return Chrome.Instance(version); 
-                case BrowserType.FireFox : return FireFox.Instance(version);
-                default : throw new System.ArgumentException("Unsuporting browser");
+                return fabrics[i].Create(version);
             }
+
+            return null;
         }
     }
     

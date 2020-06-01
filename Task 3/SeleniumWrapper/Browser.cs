@@ -11,9 +11,9 @@ using System;
 
 namespace SeleniumWrapper
 {
-    abstract class BrowserBase : IBrowser
+    class Browser : IBrowser
     {
-        public BrowserBase(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
+        private Browser(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
         {
             new DriverManager().SetUpDriver(config,version);
             BrowserName = $"{browserName} {version}";
@@ -22,6 +22,17 @@ namespace SeleniumWrapper
             driver = driverCreator();
 
             Window = new BrowserWindow(driver);
+        }
+
+        private static Browser instance;
+        public static IBrowser Instance(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
+        {
+            if(instance == null)
+            {
+                instance = new Browser(config,version,browserName,driverCreator);
+            }
+
+            return instance;
         }
         
         public string BrowserName { get; }
