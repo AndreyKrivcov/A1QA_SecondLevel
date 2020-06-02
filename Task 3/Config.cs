@@ -33,24 +33,45 @@ namespace Task_3
         public string Login { get; set; }
         [DataMember]
         public string Passward { get; set; }
+    }
 
+    class ConfigSerializer
+    {
+        private ConfigSerializer(string fileName)
+        {
+            ConfigFileName = fileName;
+        }
         private static DataContractJsonSerializer serializer = 
             new DataContractJsonSerializer(typeof(Config));
-        public void Serialize(string filePath)
+        
+        private static ConfigSerializer instance;
+        public static ConfigSerializer Instance(string fileName = "Test configuration.json")
         {
-            using(var file = new FileStream(filePath,FileMode.Create))
+            if(instance == null)
             {
-                serializer.WriteObject(file,this);
+                instance = new ConfigSerializer(fileName);
+            }
+
+            return instance;
+        }
+
+        public string ConfigFileName { get; }
+
+        public void Serialize(Config config)
+        {
+            using(var file = new FileStream(ConfigFileName,FileMode.Create))
+            {
+                serializer.WriteObject(file,config);
             }
         }
-        public static Config Deserialize(string filePath)
+        public Config Deserialize()
         {
-            if(!File.Exists(filePath))
+            if(!File.Exists(ConfigFileName))
             {
                 return null;
             }
             
-            using(var file = new FileStream(filePath,FileMode.Open))
+            using(var file = new FileStream(ConfigFileName,FileMode.Open))
             {
                 return (Config)serializer.ReadObject(file);
             }

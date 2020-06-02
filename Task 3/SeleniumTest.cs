@@ -1,12 +1,4 @@
 using NUnit.Framework;
-using WebDriverManager;
-using OpenQA.Selenium;
-using SeleniumWrapper;
-
-
-using WebDriverManager.DriverConfigs;
-using WebDriverManager.DriverConfigs.Impl;
-using System;
 
 namespace Task_3
 {
@@ -15,17 +7,20 @@ namespace Task_3
         [SetUp]
         public void Setup()
         {
+            config = configSerializer.Deserialize();
+            if(config == null)
+            {
+                config = new Config();
+                configSerializer.Serialize(config);
+            }
         }
 
-        [Test]
-        public void Test1()
-        {
-        }
+        Config config;
+        ConfigSerializer configSerializer = ConfigSerializer.Instance();
 
         [Test]
-        public void Test2()
+        public void Test_YandexMarket()
         {
-            Assert.Fail();
         }
     }
 }
