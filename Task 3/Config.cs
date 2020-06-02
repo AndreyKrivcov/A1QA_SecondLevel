@@ -37,34 +37,18 @@ namespace Task_3
 
     class ConfigSerializer
     {
-        private ConfigSerializer(string fileName)
-        {
-            ConfigFileName = fileName;
-        }
         private static DataContractJsonSerializer serializer = 
             new DataContractJsonSerializer(typeof(Config));
-        
-        private static ConfigSerializer instance;
-        public static ConfigSerializer Instance(string fileName = "Test configuration.json")
-        {
-            if(instance == null)
-            {
-                instance = new ConfigSerializer(fileName);
-            }
+        public static string ConfigFileName { get; } = "Test configuration.json";
 
-            return instance;
-        }
-
-        public string ConfigFileName { get; }
-
-        public void Serialize(Config config)
+        public static void Serialize(Config config)
         {
             using(var file = new FileStream(ConfigFileName,FileMode.Create))
             {
                 serializer.WriteObject(file,config);
             }
         }
-        public Config Deserialize()
+        public static Config Deserialize()
         {
             if(!File.Exists(ConfigFileName))
             {

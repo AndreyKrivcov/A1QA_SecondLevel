@@ -7,16 +7,15 @@ namespace Task_3
         [SetUp]
         public void Setup()
         {
-            config = configSerializer.Deserialize();
+            config = ConfigSerializer.Deserialize();
             if(config == null)
             {
                 config = new Config();
-                configSerializer.Serialize(config);
+                ConfigSerializer.Serialize(config);
             }
         }
 
         Config config;
-        ConfigSerializer configSerializer = ConfigSerializer.Instance();
 
         [Test]
         public void Test_YandexMarket()
