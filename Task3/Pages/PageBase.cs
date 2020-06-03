@@ -75,7 +75,7 @@ namespace Task_3.Pages
             
             if(browser.Window.Url != pageUrl)
             {
-                throw new Exception("Url adress was changed");
+                throw new Exception($"Url adress is {browser.Window.Url} but expected {pageUrl}");
             }
         }
 
