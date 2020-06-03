@@ -72,11 +72,6 @@ namespace Task_3.Pages
                     throw new Exception("Page was closed!");
                 }
             }
-            
-            if(browser.Window.Url != pageUrl)
-            {
-                throw new Exception($"Url adress is {browser.Window.Url} but expected {pageUrl}");
-            }
         }
 
         protected ReadOnlyCollection<IWebElement> FindElements(string xPath, BrowserWait wait = null)
