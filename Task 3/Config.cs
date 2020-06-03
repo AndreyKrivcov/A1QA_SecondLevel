@@ -33,6 +33,10 @@ namespace Task_3
         public string Login { get; set; }
         [DataMember]
         public string Passward { get; set; }
+        [DataMember]
+        public uint WaitSecondsTimeuot { get; set; } = 60;
+        [DataMember]
+        public uint WaitMilisecondsSleepage { get; set; } = 500;
     }
 
     class ConfigSerializer
