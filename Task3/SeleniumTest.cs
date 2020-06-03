@@ -20,12 +20,9 @@ namespace Task_3
                 config = new Config();
                 ConfigSerializer.Serialize(config);
             }
-
-            browser = new BrowserFabric().GetBrowser(config.Browser, config.BrowserVersion);
         }
 
         Config config;
-        IBrowser browser;
         
         /*
         [Test]
@@ -47,8 +44,13 @@ namespace Task_3
         [Test]
         public void Test_YandexMarket()
         {
-            MainPage mainPage = new MainPage(browser,config.Url,config.WaitSecondsTimeuot,config.WaitMilisecondsSleepage);
-            var popularGoods = mainPage.PopularGoods;
+            using( IBrowser browser = new BrowserFabric().GetBrowser(config.Browser, config.BrowserVersion))
+            {
+                browser.Window.Maximize();
+                
+                MainPage mainPage = new MainPage(browser,config.Url,config.WaitSecondsTimeuot,config.WaitMilisecondsSleepage);
+                var popularGoods = mainPage.PopularGoods;
+            }
         }
     }
 }

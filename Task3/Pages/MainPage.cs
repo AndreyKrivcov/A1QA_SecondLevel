@@ -45,8 +45,11 @@ namespace Task_3.Pages
                 List<KeyValuePair<string,IWebElement>> goods = new List<KeyValuePair<string,IWebElement>>();
                 foreach (var item in collection)
                 {
-                    string name = item.GetAttribute(NameOfPopularGoodsCollectionsItem_tag);
-                    if(!excludingNames.Contains(name))
+                    string name = item.FindElement(By.TagName(NameOfPopularGoodsCollectionsItem_tag))
+                                      .Text;
+                    if(!excludingNames.Contains(name) &&
+                       !string.IsNullOrEmpty(name) &&
+                       !string.IsNullOrWhiteSpace(name))
                     {
                         goods.Add(new KeyValuePair<string, IWebElement>(name,item));
                     }
