@@ -40,6 +40,14 @@ namespace Task_3.Pages
 
         protected readonly IBrowser browser;
         public string MyHandle {get;}
+        public string Title 
+        {
+            get
+            {
+                Check();
+                return browser.Window.Title;
+            }
+        }
 
         protected bool WindowChangedTougle { get; private set; } = false;
         private void WindowChanged(IBrowser browser)

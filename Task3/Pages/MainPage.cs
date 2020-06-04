@@ -41,10 +41,6 @@ namespace Task_3.Pages
             "Скидки и акции"
         }.AsReadOnly();
 #endregion
-#region Region selector
-        private readonly string popUpRegionDiv_headder = "//div[text()= \"Ваш регион\"]";
-        private readonly string confermRegionButton = "//div[text()= \"Ваш регион\"]/..//div[1]/button";
-#endregion
 #region  Login logout
         private readonly string loginLink = "//div[@data-apiary-widget-name=\"@MarketNode/HeaderNav\"]//a";
         private readonly string mainLogoutButton = "//div[@data-apiary-widget-name=\"@MarketNode/HeaderNav\"]//div[1]/button";
@@ -58,27 +54,7 @@ namespace Task_3.Pages
             {
                 BrowserWait wait = new BrowserWait(new SystemClock() ,browser, timeout, sleep);
 
-                var collection = wait.Until(x=>
-                {
-                    ReadOnlyCollection<IWebElement> ans;
-                    try
-                    {
-                        if(FindElements(popUpRegionDiv_headder)[0].Displayed)
-                        {
-                            FindElements(confermRegionButton)[0].Click();
-                        }
-                    }
-                    catch(Exception)
-                    {
-                        return null;
-                    }
-                    finally
-                    {
-                        ans = FindElements(popularGoodsCollection_xpath);
-                    }         
-
-                    return ans;                                      
-                });
+                var collection = FindElements(popularGoodsCollection_xpath,wait);
                 
                 List<KeyValuePair<string,CategoryPageCreator>> goods = new List<KeyValuePair<string,CategoryPageCreator>>();
                 foreach (var item in collection)
@@ -101,13 +77,6 @@ namespace Task_3.Pages
             get
             {   
                 var wait = new BrowserWait(new SystemClock() ,browser, timeout, sleep);
-
-                // This think doesn`t works !!! But why ???
-                //===========================================
-                // wait.IgnoreExceptionTypes(typeof(NoSuchElementException), 
-                //                           typeof(StaleElementReferenceException),
-                //                           typeof(OpenQA.Selenium.ElementClickInterceptedException));
-                //===========================================
                 
                 var collection = wait.Until(x=>
                 {
