@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
+using System.IO;
+
 using NUnit.Framework;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper;
 using SeleniumWrapper.BrowserFabrics;
 
@@ -24,23 +26,6 @@ namespace Task_3
 
         Config config;
         
-        /*
-        [Test]
-        public void FluentWaitExample()
-        {
-            IBrowser browser = new BrowserFabric().GetBrowser(BrowserType.Chrome, "81.0.4044.138");
-            string target_xpath = "//h3[.='LambdaTest: Most Powerful Cross Browser Testing Tool Online']";
-            
-            BrowserWait browserWait = new BrowserWait(new SystemClock(), browser, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
-            browserWait.Message = "Element to be searched not found";
-
-            browser.Window.Url = "https://www.google.com/ncr";
-            browser.Window.FindElement(By.Name("q")).SendKeys("LambdaTest" + Keys.Enter);
-            
-            IWebElement searchedResult = browserWait.Until(x => x.Window.FindElement(By.XPath(target_xpath)));
-            searchedResult.Click();
-        }*/
-
         [Test]
         public void Test_YandexMarket()
         {
@@ -49,11 +34,27 @@ namespace Task_3
                 browser.Window.Maximize();
                 
                 MainPage mainPage = new MainPage(browser,config.Url,config.WaitSecondsTimeuot,config.WaitMilisecondsSleepage);
+                /*Assert по регулярному вырожению Title содержит в себе 'Яндекс.Маркет'*/
+
+                Assert.True(mainPage.SignIn.LogIn(config.Login, config.Passward));
+                
                 var popularGoods = mainPage.PopularGoods;
 
-                string s = popularGoods[0].Value.Create().Headder;
+                Random rnd = new Random();
+                int index = rnd.Next(popularGoods.Count);
+                string randomCategory_headder = popularGoods[index].Value.Create().Headder;
+                string randomCategory_name = popularGoods[index].Key;
+
+                /*Assert that headder belongs to the name*/
+
                 browser.Window.Back();
-             //   var allGoods = mainPage.AllCategories;
+
+                var allCategories = mainPage.AllCategories;
+                File.WriteAllLines(config.PathToFileWithCatigories ,allCategories);
+
+                /*Assert that allCategories containes popularGoods*/
+
+                Assert.True(mainPage.LogOut());
             }
         }
     }

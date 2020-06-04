@@ -37,6 +37,8 @@ namespace Task_3
         public uint WaitSecondsTimeuot { get; set; } = 60;
         [DataMember]
         public uint WaitMilisecondsSleepage { get; set; } = 500;
+        [DataMember]
+        public string PathToFileWithCatigories { get; set; } = "All categories.csv";
     }
 
     class ConfigSerializer

@@ -45,6 +45,11 @@ namespace Task_3.Pages
         private readonly string popUpRegionDiv_headder = "//div[text()= \"Ваш регион\"]";
         private readonly string confermRegionButton = "//div[text()= \"Ваш регион\"]/..//div[1]/button";
 #endregion
+#region  Login logout
+        private readonly string loginLink = "//div[@data-apiary-widget-name=\"@MarketNode/HeaderNav\"]//a";
+        private readonly string mainLogoutButton = "//div[@data-apiary-widget-name=\"@MarketNode/HeaderNav\"]//div[1]/button";
+        private readonly string logoutLink = "//div[@data-apiary-widget-name=\"@MarketNode/HeaderNav\"]//div[3]/a[6]";
+#endregion
 #endregion
 
         public ReadOnlyCollection<KeyValuePair<string,CategoryPageCreator>> PopularGoods
@@ -58,10 +63,9 @@ namespace Task_3.Pages
                     ReadOnlyCollection<IWebElement> ans;
                     try
                     {
-                        var regionNotification = x.Window.FindElement(By.XPath(popUpRegionDiv_headder));
-                        if(regionNotification.Displayed)
+                        if(FindElements(popUpRegionDiv_headder)[0].Displayed)
                         {
-                            x.Window.FindElement(By.XPath(confermRegionButton)).Click();
+                            FindElements(confermRegionButton)[0].Click();
                         }
                     }
                     catch(Exception)
@@ -70,7 +74,7 @@ namespace Task_3.Pages
                     }
                     finally
                     {
-                        ans = x.Window.FindElements(By.XPath(popularGoodsCollection_xpath));
+                        ans = FindElements(popularGoodsCollection_xpath);
                     }         
 
                     return ans;                                      
@@ -85,14 +89,13 @@ namespace Task_3.Pages
                        !string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(name))
                     {
                         goods.Add(new KeyValuePair<string, CategoryPageCreator>(name,
-                        new CategoryPageCreator(browser, item, (uint)timeout.TotalSeconds, (uint)sleep.TotalMilliseconds)));
+                        new CategoryPageCreator(browser, item, timeout, sleep)));
                     }
                 }
 
                 return goods.AsReadOnly();
             }
         }
-
         public ReadOnlyCollection<string> AllCategories 
         {
             get
@@ -101,23 +104,23 @@ namespace Task_3.Pages
 
                 // This think doesn`t works !!! But why ???
                 //===========================================
-                wait.IgnoreExceptionTypes(typeof(NoSuchElementException), 
-                                          typeof(StaleElementReferenceException),
-                                          typeof(OpenQA.Selenium.ElementClickInterceptedException));
+                // wait.IgnoreExceptionTypes(typeof(NoSuchElementException), 
+                //                           typeof(StaleElementReferenceException),
+                //                           typeof(OpenQA.Selenium.ElementClickInterceptedException));
                 //===========================================
                 
                 var collection = wait.Until(x=>
                 {
                     try
                     {
-                        x.Window.FindElement(By.XPath(allCategories_xpath)).Click();
+                        FindElements(allCategories_xpath)[0].Click();
                     }
                     catch(ElementClickInterceptedException)
                     {
                         return null;
                     }
                     
-                    var data = x.Window.FindElements(By.XPath(allGoodsCollection_xpath));
+                    var data = FindElements(allGoodsCollection_xpath);
                     return (data.Count == 0  || data.Any(x=>string.IsNullOrEmpty(x.Text) && string.IsNullOrWhiteSpace(x.Text)) ? null : data);
                 });
                 
@@ -140,13 +143,41 @@ namespace Task_3.Pages
         {
             get
             {
-                throw new NotImplementedException();
+                BrowserWait wait = new BrowserWait(new SystemClock(),browser,timeout,sleep);
+            
+                wait.Until(x=>
+                {
+                    var elements =FindElements(loginLink);
+                    if(elements.Count == 0 || 
+                      (elements.Count > 0 && !elements[0].Displayed))
+                    {
+                        return null;
+                    }
+                    return elements[0];
+                }).Click();
+
+                browser.SwitchToWindow(browser.OpenedWindows.Last());
+                return new AuthorizationPage(browser,timeout,sleep);
             }
         }
 
         public bool LogOut()
         {
-            throw new NotImplementedException();
+            BrowserWait wait = new BrowserWait(new SystemClock(),browser,timeout,sleep);
+
+            FindElements(mainLogoutButton,wait)[0].Click();
+            FindElements(logoutLink, wait)[0].Click();
+
+            return wait.Until(x=>
+            {
+                var elements =FindElements(loginLink);
+                if(elements.Count == 0 || 
+                  (elements.Count > 0 && !elements[0].Displayed))
+                    {
+                        return false;
+                    }
+                return true;
+            });
         }
     }
 }

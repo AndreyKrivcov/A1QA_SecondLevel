@@ -7,7 +7,7 @@ namespace Task_3.Pages
 {
     class CategoryPageCreator
     {
-        public CategoryPageCreator(IBrowser browser, IWebElement item, uint timeout_s, uint sleep_mls)
+        public CategoryPageCreator(IBrowser browser, IWebElement item, TimeSpan timeout_s, TimeSpan sleep_mls)
         {
             timeout = timeout_s;
             sleep = sleep_mls; 
@@ -16,8 +16,8 @@ namespace Task_3.Pages
         }
 
 #region Fluent wait params
-        private readonly uint timeout; 
-        private readonly uint sleep;
+        private readonly TimeSpan timeout; 
+        private readonly TimeSpan sleep;
 #endregion
 
         private readonly IBrowser browser;
@@ -32,10 +32,10 @@ namespace Task_3.Pages
 
     class CategoryPage : PageBase
     {   
-        public CategoryPage(IBrowser browser, uint timeout_s, uint sleep_mls) : base (browser, browser.Window.Url)
+        public CategoryPage(IBrowser browser, TimeSpan timeout_s, TimeSpan sleep_mls) : base (browser, browser.Window.Url)
         {
-            timeout = TimeSpan.FromSeconds(timeout_s);
-            sleep = TimeSpan.FromMilliseconds(sleep_mls); 
+            timeout = timeout_s;
+            sleep = sleep_mls; 
         }
 
 #region Fluent wait params
@@ -51,13 +51,7 @@ namespace Task_3.Pages
             get
             {
                 BrowserWait wait = new BrowserWait(new SystemClock() ,browser, timeout, sleep);
-                var headders = FindElements(headderSelector, wait);
-                if(headders.Count == 0)
-                {
-                    throw new Exception("Can`t find htadder");
-                }
-
-                return headders[0].Text;
+                return FindElements(headderSelector, wait)[0].Text;
             }
         }
 
