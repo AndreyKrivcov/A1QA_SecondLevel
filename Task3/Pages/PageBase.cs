@@ -79,7 +79,11 @@ namespace Task_3.Pages
             Check();
                         
             return (wait == null ? browser.Window.FindElements(By.XPath(xPath)) :  
-                    wait.Until(x => x.Window.FindElements(By.XPath(xPath))));
+                    wait.Until(x=>
+                    {
+                        var data = x.Window.FindElements(By.XPath(xPath));
+                        return (data.Count == 0 ? null : data); 
+                    }));
         } 
     }
 }

@@ -50,6 +50,7 @@ namespace Task_3
                 
                 MainPage mainPage = new MainPage(browser,config.Url,config.WaitSecondsTimeuot,config.WaitMilisecondsSleepage);
                 var popularGoods = mainPage.PopularGoods;
+             //   var allGoods = mainPage.AllCategories;
             }
         }
     }
