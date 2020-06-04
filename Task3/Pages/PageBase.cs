@@ -16,7 +16,6 @@ namespace Task_3.Pages
             }
 
             this.browser = browser;
-            this.pageUrl = pageUrl;
 
             if(browser.Window == null)
             {
@@ -40,7 +39,6 @@ namespace Task_3.Pages
         }
 
         protected readonly IBrowser browser;
-        protected readonly string pageUrl;
         public string MyHandle {get;}
 
         protected bool WindowChangedTougle { get; private set; } = false;

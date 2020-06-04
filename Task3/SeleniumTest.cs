@@ -50,6 +50,9 @@ namespace Task_3
                 
                 MainPage mainPage = new MainPage(browser,config.Url,config.WaitSecondsTimeuot,config.WaitMilisecondsSleepage);
                 var popularGoods = mainPage.PopularGoods;
+
+                string s = popularGoods[0].Value.Create().Headder;
+                browser.Window.Back();
              //   var allGoods = mainPage.AllCategories;
             }
         }

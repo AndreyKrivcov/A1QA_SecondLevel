@@ -42,13 +42,12 @@ namespace Task_3.Pages
         }.AsReadOnly();
 #endregion
 #region Region selector
-        private readonly string popUpHealpDiv = "//div[contains(@class,\"popup2\")]";
         private readonly string popUpRegionDiv_headder = "//div[text()= \"Ваш регион\"]";
         private readonly string confermRegionButton = "//div[text()= \"Ваш регион\"]/..//div[1]/button";
 #endregion
 #endregion
 
-        public ReadOnlyCollection<KeyValuePair<string,IWebElement>> PopularGoods
+        public ReadOnlyCollection<KeyValuePair<string,CategoryPageCreator>> PopularGoods
         {
             get
             {
@@ -77,7 +76,7 @@ namespace Task_3.Pages
                     return ans;                                      
                 });
                 
-                List<KeyValuePair<string,IWebElement>> goods = new List<KeyValuePair<string,IWebElement>>();
+                List<KeyValuePair<string,CategoryPageCreator>> goods = new List<KeyValuePair<string,CategoryPageCreator>>();
                 foreach (var item in collection)
                 {
                     string name = item.FindElement(By.TagName(NameOfPopularGoodsCollectionsItem_tag))
@@ -85,7 +84,8 @@ namespace Task_3.Pages
                     if(!excludingPopularGoodsCollectionNames.Contains(name) &&
                        !string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(name))
                     {
-                        goods.Add(new KeyValuePair<string, IWebElement>(name,item));
+                        goods.Add(new KeyValuePair<string, CategoryPageCreator>(name,
+                        new CategoryPageCreator(browser, item, (uint)timeout.TotalSeconds, (uint)sleep.TotalMilliseconds)));
                     }
                 }
 
