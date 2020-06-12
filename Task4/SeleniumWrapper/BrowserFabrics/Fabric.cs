@@ -1,14 +1,32 @@
+using System;
+using OpenQA.Selenium;
+using WebDriverManager;
+using WebDriverManager.DriverConfigs;
+
 namespace SeleniumWrapper.BrowserFabrics
 {
-    abstract class Fabric
+
+    public abstract class Fabric
     {
-        protected Fabric(BrowserType type)
+        protected Fabric(string browserName)
         {
-            Type = type;
+            BrowserName = browserName;
+        }
+        protected Fabric(string browserName, IDriverConfig config, Func<IWebDriver> driverCreator) : this(browserName)
+        {
+            this.config = config;
+            this.driverCreator = driverCreator;
         }
         
-        public abstract IBrowser Create(string version);
-        public BrowserType Type{ get; }
+        protected readonly IDriverConfig config;
+        protected readonly Func<IWebDriver> driverCreator;
 
+        public virtual IBrowser Create(string version)
+        {
+            new DriverManager().SetUpDriver(config,version);
+            return Browser.Instance(version, BrowserName, driverCreator);
+        }
+        public string BrowserName{ get; }
     }
+    
 }

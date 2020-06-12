@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 using OpenQA.Selenium;
 
-using WebDriverManager.DriverConfigs;
-using WebDriverManager;
 using System.Linq;
 using System;
 
@@ -13,28 +11,27 @@ namespace SeleniumWrapper
 {
     public class Browser : IBrowser
     {
-        private Browser(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
+        private Browser(string version, string browserName, Func<IWebDriver> driverCreator)
         {
             this.driverCreator = driverCreator;
-            BrowserName = $"{browserName} {version}";
-
-            new DriverManager().SetUpDriver(config,version);
-            driver = driverCreator();
-            Window = new BrowserWindow(driver);
+            BrowserName = browserName;
+            Version = version;
         }
-
+        
         private static Browser instance;
-        public static IBrowser Instance(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
+        public static IBrowser Instance(string version, string browserName, Func<IWebDriver> driverCreator)
         {
             if(instance == null)
             {
-                instance = new Browser(config,version,browserName,driverCreator);
+                instance = new Browser(version,browserName,driverCreator);
             }
 
             return instance;
         }
         
         public string BrowserName { get; }
+        public string Version { get; }
+        public bool IsOpened => driver != null;
 
         private readonly Func<IWebDriver> driverCreator;
 
@@ -42,15 +39,26 @@ namespace SeleniumWrapper
         public ReadOnlyCollection<string> OpenedWindows => 
             (driver == null ? new List<string>().AsReadOnly() : driver.WindowHandles);
 
-        public IBrowserWindow Window { get; private set; } 
+
+        private IBrowserWindow myWindow;
+        public IBrowserWindow Window 
+        { 
+            get
+            {
+                if(myWindow == null)
+                    OpenNewWindowTab();
+                return myWindow;
+            } 
+        } 
 
         public event Action<IBrowser> WindowChanged;
+        public event Action<IBrowser, string> WindowClosed;
         public event Action<IBrowser> BrowserClosed;
 
         private void BrowserClosedInvoke()
         {
             driver = null;
-            Window = null;
+            myWindow = null;
 
             BrowserClosed?.Invoke(this);
         }
@@ -84,6 +92,8 @@ namespace SeleniumWrapper
                 driver.SwitchTo().Window(OpenedWindows.Last());
                 WindowChanged?.Invoke(this);
             }
+
+            WindowClosed?.Invoke(this, windowHandle);
         }
 
         public void Dispose()
@@ -113,7 +123,7 @@ namespace SeleniumWrapper
             if(driver == null)
             {
                 driver = driverCreator();
-                Window = new BrowserWindow(driver);
+                myWindow = new BrowserWindow(driver);
             }
             else
             {

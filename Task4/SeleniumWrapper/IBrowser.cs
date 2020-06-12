@@ -7,10 +7,13 @@ namespace SeleniumWrapper
     {
         void Quit();
         string BrowserName { get; }
+        string Version { get; }
+        bool IsOpened { get; }
 
         ReadOnlyCollection<string> OpenedWindows { get; }
 
         event Action<IBrowser> WindowChanged;
+        event Action<IBrowser, string> WindowClosed;
         event Action<IBrowser> BrowserClosed;
 
         IBrowserWindow Window{ get; }
