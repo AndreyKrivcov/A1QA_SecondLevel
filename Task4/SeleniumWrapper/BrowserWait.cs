@@ -15,7 +15,7 @@ namespace SeleniumWrapper
     /// IWebElement element = wait.Until(BrowserWait => BrowserWait.Window.FindElement(By.Name("q")));
     /// </code>
     /// </example>
-    class BrowserWait : DefaultWait<IBrowser>
+    public class BrowserWait : DefaultWait<IBrowser>
     {
         public BrowserWait(IBrowser browser, TimeSpan timeout)
             : this(new SystemClock(), browser, timeout, DefaultSleepTimeout)

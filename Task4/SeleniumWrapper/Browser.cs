@@ -11,7 +11,7 @@ using System;
 
 namespace SeleniumWrapper
 {
-    class Browser : IBrowser
+    public class Browser : IBrowser
     {
         private Browser(IDriverConfig config, string version, string browserName, Func<IWebDriver> driverCreator)
         {

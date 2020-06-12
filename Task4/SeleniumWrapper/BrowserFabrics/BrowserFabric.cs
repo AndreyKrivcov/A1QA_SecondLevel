@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SeleniumWrapper.BrowserFabrics
 {
-    class BrowserFabric
+    public class BrowserFabric
     {
 
         private readonly List<Fabric> fabrics = new List<Fabric>
@@ -23,7 +23,7 @@ namespace SeleniumWrapper.BrowserFabrics
         }
     }
     
-    enum BrowserType
+    public enum BrowserType
     {
         Chrome,
         FireFox

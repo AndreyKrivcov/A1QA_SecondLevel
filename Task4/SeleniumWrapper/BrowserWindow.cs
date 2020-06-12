@@ -6,7 +6,7 @@ using OpenQA.Selenium;
 
 namespace SeleniumWrapper
 {
-    class BrowserWindow : IBrowserWindow
+    public class BrowserWindow : IBrowserWindow
     {
         public BrowserWindow(IWebDriver webDriver)
         {

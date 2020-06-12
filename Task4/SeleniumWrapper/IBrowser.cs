@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace SeleniumWrapper
 {
-    interface IBrowser : IDisposable
+    public interface IBrowser : IDisposable
     {
         void Quit();
         string BrowserName { get; }

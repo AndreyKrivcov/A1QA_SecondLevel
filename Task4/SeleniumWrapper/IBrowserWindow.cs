@@ -2,7 +2,7 @@ using OpenQA.Selenium;
 
 namespace SeleniumWrapper
 {
-    interface IBrowserWindow : IWindow, ISearchContext, INavigation
+    public interface IBrowserWindow : IWindow, ISearchContext, INavigation
     {
         /// <summary>
         /// Get current url adress or set new
