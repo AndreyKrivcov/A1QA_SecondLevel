@@ -39,7 +39,6 @@ namespace SeleniumWrapper.Browser
 
             this.driver = driver;
             this.by = by;
-            this.driver = driver;
         }
         public ElementsKeeper(IWebDriver driver, Func<IWebElement> element, By by) : this(driver, by)
         {
