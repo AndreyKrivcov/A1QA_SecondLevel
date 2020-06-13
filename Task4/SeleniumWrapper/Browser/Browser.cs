@@ -7,7 +7,7 @@ using OpenQA.Selenium;
 using System.Linq;
 using System;
 
-namespace SeleniumWrapper
+namespace SeleniumWrapper.Browser
 {
     public class Browser : IBrowser
     {
@@ -40,16 +40,21 @@ namespace SeleniumWrapper
             (driver == null ? new List<string>().AsReadOnly() : driver.WindowHandles);
 
 
+#region  Window keeper
         private IBrowserWindow myWindow;
         public IBrowserWindow Window 
         { 
             get
             {
                 if(myWindow == null)
+                {
                     OpenNewWindowTab();
+                    myWindow = new BrowserWindow(driver);
+                }
                 return myWindow;
             } 
         } 
+#endregion
 
         public event Action<IBrowser> WindowChanged;
         public event Action<IBrowser, string> WindowClosed;
@@ -58,7 +63,6 @@ namespace SeleniumWrapper
         private void BrowserClosedInvoke()
         {
             driver = null;
-            myWindow = null;
 
             BrowserClosed?.Invoke(this);
         }
@@ -123,7 +127,6 @@ namespace SeleniumWrapper
             if(driver == null)
             {
                 driver = driverCreator();
-                myWindow = new BrowserWindow(driver);
             }
             else
             {

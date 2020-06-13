@@ -1,10 +1,11 @@
 
 using System;
-using System.Collections.ObjectModel;
 using System.Drawing;
-using OpenQA.Selenium;
 
-namespace SeleniumWrapper
+using OpenQA.Selenium;
+using SeleniumWrapper.Elements;
+
+namespace SeleniumWrapper.Browser
 {
     public class BrowserWindow : IBrowserWindow
     {
@@ -38,9 +39,9 @@ namespace SeleniumWrapper
 
         public void Back() => driver.Navigate().Back(); 
 
-        public IWebElement FindElement(By by) => driver.FindElement(by);
+        public BaseElement FindElement(By by) => new DefaultElement(()=>driver.FindElement(by), driver);
 
-        public ReadOnlyCollection<IWebElement> FindElements(By by) => driver.FindElements(by);
+        public ElementsKeeper FindElements(By by) => new ElementsKeeper(driver,by);
 
         public void Forward() => driver.Navigate().Forward();
 

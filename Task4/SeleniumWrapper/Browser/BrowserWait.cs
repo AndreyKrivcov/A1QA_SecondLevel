@@ -2,7 +2,7 @@ using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
-namespace SeleniumWrapper
+namespace SeleniumWrapper.Browser
 {
     /// <summary>
     /// Provides the ability to wait for an arbitrary condition during test execution.
