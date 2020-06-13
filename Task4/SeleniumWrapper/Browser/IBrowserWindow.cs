@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
-
+using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser
@@ -85,7 +85,7 @@ namespace SeleniumWrapper.Browser
 
     internal class DefaultElement : BaseElement
     {
-        public DefaultElement(Func<IWebElement> elementFinder, IWebDriver browser) : base(elementFinder,browser)
+        public DefaultElement(Func<IWebElement> elementFinder, IWebDriver driver) : base(elementFinder,driver)
         {
         }
     }

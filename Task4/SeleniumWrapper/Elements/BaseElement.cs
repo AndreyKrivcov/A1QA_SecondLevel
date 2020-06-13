@@ -17,7 +17,7 @@ namespace SeleniumWrapper.Elements
         }
 
         private readonly Func<IWebElement> elementFinder;
-        private readonly IWebDriver driver;
+        protected readonly IWebDriver driver;
 
         public bool IsExists 
         {
