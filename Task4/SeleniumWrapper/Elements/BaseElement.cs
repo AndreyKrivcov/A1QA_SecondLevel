@@ -13,7 +13,7 @@ namespace SeleniumWrapper.Elements
         {
             if(elementFinder == null || driver == null)
             {
-                throw new ArgumentException("elementFinder delegate is null");
+                throw new ArgumentNullException();
             }
             this.elementFinder = elementFinder;
             this.driver = driver;

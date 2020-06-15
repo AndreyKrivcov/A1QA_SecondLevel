@@ -14,7 +14,7 @@ namespace SeleniumWrapper.Logging
             LoggerName = loggerName;
         }
 
-        private readonly Func<StreamWriter> streamCreator;
+        protected readonly Func<StreamWriter> streamCreator;
 
         public virtual string TestName { get; set; }
         public virtual int TestStep { get; set; }

@@ -26,8 +26,7 @@ namespace SeleniumWrapper.BrowserFabrics
         public virtual IBrowser Create(string version)
         {
             new DriverManager().SetUpDriver(config,version);
-           // return Browser.Instance(version, BrowserName, driverCreator);
-           return Browser.Browser.Instance(version, BrowserName, driverCreator);
+            return Browser.Browser.Instance(version, BrowserName, driverCreator);
         }
         public string BrowserName{ get; }
     }
