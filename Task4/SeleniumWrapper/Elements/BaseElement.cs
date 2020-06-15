@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 
 namespace SeleniumWrapper.Elements
@@ -29,7 +28,7 @@ namespace SeleniumWrapper.Elements
             {
                 try
                 {
-                    return elementFinder() != null;
+                    return (element = elementFinder()) != null;
                 }
                 catch(Exception)
                 {
@@ -38,16 +37,16 @@ namespace SeleniumWrapper.Elements
             }
         } 
 
+        private IWebElement element;
         protected IWebElement Element
         {
             get
             {
-                var data = elementFinder();
                 if(!IsExists)
                 {
                     throw new NoSuchElementException("Can`t find element");
                 }
-                return data;
+                return element;
             }
         }
 
@@ -88,11 +87,11 @@ namespace SeleniumWrapper.Elements
             Element.Click();
         }
 
-        public void DoubleClick()
+       /* public void DoubleClick()
         {
             Actions act = new Actions(driver);
             act.DoubleClick(Element);
-        }
+        }*/
     }
 
     public class ElementsKeeper
@@ -120,6 +119,8 @@ namespace SeleniumWrapper.Elements
         private readonly IWebDriver driver;
         private readonly Func<IWebElement> element;
         private readonly By by;
+
+        public ReadOnlyCollection<BaseElement> Elements => this;
 
         public static implicit operator ReadOnlyCollection<BaseElement>(ElementsKeeper collectionKeeper)
         {
@@ -149,7 +150,7 @@ namespace SeleniumWrapper.Elements
         }
     }
 
-    internal class DefaultElement : BaseElement
+    internal sealed class DefaultElement : BaseElement
     {
         public DefaultElement(Func<IWebElement> elementFinder, IWebDriver driver) : base(elementFinder,driver)
         {
