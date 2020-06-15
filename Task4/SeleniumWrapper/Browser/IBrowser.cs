@@ -12,9 +12,10 @@ namespace SeleniumWrapper.Browser
 
         ReadOnlyCollection<string> OpenedWindows { get; }
 
-        event Action<IBrowser> WindowChanged;
-        event Action<IBrowser, string> WindowClosed;
-        event Action<IBrowser> BrowserClosed;
+        event Action<string> WindowChanged;
+        event Action<string> WindowClosed;
+        event Action BrowserClosed;
+        event Action BrowserOpened;
 
         IBrowserWindow Window{ get; }
         void NewWindow(string url);

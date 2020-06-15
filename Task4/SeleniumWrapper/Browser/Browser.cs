@@ -46,9 +46,9 @@ namespace SeleniumWrapper.Browser
         { 
             get
             {
-                if(myWindow == null)
+                if(myWindow == null || driver == null)
                 {
-                    OpenNewWindowTab();
+                    OpenNewWindowTab(null);
                     myWindow = new BrowserWindow(driver);
                 }
                 return myWindow;
@@ -56,15 +56,16 @@ namespace SeleniumWrapper.Browser
         } 
 #endregion
 
-        public event Action<IBrowser> WindowChanged;
-        public event Action<IBrowser, string> WindowClosed;
-        public event Action<IBrowser> BrowserClosed;
+        public event Action<string> WindowChanged;
+        public event Action<string> WindowClosed;
+        public event Action BrowserClosed;
+        public event Action BrowserOpened;
 
         private void BrowserClosedInvoke()
         {
             driver = null;
 
-            BrowserClosed?.Invoke(this);
+            BrowserClosed?.Invoke();
         }
         
         public void CloseWindow(string windowHandle)
@@ -85,6 +86,7 @@ namespace SeleniumWrapper.Browser
 
             string currentHandle = driver.CurrentWindowHandle;
             
+            bool windowChanged = false;
             if(currentHandle != windowHandle)
             {
                 driver.SwitchTo().Window(windowHandle).Close();
@@ -94,10 +96,14 @@ namespace SeleniumWrapper.Browser
             {
                 driver.Close();
                 driver.SwitchTo().Window(OpenedWindows.Last());
-                WindowChanged?.Invoke(this);
+                windowChanged = true;
             }
 
-            WindowClosed?.Invoke(this, windowHandle);
+            WindowClosed?.Invoke(windowHandle);
+            if(windowChanged)
+            {
+                WindowChanged?.Invoke(OpenedWindows.Last());
+            }
         }
 
         public void Dispose()
@@ -111,20 +117,18 @@ namespace SeleniumWrapper.Browser
 
         public void NewWindow(string url)
         {
-            OpenNewWindowTab();
-            driver.Navigate().GoToUrl(url);
-            WindowChanged?.Invoke(this);
+            OpenNewWindowTab(url);
         }
 
         public void NewWindow()
         {
-            OpenNewWindowTab();
-            WindowChanged?.Invoke(this);
+            OpenNewWindowTab(null);
         }
 
-        protected virtual void OpenNewWindowTab()
+        protected virtual void OpenNewWindowTab(string url)
         {
-            if(driver == null)
+            bool shouldOpen = driver == null;
+            if(shouldOpen)
             {
                 driver = driverCreator();
             }
@@ -132,6 +136,20 @@ namespace SeleniumWrapper.Browser
             {
                 ((IJavaScriptExecutor)driver).ExecuteScript("window.open();");
                 driver.SwitchTo().Window(driver.WindowHandles.Last());
+            }
+
+            if(!string.IsNullOrEmpty(url) || !string.IsNullOrWhiteSpace(url))
+            {
+                driver.Navigate().GoToUrl(url);
+            }
+
+            if(!shouldOpen)
+            {
+                WindowChanged?.Invoke(driver.WindowHandles.Last());
+            }
+            else
+            {
+                BrowserOpened?.Invoke();
             }
         }
 
@@ -154,7 +172,7 @@ namespace SeleniumWrapper.Browser
                 }
 
                 driver.SwitchTo().Window(windowHandle);
-                WindowChanged?.Invoke(this);
+                WindowChanged?.Invoke(windowHandle);
             }
         }
     }
