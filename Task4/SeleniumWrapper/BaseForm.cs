@@ -87,6 +87,8 @@ namespace SeleniumWrapper
 #region Wait
         protected BaseElement WaitForElement(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
         {
+            CheckWindow();
+
             if(ignoringExceptions != null && 
                ignoringExceptions.Contains(typeof(NoSuchElementException)))
             {
@@ -97,6 +99,8 @@ namespace SeleniumWrapper
 
         protected ElementsKeeper WaitForElements(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
         {
+            CheckWindow();
+            
             if(ignoringExceptions != null && 
                ignoringExceptions.Contains(typeof(NoSuchElementException)))
             {
