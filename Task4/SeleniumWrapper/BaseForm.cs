@@ -4,14 +4,22 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Elements;
+using SeleniumWrapper.Logging;
+
+using LogType = SeleniumWrapper.Logging.LogType;
 
 namespace SeleniumWrapper
 {
     public abstract class BaseForm
     {
-        protected BaseForm(IBrowser browser, string url, bool openNewWindow)
+        protected BaseForm(IBrowser browser, string url, 
+                            bool openNewWindow = false, 
+                            bool threadSaveLogs = false, 
+                            bool disableStandartLogging = false)
         {
             this.browser = browser;
+            this.threadSaveLogs = threadSaveLogs;
+            this.disableStandartLogging = disableStandartLogging;
 
             if(openNewWindow)
             {
@@ -23,20 +31,24 @@ namespace SeleniumWrapper
             }
 
             Handle = browser.Window.Handle;
+            Url = browser.Window.Url;
 
             browser.WindowChanged += WindowChanged;
             browser.BrowserClosed += BrowserClosed;
             browser.WindowClosed += WindowClosed;
+
+            loggers.Add(LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,""));
         }
 
         ~BaseForm()
         {
-            browser.WindowChanged -= WindowChanged;
-            browser.BrowserClosed -= BrowserClosed;
-            browser.WindowClosed -= WindowClosed;
+            Unsubscribe();
         }
 
         protected readonly IBrowser browser;
+        protected readonly LoggersCollection loggers = new LoggersCollection();
+        private readonly bool threadSaveLogs;
+        private readonly bool disableStandartLogging;
 
 #region Properties
         public string Handle { get; }
@@ -49,24 +61,59 @@ namespace SeleniumWrapper
                 return browser.Window.Title;
             }
         }
+        public string Url { get; }
 #endregion
 
 #region Callbacks
+
+#region  WindowChanged tougle
         private bool windowChangedTougle = false;
         private void WindowChanged(string newHandle)
         {
-            windowChangedTougle = newHandle != Handle;
+            bool wasChanged = newHandle != Handle;
+            if(!disableStandartLogging && wasChanged && !windowChangedTougle)
+            {
+                Log(LogType.Info, $"Window with URL address ({Url}) switched to window with URL address ({browser.Window.Url})", 
+                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);            
+            }
+            else if(!disableStandartLogging && !wasChanged && windowChangedTougle)
+            {
+                Log(LogType.Info, $"Window with URL address ({Url}) switched back",
+                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);                
+            }
+
+            windowChangedTougle = wasChanged;
         }
+#endregion
+
+#region BrowserClosed tougle
         private bool browserClosedTougle = false;
         private void BrowserClosed()
         {
             browserClosedTougle = true;
+            Unsubscribe();
         }
+#endregion
 
+#region WindowClose tougle
         private bool windowClosedTougle = false;
         private void WindowClosed(string handle)
         {
             windowClosedTougle = handle == Handle;
+            Unsubscribe();
+            if(!disableStandartLogging)
+            {
+                Log(LogType.Info, $"Window with URL address ({Url}) was closed",
+                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
+            }
+        }
+#endregion
+
+        private void Unsubscribe()
+        {
+            browser.WindowChanged -= WindowChanged;
+            browser.BrowserClosed -= BrowserClosed;
+            browser.WindowClosed -= WindowClosed;
         }
 #endregion
 
@@ -81,8 +128,47 @@ namespace SeleniumWrapper
             {
                 browser.SwitchToWindow(Handle);
             }
+
+            string lastUrl = browser.Window.Url;
+            if(Url != lastUrl)
+            {
+                browser.Window.Url = Url;
+                if(!disableStandartLogging)
+                {
+                    Log(LogType.Warning, $"Restore URL adress from ({lastUrl}), to URL ({Url})", 
+                        System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
+                }
+            }
         }
 
+#region Logger
+        protected void Log(LogType type, string msg, string testName, int testStep)
+        {
+            if(threadSaveLogs)
+            {
+                loggers.ThreadSaveLog(type, msg, testName, testStep);
+            }
+            else
+            {
+                loggers.TestName = testName;
+                loggers.TestStep = testStep;
+                loggers.Log(type, msg);
+            }
+        }
+        protected void Log(Exception e, string testName, int testStep)
+        {
+            if(threadSaveLogs)
+            {
+                loggers.ThreadSaveLog(e, testName, testStep);
+            }
+            else
+            {
+                loggers.TestName = testName;
+                loggers.TestStep = testStep;
+                loggers.Log(e);
+            }
+        }
+#endregion
 
 #region Wait
         protected BaseElement WaitForElement(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
