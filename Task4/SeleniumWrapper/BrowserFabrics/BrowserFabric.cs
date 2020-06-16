@@ -5,18 +5,18 @@ using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.BrowserFabrics
 {
-    public class BrowserFabric
+    public static class BrowserFabric
     {
 
-        private readonly List<Fabric> fabrics = new List<Fabric>
+        private static readonly List<Fabric> fabrics = new List<Fabric>
         {
             new ChromeFabric(),
             new FireFoxFabric()
         };
 
-        public IBrowser GetBrowser(BrowserType type, string version = "Latest") => GetBrowser(type.ToString(), version);
+        public static IBrowser GetBrowser(BrowserType type, string version = "Latest") => GetBrowser(type.ToString(), version);
             
-        public IBrowser GetBrowser(string browserName, string version = "Latest")
+        public static IBrowser GetBrowser(string browserName, string version = "Latest")
         {
             int i = fabrics.FindIndex(x=>x.BrowserName ==browserName);
             if(i > -1)
@@ -27,7 +27,7 @@ namespace SeleniumWrapper.BrowserFabrics
             return null;
         }
 
-        public bool AddFabric(Fabric fabric)
+        public static bool AddFabric(Fabric fabric)
         {
             if(fabrics.Any(x=>x.BrowserName == fabric.BrowserName))
             {

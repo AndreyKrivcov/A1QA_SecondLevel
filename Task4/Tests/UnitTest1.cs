@@ -18,13 +18,13 @@ namespace Tests
         public void Setup()
         {
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,"")});
-            browser = new BrowserFabric().GetBrowser(BrowserType.Chrome);
+           // browser = BrowserFabric.GetBrowser(BrowserType.Chrome);
         }
 
         [TearDown]
         public void Teardown()
         {
-            browser.Dispose();
+            //browser.Dispose();
         }
 
         IBrowser browser;
@@ -33,7 +33,13 @@ namespace Tests
         [Test]
         public void Test1()
         {
-           Localisation<Language,Param> l = new Localisation<Language,Param>(); 
+            using(IBrowser b = BrowserFabric.GetBrowser(BrowserType.Chrome))
+            {
+                b.Window.Maximize();
+                b.Window.Url = "https://store.steampowered.com/";
+                b.MouseUtils.MoveToElement(b.Window.FindElement(By.XPath("//*[@id=\"genre_tab\"]/span/a[1]"))).Perform();
+
+            }
            
         }
     }
