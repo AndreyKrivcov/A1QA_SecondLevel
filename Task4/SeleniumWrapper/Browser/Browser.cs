@@ -6,7 +6,7 @@ using OpenQA.Selenium;
 
 using System.Linq;
 using System;
-using OpenQA.Selenium.Interactions;
+using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
 {

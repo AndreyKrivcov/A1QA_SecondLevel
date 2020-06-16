@@ -2,9 +2,9 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using SeleniumWrapper.Elements;
 
-namespace SeleniumWrapper.Browser
+namespace SeleniumWrapper.Utils
 { 
-    public class KeyUtils : IAction
+    public sealed class KeyUtils : IAction
     {
         public KeyUtils(IWebDriver driver)
         {

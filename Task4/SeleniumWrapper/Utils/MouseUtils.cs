@@ -2,9 +2,9 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using SeleniumWrapper.Elements;
 
-namespace SeleniumWrapper.Browser
+namespace SeleniumWrapper.Utils
 {
-    public class MouseUtils : IAction
+    public sealed class MouseUtils : IAction
     {
         public MouseUtils(IWebDriver driver)
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
+using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
 {
