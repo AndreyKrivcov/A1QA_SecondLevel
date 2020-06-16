@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace SeleniumWrapper.Utils
 {
-    public sealed class Localisator<T> where T  : Enum
+    public sealed class Localisation<Param, Language> where Param : Enum where Language : Enum
     {
-        private readonly Dictionary<string, Dictionary <T, string> > collection = 
-                        new Dictionary<string, Dictionary<T, string>>();
+        private readonly Dictionary<Param, Dictionary <Language, string> > collection = 
+                        new Dictionary<Param, Dictionary<Language, string>>();
 
 #region  Getters
-        public string Get(string param, T language)
+        public string Get(Param param, Language language)
         {
             if(!collection.Keys.Contains(param))
             {
@@ -23,7 +23,7 @@ namespace SeleniumWrapper.Utils
 
             return collection[param][language];
         }
-        public Dictionary<T, string> Get(string param)
+        public Dictionary<Language, string> Get(Param param)
         {
             if(!collection.Keys.Contains(param))
             {
@@ -33,7 +33,7 @@ namespace SeleniumWrapper.Utils
             return collection[param];
         }
 
-        public Dictionary<T, string> this[string key]
+        public Dictionary<Language, string> this[Param key]
         {
             get => collection[key];
             set => collection[key] = value;
@@ -41,7 +41,7 @@ namespace SeleniumWrapper.Utils
 #endregion
 
 #region Setters
-        public void AddOrReplace(string param, T language, string value)
+        public void AddOrReplace(Param param, Language language, string value)
         {
             if(collection.Keys.Contains(param))
             {
@@ -56,10 +56,10 @@ namespace SeleniumWrapper.Utils
             }
             else
             {
-                collection.Add(param, new Dictionary<T, string> {{language, value}});
+                collection.Add(param, new Dictionary<Language, string> {{language, value}});
             }
         }
-        public void AddOrReplace(string param, Dictionary<T,string> dictionary)
+        public void AddOrReplace(Param param, Dictionary<Language,string> dictionary)
         {
             if(collection.Keys.Contains(param))
             {
@@ -72,7 +72,7 @@ namespace SeleniumWrapper.Utils
         }
 #endregion
 
-        void Clear()
+        public void Clear()
         {
             collection.Clear();
         }
