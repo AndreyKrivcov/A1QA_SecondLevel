@@ -56,5 +56,10 @@ namespace SeleniumWrapper.Browser
         public void Minimize() => driver.Manage().Window.Minimize();
 
         public void Refresh() => driver.Navigate().Refresh();
+
+        public void Scroll(int x, int y)
+        {
+            ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy({x},{y})");
+        }
     }
 }

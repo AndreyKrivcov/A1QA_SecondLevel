@@ -22,5 +22,7 @@ namespace SeleniumWrapper.Browser
         string Handle { get; }
         BaseElement FindElement(By by);
         ElementsKeeper FindElements(By by);
+
+        void Scroll(int x, int y);
     } 
 }

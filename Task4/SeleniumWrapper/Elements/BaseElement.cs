@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 
 namespace SeleniumWrapper.Elements
@@ -17,10 +18,12 @@ namespace SeleniumWrapper.Elements
             }
             this.elementFinder = elementFinder;
             this.driver = driver;
+            actions = new Actions(driver);
         }
 
         private readonly Func<IWebElement> elementFinder;
         protected readonly IWebDriver driver;
+        protected readonly Actions actions;
 
         public bool IsExists 
         {
@@ -36,6 +39,8 @@ namespace SeleniumWrapper.Elements
                 }
             }
         } 
+
+        internal IWebElement GetIWebElement()=>Element;
 
         private IWebElement element;
         protected IWebElement Element
@@ -81,17 +86,13 @@ namespace SeleniumWrapper.Elements
 
         public BaseElement FindElement(By by) => new DefaultElement(()=>driver.FindElement(by),driver);
         public ElementsKeeper FindElements(By by) => new ElementsKeeper(driver, elementFinder, by);
+        public void Click() => Element.Click();
 
-        public void Click()
+        public void ScrollToElement()
         {
-            Element.Click();
+            actions.MoveToElement(Element);
+            actions.Perform();
         }
-
-       /* public void DoubleClick()
-        {
-            Actions act = new Actions(driver);
-            act.DoubleClick(Element);
-        }*/
     }
 
     public class ElementsKeeper

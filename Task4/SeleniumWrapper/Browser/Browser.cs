@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 
 using System.Linq;
 using System;
+using OpenQA.Selenium.Interactions;
 
 namespace SeleniumWrapper.Browser
 {
@@ -32,6 +33,9 @@ namespace SeleniumWrapper.Browser
         public string BrowserName { get; }
         public string Version { get; }
         public bool IsOpened => driver != null;
+        public MouseUtils MouseUtils => new MouseUtils(driver);
+        public KeyUtils KeyUtils => new KeyUtils(driver);
+        public IJavaScriptExecutor JavaScriptExecutor => (IJavaScriptExecutor)driver;
 
         private readonly Func<IWebDriver> driverCreator;
 

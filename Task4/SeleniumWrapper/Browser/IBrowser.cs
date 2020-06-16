@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using OpenQA.Selenium;
 
 namespace SeleniumWrapper.Browser
 {
@@ -11,6 +12,9 @@ namespace SeleniumWrapper.Browser
         bool IsOpened { get; }
 
         ReadOnlyCollection<string> OpenedWindows { get; }
+        IJavaScriptExecutor JavaScriptExecutor { get; }
+        MouseUtils MouseUtils { get; }
+        KeyUtils KeyUtils { get; }
 
         event Action<string> WindowChanged;
         event Action<string> WindowClosed;
