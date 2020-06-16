@@ -49,7 +49,6 @@ namespace SeleniumWrapper.Browser
                 if(myWindow == null || driver == null)
                 {
                     OpenNewWindowTab(null);
-                    myWindow = new BrowserWindow(driver);
                 }
                 return myWindow;
             } 
@@ -131,6 +130,7 @@ namespace SeleniumWrapper.Browser
             if(shouldOpen)
             {
                 driver = driverCreator();
+                myWindow = new BrowserWindow(driver);
             }
             else
             {

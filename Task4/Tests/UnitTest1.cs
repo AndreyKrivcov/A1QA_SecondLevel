@@ -8,6 +8,8 @@ using OpenQA.Selenium;
 using System;
 using System.IO;
 
+using LogType = SeleniumWrapper.Logging.LogType;
+
 namespace Tests
 {
     public class Tests
@@ -15,26 +17,29 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
+            loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,"")});
+            browser = new BrowserFabric().GetBrowser(BrowserType.Chrome);
+            browser.WindowChanged += WindowChanged;
+            browser.WindowClosed += WindowClosed;
+            browser.BrowserClosed += BrowserClosed;
+            browser.BrowserOpened += BrowserOpened;
         }
+
+        [TearDown]
+        public void Teardown()
+        {
+            browser.WindowChanged -= WindowChanged;
+            browser.WindowClosed -= WindowClosed;
+            browser.BrowserClosed -= BrowserClosed;
+            browser.BrowserOpened -= BrowserOpened;
+        }
+
+        IBrowser browser;
+        LoggersCollection loggers = new LoggersCollection();
 
         [Test]
         public void Test1()
         {
-            LoggersCollection loggers = new LoggersCollection();
-            loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.FileLogger,"MyDoubleLogedFile.csv"), 
-                                LoggerCreator.GetLogger(LoggerTypes.FileLogger,"MyDoubleLogedFile.csv"),
-                                LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,""),
-                                LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,"")});
-
-            loggers.TestName = "Test # 1";
-            loggers.TestStep = 1;
-            loggers.Log(SeleniumWrapper.Logging.LogType.Info, "Info log");
-            loggers.Log(SeleniumWrapper.Logging.LogType.Warning, "Warning log");
-            loggers.Log(SeleniumWrapper.Logging.LogType.Error, "Info Error");
-            loggers.Log(SeleniumWrapper.Logging.LogType.Fatal, "Info fatal");
-
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         }
     }
 }
