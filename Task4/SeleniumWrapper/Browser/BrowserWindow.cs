@@ -39,9 +39,9 @@ namespace SeleniumWrapper.Browser
 
         public void Back() => driver.Navigate().Back(); 
 
-        public BaseElement FindElement(By by) => new DefaultElement(()=>driver.FindElement(by), driver);
+        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(()=>driver.FindElement(by), driver);
 
-        public ElementsKeeper FindElements(By by) => new ElementsKeeper(driver,by);
+        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => new ElementsKeeper<T>(driver,by);
 
         public void Forward() => driver.Navigate().Forward();
 

@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
+
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -21,7 +21,7 @@ namespace SeleniumWrapper.Elements
             actions = new Actions(driver);
         }
 
-        private readonly Func<IWebElement> elementFinder;
+        protected readonly Func<IWebElement> elementFinder;
         protected readonly IWebDriver driver;
         protected readonly Actions actions;
 
@@ -84,8 +84,8 @@ namespace SeleniumWrapper.Elements
             return wait.Until(x=> f(x));
         } 
 
-        public BaseElement FindElement(By by) => new DefaultElement(()=>driver.FindElement(by),driver);
-        public ElementsKeeper FindElements(By by) => new ElementsKeeper(driver, elementFinder, by);
+        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(()=>driver.FindElement(by),driver);
+        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => new ElementsKeeper<T>(driver, elementFinder, by);
         public void Click() => Element.Click();
 
         public void ScrollToElement()
@@ -95,66 +95,15 @@ namespace SeleniumWrapper.Elements
         }
     }
 
-    public class ElementsKeeper
-    {
-        public ElementsKeeper(IWebDriver driver, By by)
-        {
-            if(driver == null || by == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            this.driver = driver;
-            this.by = by;
-        }
-        public ElementsKeeper(IWebDriver driver, Func<IWebElement> element, By by) : this(driver, by)
-        {
-            if(element == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            this.element = element;
-        }
-
-        private readonly IWebDriver driver;
-        private readonly Func<IWebElement> element;
-        private readonly By by;
-
-        public ReadOnlyCollection<BaseElement> Elements => this;
-
-        public static implicit operator ReadOnlyCollection<BaseElement>(ElementsKeeper collectionKeeper)
-        {
-            if(collectionKeeper.driver == null || collectionKeeper.by == null)
-                return null;    
-
-            ReadOnlyCollection<IWebElement> elementsFinder()
-            {
-                ISearchContext finder = (collectionKeeper.element == null ? collectionKeeper.driver : (ISearchContext)collectionKeeper.element());
-                return finder.FindElements(collectionKeeper.by);
-            }
-
-            var data = elementsFinder();
-
-            List<BaseElement> ans = new List<BaseElement>();
-            for (int i = 0; i < data.Count; i++)
-            {
-                int n = i;
-                ans.Add(new DefaultElement(()=>
-                {
-                    var items = elementsFinder();
-                    return (items.Count > n ? items[n] : null);
-                }, collectionKeeper.driver));
-            }
-
-            return ans.AsReadOnly();
-        }
-    }
-
-    internal sealed class DefaultElement : BaseElement
+    internal sealed class DefaultElement<T> : BaseElement where T : BaseElement
     {
         public DefaultElement(Func<IWebElement> elementFinder, IWebDriver driver) : base(elementFinder,driver)
         {
+        }
+
+        public static implicit operator T(DefaultElement<T> element)
+        {
+            return (T)Activator.CreateInstance(typeof(T),element.elementFinder, element.driver);
         }
     }
 }

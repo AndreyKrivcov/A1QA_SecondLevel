@@ -20,8 +20,8 @@ namespace SeleniumWrapper.Browser
         /// </summary>
         /// <value>unique handle</value>
         string Handle { get; }
-        BaseElement FindElement(By by);
-        ElementsKeeper FindElements(By by);
+        T FindElement<T>(By by) where T : BaseElement;
+        ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement;
 
         void Scroll(int x, int y);
     } 

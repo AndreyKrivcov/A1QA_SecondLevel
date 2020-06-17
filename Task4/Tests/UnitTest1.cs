@@ -9,6 +9,7 @@ using System;
 using System.IO;
 
 using LogType = SeleniumWrapper.Logging.LogType;
+using SeleniumWrapper.Elements;
 
 namespace Tests
 {
@@ -33,12 +34,20 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            using(IBrowser b = BrowserFabric.GetBrowser(BrowserType.Chrome))
+            using(IBrowser b = BrowserFabric.GetBrowser(BrowserType.FireFox))
             {
-                b.Window.Maximize();
-                b.Window.Url = "https://store.steampowered.com/";
-                b.MouseUtils.MoveToElement(b.Window.FindElement(By.XPath("//*[@id=\"genre_tab\"]/span/a[1]"))).Perform();
-
+                try
+                {
+                    b.Window.Maximize();
+                    b.Window.Url = "https://store.steampowered.com/";
+                    var a = b.Window.FindElement<A>(By.XPath("//*[@id=\"genre_tab\"]/span/a[1]"));
+                    string s = a.Coords;
+                    loggers.Log(LogType.Warning,s);
+                }
+                catch(Exception e)
+                {
+                    loggers.Log(e);
+                }
             }
            
         }

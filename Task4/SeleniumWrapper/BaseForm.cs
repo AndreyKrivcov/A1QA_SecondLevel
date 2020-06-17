@@ -171,7 +171,7 @@ namespace SeleniumWrapper
 #endregion
 
 #region Wait
-        protected BaseElement WaitForElement(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
+        protected T WaitForElement<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions) where T : BaseElement
         {
             CheckWindow();
 
@@ -180,10 +180,11 @@ namespace SeleniumWrapper
             {
                 ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
             }
-            return Wait(timeout, (IBrowser b)=> b.Window.FindElement(by) , sleepInterval, ignoringExceptions);
+            return Wait(timeout, (IBrowser b)=> b.Window.FindElement<T>(by) , sleepInterval, ignoringExceptions);
         }
 
-        protected ElementsKeeper WaitForElements(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
+        protected ElementsKeeper<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
+                                    where T : BaseElement
         {
             CheckWindow();
             
@@ -193,10 +194,10 @@ namespace SeleniumWrapper
                 ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
             }
 
-            ElementsKeeper elements = null;
+            ElementsKeeper<T> elements = null;
             Wait(timeout, (IBrowser b)=>
             {
-                elements = b.Window.FindElements(by);
+                elements = b.Window.FindElements<T>(by);
                 foreach (var item in elements.Elements)
                 {
                     if(!item.IsExists)
