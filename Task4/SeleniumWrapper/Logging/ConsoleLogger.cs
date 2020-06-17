@@ -35,7 +35,7 @@ namespace SeleniumWrapper.Logging
             {                
                 case LogType.Info : Console.ForegroundColor = ConsoleColor.Gray; break;
                 case LogType.Warning : Console.ForegroundColor = ConsoleColor.DarkYellow; break;
-                case LogType.Error : Console.ForegroundColor = ConsoleColor.Magenta; break;
+                case LogType.Error : Console.ForegroundColor = ConsoleColor.Red; break;
                 case LogType.Fatal : Console.ForegroundColor = ConsoleColor.DarkRed; break;
                 default: Console.ForegroundColor = defaultColor; break;
             }

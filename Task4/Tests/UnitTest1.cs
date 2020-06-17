@@ -34,15 +34,33 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            using(IBrowser b = BrowserFabric.GetBrowser(BrowserType.FireFox))
+            using(IBrowser b = BrowserFabric.GetBrowser(BrowserType.Chrome))
             {
                 try
                 {
                     b.Window.Maximize();
-                    b.Window.Url = "https://store.steampowered.com/";
-                    var a = b.Window.FindElement<A>(By.XPath("//*[@id=\"genre_tab\"]/span/a[1]"));
-                    string s = a.Coords;
-                    loggers.Log(LogType.Warning,s);
+                    b.Window.Url = "https://store.steampowered.com/agecheck/app/1282690/";
+                  //  b.Window.Scroll(0,5000);
+
+                    var s = b.Window.FindElement<Select>(By.XPath("//select[@id=\"ageYear\"]"));
+                    
+                    loggers.Log(LogType.Warning, s.AccessKey);
+                    loggers.Log(LogType.Warning, s.Form);
+                    loggers.Log(LogType.Warning, s.Name);
+                    loggers.Log(LogType.Warning, s.SelectedOption.InnerHTML);
+                    s.SelectByIndex(10);
+                    loggers.Log(LogType.Warning, s.SelectedOption.InnerHTML);
+                    loggers.Log(LogType.Warning, s.SelectedOption.InnerHTML);
+
+                    foreach (var item in s.Options)
+                    {
+                        loggers.Log(LogType.Warning, item.InnerHTML);
+                    }
+
+                    loggers.Log(LogType.Info,"");
+                    loggers.Log(LogType.Warning,"");
+                    loggers.Log(LogType.Error,"");
+                    loggers.Log(LogType.Fatal,"");
                 }
                 catch(Exception e)
                 {

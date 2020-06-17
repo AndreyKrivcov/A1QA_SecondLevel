@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
@@ -25,6 +24,7 @@ namespace SeleniumWrapper.Elements
         protected readonly IWebDriver driver;
         protected readonly Actions actions;
 
+        private Exception lastException;
         public bool IsExists 
         {
             get
@@ -33,8 +33,9 @@ namespace SeleniumWrapper.Elements
                 {
                     return (element = elementFinder()) != null;
                 }
-                catch(Exception)
+                catch(Exception e)
                 {
+                    lastException = e;
                     return false;
                 }
             }
@@ -49,9 +50,17 @@ namespace SeleniumWrapper.Elements
             {
                 if(!IsExists)
                 {
-                    throw new NoSuchElementException("Can`t find element");
+                    throw lastException;
                 }
                 return element;
+            }
+        }
+
+        protected void CheckTag(string expectedTag)
+        {
+            if(Element.TagName != expectedTag)
+            {
+                throw new Exception($"Wrong tag name. Expected \"{expectedTag}\", but current is \"{Element.TagName}\"");
             }
         }
 
@@ -62,6 +71,7 @@ namespace SeleniumWrapper.Elements
         public string TagName=> Element.TagName;
         public bool Displayed => Element.Displayed;
         public bool Enabled => Element.Enabled;
+        public bool Disabled => Element.GetAttribute("disabled") == "disabled"; 
         public void WaitForDisplayed(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             Wait(timeout, (IWebDriver x) => Displayed, sleepInterval, typeof(NoSuchElementException));
@@ -69,6 +79,11 @@ namespace SeleniumWrapper.Elements
         public void WaitForExists(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             Wait(timeout, (IWebDriver x) => IsExists, sleepInterval, typeof(NoSuchElementException));
+        }
+
+        public void WaitForAvailibility(TimeSpan timeout, TimeSpan? sleepInterval = null)
+        {
+            Wait(timeout, (IWebDriver x) => Enabled && !Disabled, sleepInterval, typeof(NoSuchElementException));
         }
 
         protected T Wait<T>(TimeSpan timeout, Func<IWebDriver, T> f, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions )
@@ -105,5 +120,21 @@ namespace SeleniumWrapper.Elements
         {
             return (T)Activator.CreateInstance(typeof(T),element.elementFinder, element.driver);
         }
+    }
+
+    public enum Sharpe
+    {
+        Circle,
+        Default,
+        Poly,
+        Rect
+    }
+
+    public enum Align
+    {
+        Center,
+        Left,
+        Right,
+        Justify,
     }
 }
