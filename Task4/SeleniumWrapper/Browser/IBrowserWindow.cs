@@ -24,5 +24,6 @@ namespace SeleniumWrapper.Browser
         ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement;
 
         void Scroll(int x, int y);
+        void WaitForLoading();
     } 
 }

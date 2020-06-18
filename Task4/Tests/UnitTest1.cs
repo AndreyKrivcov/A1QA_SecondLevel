@@ -1,15 +1,13 @@
-using NUnit.Framework;
-using SeleniumWrapper.BrowserFabrics;
-using SeleniumWrapper.Browser;
-using SeleniumWrapper.Utils;
-using SeleniumWrapper.Logging;
-using OpenQA.Selenium;
-
 using System;
-using System.IO;
+using NUnit.Framework;
+using SeleniumWrapper.Browser;
+using SeleniumWrapper.BrowserFabrics;
+using SeleniumWrapper.Logging;
+using SeleniumWrapper.Utils;
 
-using LogType = SeleniumWrapper.Logging.LogType;
-using SeleniumWrapper.Elements;
+using System.Collections.Generic;
+
+using Tests.Pages;
 
 namespace Tests
 {
@@ -19,13 +17,13 @@ namespace Tests
         public void Setup()
         {
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,"")});
-           // browser = BrowserFabric.GetBrowser(BrowserType.Chrome);
+            browser = BrowserFabric.GetBrowser(BrowserType.Chrome);
         }
 
         [TearDown]
         public void Teardown()
         {
-            //browser.Dispose();
+         //   browser.Dispose();
         }
 
         IBrowser browser;
@@ -34,52 +32,20 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            using(IBrowser b = BrowserFabric.GetBrowser(BrowserType.Chrome))
+        
+            Dictionary<Language,string> ls = new Dictionary<Language, string>
             {
-                try
-                {
-                    b.Window.Maximize();
-                    b.Window.Url = "https://store.steampowered.com/agecheck/app/1282690/";
-                  //  b.Window.Scroll(0,5000);
+                {Language.Ru, "Русский (Russian)"},
+                {Language.En, "English (английский)"}
+            };
 
-                    var s = b.Window.FindElement<Select>(By.XPath("//select[@id=\"ageYear\"]"));
-                    
-                    loggers.Log(LogType.Warning, s.AccessKey);
-                    loggers.Log(LogType.Warning, s.Form);
-                    loggers.Log(LogType.Warning, s.Name);
-                    loggers.Log(LogType.Warning, s.SelectedOption.InnerHTML);
-                    s.SelectByIndex(10);
-                    loggers.Log(LogType.Warning, s.SelectedOption.InnerHTML);
-                    loggers.Log(LogType.Warning, s.SelectedOption.InnerHTML);
+            Localisation<MainPageParams,Language> localisation = new Localisation<MainPageParams,Language>();
+            localisation.AddOrReplace(MainPageParams.Games,Language.Ru,"Игры");
+            localisation.AddOrReplace(MainPageParams.Games,Language.En,"Games");
 
-                    foreach (var item in s.Options)
-                    {
-                        loggers.Log(LogType.Warning, item.InnerHTML);
-                    }
 
-                    loggers.Log(LogType.Info,"");
-                    loggers.Log(LogType.Warning,"");
-                    loggers.Log(LogType.Error,"");
-                    loggers.Log(LogType.Fatal,"");
-                }
-                catch(Exception e)
-                {
-                    loggers.Log(e);
-                }
-            }
-           
+            MainPage mainPage = new MainPage(browser,"https://store.steampowered.com/",Language.En,localisation,TimeSpan.FromMinutes(1),ls,null);
+            mainPage.MouseOver();
         }
-    }
-
-    enum Language
-    {
-        En,
-        Rus
-    }
-
-    enum Param
-    {
-        Param_1,
-        Param_2
     }
 }

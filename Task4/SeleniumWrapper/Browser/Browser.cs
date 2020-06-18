@@ -11,37 +11,16 @@ using SeleniumWrapper.Utils;
 namespace SeleniumWrapper.Browser
 {
     public class Browser : IBrowser
-    {
-        private Browser(string version, string browserName, Func<IWebDriver> driverCreator)
-        {
-            this.driverCreator = driverCreator;
-            BrowserName = browserName;
-            Version = version;
-        }
-        
-        private static Browser instance;
-        public static IBrowser Instance(string version, string browserName, Func<IWebDriver> driverCreator)
-        {
-            if(instance == null)
-            {
-                instance = new Browser(version,browserName,driverCreator);
-            }
-
-            return instance;
-        }
-        
-        public string BrowserName { get; }
-        public string Version { get; }
-        public bool IsOpened => driver != null;
-        public MouseUtils MouseUtils => new MouseUtils(driver);
-        public KeyUtils KeyUtils => new KeyUtils(driver);
-        public IJavaScriptExecutor JavaScriptExecutor => (IJavaScriptExecutor)driver;
-
-        private readonly Func<IWebDriver> driverCreator;
-
-        protected IWebDriver driver;
+    {    
+        internal Browser(){}
+        public string BrowserName => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.BrowserName);
+        public string Version => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.Version);
+        public bool IsOpened => DriverKeeper.GetDriver.IsOpened;
+        public MouseUtils MouseUtils => new MouseUtils(DriverKeeper.GetDriver);
+        public KeyUtils KeyUtils => new KeyUtils(DriverKeeper.GetDriver);
+        public IJavaScriptExecutor JavaScriptExecutor => DriverKeeper.GetDriver.JavaScriptExecutor;
         public ReadOnlyCollection<string> OpenedWindows => 
-            (driver == null ? new List<string>().AsReadOnly() : driver.WindowHandles);
+            (IsOpened ? new List<string>().AsReadOnly() : DriverKeeper.GetDriver.WindowHandles);
 
 
 #region  Window keeper
@@ -50,7 +29,7 @@ namespace SeleniumWrapper.Browser
         { 
             get
             {
-                if(myWindow == null || driver == null)
+                if(myWindow == null || !IsOpened)
                 {
                     OpenNewWindowTab(null);
                 }
@@ -63,17 +42,10 @@ namespace SeleniumWrapper.Browser
         public event Action<string> WindowClosed;
         public event Action BrowserClosed;
         public event Action BrowserOpened;
-
-        private void BrowserClosedInvoke()
-        {
-            driver = null;
-
-            BrowserClosed?.Invoke();
-        }
         
         public void CloseWindow(string windowHandle)
         {
-            if(driver == null)
+            if(!IsOpened)
             {
                 return;
             }
@@ -87,18 +59,18 @@ namespace SeleniumWrapper.Browser
                 return;
             }
 
-            string currentHandle = driver.CurrentWindowHandle;
+            string currentHandle = DriverKeeper.GetDriver.CurrentWindowHandle;
             
             bool windowChanged = false;
             if(currentHandle != windowHandle)
             {
-                driver.SwitchTo().Window(windowHandle).Close();
-                driver.SwitchTo().Window(currentHandle);
+                DriverKeeper.GetDriver.SwitchTo().Window(windowHandle).Close();
+                DriverKeeper.GetDriver.SwitchTo().Window(currentHandle);
             }
             else
             {
-                driver.Close();
-                driver.SwitchTo().Window(OpenedWindows.Last());
+                DriverKeeper.GetDriver.Close();
+                DriverKeeper.GetDriver.SwitchTo().Window(OpenedWindows.Last());
                 windowChanged = true;
             }
 
@@ -111,10 +83,10 @@ namespace SeleniumWrapper.Browser
 
         public void Dispose()
         {
-            if(driver != null)
+            if(IsOpened)
             {
-                driver.Dispose();
-                BrowserClosedInvoke();
+                DriverKeeper.GetDriver.Dispose();
+                BrowserClosed?.Invoke();
             }
         }
 
@@ -130,52 +102,52 @@ namespace SeleniumWrapper.Browser
 
         protected virtual void OpenNewWindowTab(string url)
         {
-            bool shouldOpen = driver == null;
-            if(shouldOpen)
+            bool shouldOpen = !IsOpened;            
+           
+            if(!shouldOpen)
             {
-                driver = driverCreator();
-                myWindow = new BrowserWindow(driver);
+                JavaScriptExecutor.ExecuteScript("window.open();");
+                DriverKeeper.GetDriver.SwitchTo().Window(DriverKeeper.GetDriver.WindowHandles.Last());
             }
             else
             {
-                ((IJavaScriptExecutor)driver).ExecuteScript("window.open();");
-                driver.SwitchTo().Window(driver.WindowHandles.Last());
+                DriverKeeper.GetDriver.SwitchTo().ParentFrame();
             }
-
             if(!string.IsNullOrEmpty(url) || !string.IsNullOrWhiteSpace(url))
             {
-                driver.Navigate().GoToUrl(url);
+                DriverKeeper.GetDriver.Navigate().GoToUrl(url);
             }
 
             if(!shouldOpen)
             {
-                WindowChanged?.Invoke(driver.WindowHandles.Last());
+                WindowChanged?.Invoke(DriverKeeper.GetDriver.WindowHandles.Last());
             }
             else
             {
+                myWindow = new BrowserWindow();
                 BrowserOpened?.Invoke();
             }
         }
 
         public void Quit()
         {
-            if(driver != null)
+            if(IsOpened)
             {
-                driver.Quit();
-                BrowserClosedInvoke();
+                DriverKeeper.GetDriver.Quit();
+                BrowserClosed?.Invoke();
             }
         }
 
         public void SwitchToWindow(string windowHandle)
         {
-            if(driver != null)
+            if(IsOpened)
             {
                 if(!OpenedWindows.Contains(windowHandle))
                 {
                     throw new ArgumentException($"Can`t find window with handle = {windowHandle}");
                 }
 
-                driver.SwitchTo().Window(windowHandle);
+                DriverKeeper.GetDriver.SwitchTo().Window(windowHandle);
                 WindowChanged?.Invoke(windowHandle);
             }
         }

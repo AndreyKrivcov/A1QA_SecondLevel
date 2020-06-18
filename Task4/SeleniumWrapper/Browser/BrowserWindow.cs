@@ -9,57 +9,56 @@ namespace SeleniumWrapper.Browser
 {
     public class BrowserWindow : IBrowserWindow
     {
-        public BrowserWindow(IWebDriver webDriver)
-        {
-            driver = webDriver;
-        }
-        
-        private readonly IWebDriver driver;
-
+        internal BrowserWindow(){}
         public string Url 
         { 
-            get => driver.Url; 
-            set => driver.Url = value; 
+            get => DriverKeeper.GetDriver.Url; 
+            set => DriverKeeper.GetDriver.Url = value; 
         }
 
-        public string Title => driver.Title;
+        public string Title => DriverKeeper.GetDriver.Title;
 
-        public string Handle => driver.CurrentWindowHandle;
+        public string Handle => DriverKeeper.GetDriver.CurrentWindowHandle;
 
         public Point Position 
         { 
-            get => driver.Manage().Window.Position; 
-            set => driver.Manage().Window.Position = value; 
+            get => DriverKeeper.GetDriver.Manage().Window.Position; 
+            set => DriverKeeper.GetDriver.Manage().Window.Position = value; 
         }
         public Size Size 
         { 
-            get => driver.Manage().Window.Size; 
-            set => driver.Manage().Window.Size = value; 
+            get => DriverKeeper.GetDriver.Manage().Window.Size; 
+            set => DriverKeeper.GetDriver.Manage().Window.Size = value; 
         }
 
-        public void Back() => driver.Navigate().Back(); 
+        public void Back() => DriverKeeper.GetDriver.Navigate().Back(); 
 
-        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(()=>driver.FindElement(by), driver);
+        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(by,-1,null);
 
-        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => new ElementsKeeper<T>(driver,by);
+        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => 
+            new ElementsKeeper<T>(by);
 
-        public void Forward() => driver.Navigate().Forward();
+        public void Forward() => DriverKeeper.GetDriver.Navigate().Forward();
 
-        public void FullScreen() => driver.Manage().Window.FullScreen();
+        public void FullScreen() => DriverKeeper.GetDriver.Manage().Window.FullScreen();
 
-        public void GoToUrl(string url) => driver.Navigate().GoToUrl(url);
+        public void GoToUrl(string url) => DriverKeeper.GetDriver.Navigate().GoToUrl(url);
 
-        public void GoToUrl(Uri url) => driver.Navigate().GoToUrl(url);
+        public void GoToUrl(Uri url) => DriverKeeper.GetDriver.Navigate().GoToUrl(url);
 
-        public void Maximize() => driver.Manage().Window.Maximize();
+        public void Maximize() => DriverKeeper.GetDriver.Manage().Window.Maximize();
         
-        public void Minimize() => driver.Manage().Window.Minimize();
+        public void Minimize() => DriverKeeper.GetDriver.Manage().Window.Minimize();
 
-        public void Refresh() => driver.Navigate().Refresh();
+        public void Refresh() => DriverKeeper.GetDriver.Navigate().Refresh();
 
         public void Scroll(int x, int y)
         {
-            ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy({x},{y})");
+            DriverKeeper.GetDriver.JavaScriptExecutor.ExecuteScript($"window.scrollBy({x},{y})");
+        }
+        public void WaitForLoading()
+        {
+            DriverKeeper.GetDriver.JavaScriptExecutor.ExecuteScript("window.onload");
         }
     }
 }

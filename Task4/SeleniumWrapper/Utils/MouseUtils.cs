@@ -19,12 +19,12 @@ namespace SeleniumWrapper.Utils
         } 
         public MouseUtils Click(BaseElement onElement) 
         {
-            actions.Click(onElement.GetIWebElement());
+            actions.Click(onElement.IWebElement);
             return this;
         }
         public MouseUtils ClickAndHold(BaseElement onElement)
         {
-            actions.ClickAndHold(onElement.GetIWebElement());
+            actions.ClickAndHold(onElement.IWebElement);
             return this;
         }
         public MouseUtils ClickAndHold()
@@ -39,7 +39,7 @@ namespace SeleniumWrapper.Utils
         }
         public MouseUtils ContextClick(BaseElement onElement)
         {
-            actions.ContextClick(onElement.GetIWebElement());
+            actions.ContextClick(onElement.IWebElement);
             return this;
         }
         public MouseUtils DoubleClick()
@@ -49,17 +49,17 @@ namespace SeleniumWrapper.Utils
         }
         public MouseUtils DoubleClick(BaseElement onElement)
         {
-            actions.DoubleClick(onElement.GetIWebElement());
+            actions.DoubleClick(onElement.IWebElement);
             return this;
         }
         public MouseUtils DragAndDrop(BaseElement source, BaseElement target)
         {
-            actions.DragAndDrop(source.GetIWebElement(), target.GetIWebElement());
+            actions.DragAndDrop(source.IWebElement, target.IWebElement);
             return this;
         }
         public MouseUtils DragAndDropToOffset(BaseElement source, int offsetX, int offsetY)
         {
-            actions.DragAndDropToOffset(source.GetIWebElement(), offsetX, offsetY);
+            actions.DragAndDropToOffset(source.IWebElement, offsetX, offsetY);
             return this;
         }
         public MouseUtils MoveByOffset(int offsetX, int offsetY)
@@ -69,22 +69,22 @@ namespace SeleniumWrapper.Utils
         }
         public MouseUtils MoveToElement(BaseElement toElement)
         {
-            actions.MoveToElement(toElement.GetIWebElement());
+            actions.MoveToElement(toElement.IWebElement);
             return this;
         }
         public MouseUtils MoveToElement(BaseElement toElement, int offsetX, int offsetY)
         {
-            actions.MoveToElement(toElement.GetIWebElement(), offsetX, offsetY);
+            actions.MoveToElement(toElement.IWebElement, offsetX, offsetY);
             return this;
         }
         public MouseUtils MoveToElement(BaseElement toElement, int offsetX, int offsetY, MoveToElementOffsetOrigin offsetOrigin)
         {
-            actions.MoveToElement(toElement.GetIWebElement(),offsetX,offsetY,offsetOrigin);
+            actions.MoveToElement(toElement.IWebElement,offsetX,offsetY,offsetOrigin);
             return this;
         }
         public MouseUtils Release(BaseElement onElement) 
         {
-            actions.Release(onElement.GetIWebElement());
+            actions.Release(onElement.IWebElement);
             return this;
         }
         public MouseUtils Release()

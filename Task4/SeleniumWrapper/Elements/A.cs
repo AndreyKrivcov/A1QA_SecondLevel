@@ -5,7 +5,7 @@ namespace SeleniumWrapper.Elements
 {
     public sealed class A : BaseElement
     {
-        public A(Func<IWebElement> elementFinder, IWebDriver driver) : base(elementFinder, driver)
+        public A(By by, int ind, BaseElement parentElemen) : base(by,ind,parentElemen)
         {
             CheckTag("a");
         }
@@ -34,6 +34,6 @@ namespace SeleniumWrapper.Elements
         public int TabIndex => Convert.ToInt32(Element.GetAttribute("tabindex"));
         public string Target => Element.GetAttribute("target");
         public string Title => Element.GetAttribute("title");
-        public string Type => Element.GetAttribute("type"); 
+        public string Type => Element.GetAttribute("type");
     }
 }

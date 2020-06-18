@@ -7,9 +7,9 @@ using OpenQA.Selenium.Support.UI;
 
 namespace SeleniumWrapper.Elements
 {
-    public sealed class Select : BaseElement
+    public sealed partial class Select : BaseElement
     {
-        public Select(Func<IWebElement> elementFinder, IWebDriver driver) : base(elementFinder, driver)
+        public Select(By by, int ind, BaseElement parentElemen) : base(by, ind, parentElemen)
         {
             CheckTag("select");
             dropDownManager = new SelectElement(Element);
@@ -22,12 +22,36 @@ namespace SeleniumWrapper.Elements
 
 #region Wrapper for SelectElement
         public bool IsMultiple => dropDownManager.IsMultiple;
-        public ReadOnlyCollection<Option> Options => dropDownManager.Options
-            .Select(x=>new Option(()=>x,driver)).ToList().AsReadOnly();
-        public Option SelectedOption => new Option(()=>dropDownManager.SelectedOption, driver);
-        public ReadOnlyCollection<Option> AllSelectedOptions => dropDownManager.AllSelectedOptions
-            .Select(x=>new Option(()=>x,driver)).ToList().AsReadOnly();
+        public ReadOnlyCollection<Option> Options 
+        {
+            get
+            {
+                var data = dropDownManager.Options;
+                List<Option> ans = new List<Option>();
+                for (int i = 0; i < data.Count; i++)
+                {
+                    ans.Add(new Option(By,i,false));
+                }
 
+                return ans.AsReadOnly();
+            }
+        }
+        public Option SelectedOption => new Option(By,-1,false);
+        public ReadOnlyCollection<Option> AllSelectedOptions
+        {
+            get
+            {
+                var data = dropDownManager.AllSelectedOptions;
+                List<Option> ans = new List<Option>();
+                for (int i = 0; i < data.Count; i++)
+                {
+                    ans.Add(new Option(By,i,true));
+                }
+
+                return ans.AsReadOnly();
+            }
+        }
+        
         public void DeselectAll()=>dropDownManager.DeselectAll();
         public void DeselectByIndex(int index) => dropDownManager.DeselectByIndex(index);
         public void DeselectByText(string text) => dropDownManager.DeselectByText(text);

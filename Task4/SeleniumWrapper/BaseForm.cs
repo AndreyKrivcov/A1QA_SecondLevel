@@ -12,7 +12,7 @@ namespace SeleniumWrapper
 {
     public abstract class BaseForm
     {
-        protected BaseForm(IBrowser browser, string url, 
+        protected BaseForm(IBrowser browser, string url = null, 
                             bool openNewWindow = false, 
                             bool threadSaveLogs = false, 
                             bool disableStandartLogging = false)
@@ -20,14 +20,19 @@ namespace SeleniumWrapper
             this.browser = browser;
             this.threadSaveLogs = threadSaveLogs;
             this.disableStandartLogging = disableStandartLogging;
+            browserClosedTougle = false;
+            logedBrowserClosed = false;
 
-            if(openNewWindow)
+            if(!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
             {
-                browser.NewWindow(url);
-            }
-            else
-            {
-                browser.Window.Url = url;
+                if(openNewWindow)
+                {
+                    browser.NewWindow(url);
+                }
+                else
+                {
+                    browser.Window.Url = url;
+                }
             }
 
             Handle = browser.Window.Handle;
@@ -61,7 +66,7 @@ namespace SeleniumWrapper
                 return browser.Window.Title;
             }
         }
-        public string Url { get; }
+        public string Url { get; protected set; }
 #endregion
 
 #region Callbacks
@@ -87,10 +92,20 @@ namespace SeleniumWrapper
 #endregion
 
 #region BrowserClosed tougle
-        private bool browserClosedTougle = false;
+        private static bool browserClosedTougle;
+        private static bool logedBrowserClosed;
         private void BrowserClosed()
         {
-            browserClosedTougle = true;
+            if(!browserClosedTougle)
+            {
+                browserClosedTougle = true;
+            }
+            if(!disableStandartLogging && !logedBrowserClosed)
+            {
+                Log(LogType.Info, "Browser closed", 
+                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
+                logedBrowserClosed = true;
+            }
             Unsubscribe();
         }
 #endregion
@@ -180,7 +195,11 @@ namespace SeleniumWrapper
             {
                 ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
             }
-            return Wait(timeout, (IBrowser b)=> b.Window.FindElement<T>(by) , sleepInterval, ignoringExceptions);
+            return Wait(timeout, (IBrowser b)=> 
+            {
+                var element = b.Window.FindElement<T>(by);
+                return (element.IsExists ? element : null);
+            }, sleepInterval, ignoringExceptions);
         }
 
         protected ElementsKeeper<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)

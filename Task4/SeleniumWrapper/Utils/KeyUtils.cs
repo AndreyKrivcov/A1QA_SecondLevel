@@ -19,12 +19,12 @@ namespace SeleniumWrapper.Utils
         }
         public KeyUtils KeyDown(BaseElement element, string theKey)
         {
-            actions.KeyDown(element.GetIWebElement(),theKey);
+            actions.KeyDown(element.IWebElement,theKey);
             return this;
         }
         public KeyUtils KeyUp(BaseElement element, string theKey)
         {
-            actions.KeyUp(element.GetIWebElement(), theKey);
+            actions.KeyUp(element.IWebElement, theKey);
             return this;
         }
         public KeyUtils KeyUp(string theKey)
@@ -34,7 +34,7 @@ namespace SeleniumWrapper.Utils
         }
         public KeyUtils SendKeys(BaseElement element, string keysToSend)
         {
-            actions.SendKeys(element.GetIWebElement(),keysToSend);
+            actions.SendKeys(element.IWebElement,keysToSend);
             return this;
         }
         public KeyUtils SendKeys(string keysToSend)

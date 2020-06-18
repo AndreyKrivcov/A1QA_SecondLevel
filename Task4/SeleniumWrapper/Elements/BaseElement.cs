@@ -2,36 +2,54 @@ using System;
 using System.Linq;
 
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
+using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
 {
     public abstract class BaseElement 
     {
-        public BaseElement(Func<IWebElement> elementFinder, IWebDriver driver)
+        protected BaseElement(By by, int ind, BaseElement parentElement)
         {
-            if(elementFinder == null || driver == null)
+            if(by == null)
             {
                 throw new ArgumentNullException();
             }
-            this.elementFinder = elementFinder;
-            this.driver = driver;
-            actions = new Actions(driver);
+
+            By = by;
+            this.ind = ind;
+            this.parentElement = parentElement;
         }
 
-        protected readonly Func<IWebElement> elementFinder;
-        protected readonly IWebDriver driver;
-        protected readonly Actions actions;
+        public By By { get; }
+        internal readonly int ind;
 
-        private Exception lastException;
-        public bool IsExists 
+        protected BaseElement parentElement;
+        protected Exception lastException;
+        protected IWebElement element;
+        public virtual bool IsExists 
         {
             get
             {
                 try
                 {
-                    return (element = elementFinder()) != null;
+                    element = null;
+
+                    return Wait(TimeSpan.FromMinutes(1),(IWebDriver driver) =>
+                    {
+                        ISearchContext finder = (parentElement == null ? driver : (ISearchContext)parentElement.IWebElement);
+                        if(ind < 0)
+                        {
+                            element = finder.FindElement(By);
+                        }
+                        else
+                        {
+                            var data = finder.FindElements(By);
+                            element = (data.Count > ind ? data[ind] : null);
+                        }
+                        
+                        return element !=null;
+                    });
                 }
                 catch(Exception e)
                 {
@@ -41,9 +59,8 @@ namespace SeleniumWrapper.Elements
             }
         } 
 
-        internal IWebElement GetIWebElement()=>Element;
 
-        private IWebElement element;
+        internal IWebElement IWebElement => Element;
         protected IWebElement Element
         {
             get
@@ -58,6 +75,8 @@ namespace SeleniumWrapper.Elements
 
         protected void CheckTag(string expectedTag)
         {
+            WaitForExists(TimeSpan.FromMinutes(1));
+            
             if(Element.TagName != expectedTag)
             {
                 throw new Exception($"Wrong tag name. Expected \"{expectedTag}\", but current is \"{Element.TagName}\"");
@@ -70,8 +89,8 @@ namespace SeleniumWrapper.Elements
         public System.Drawing.Size Size => Element.Size;
         public string TagName=> Element.TagName;
         public bool Displayed => Element.Displayed;
-        public bool Enabled => Element.Enabled;
         public bool Disabled => Element.GetAttribute("disabled") == "disabled"; 
+        public string InnerHTML => Element.GetAttribute("innerHTML");
         public void WaitForDisplayed(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             Wait(timeout, (IWebDriver x) => Displayed, sleepInterval, typeof(NoSuchElementException));
@@ -83,42 +102,43 @@ namespace SeleniumWrapper.Elements
 
         public void WaitForAvailibility(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
-            Wait(timeout, (IWebDriver x) => Enabled && !Disabled, sleepInterval, typeof(NoSuchElementException));
+            Wait(timeout, (IWebDriver x) => !Disabled, sleepInterval, typeof(NoSuchElementException));
         }
 
         protected T Wait<T>(TimeSpan timeout, Func<IWebDriver, T> f, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions )
         {
-            var wait = sleepInterval.HasValue ? new WebDriverWait(new SystemClock(),driver,timeout, sleepInterval.Value) 
-                                              : new WebDriverWait(driver,timeout);
+            var wait = sleepInterval.HasValue ? new WebDriverWait(new SystemClock(),DriverKeeper.GetDriver,timeout, sleepInterval.Value) 
+                                              : new WebDriverWait(DriverKeeper.GetDriver,timeout);
 
+            bool isStaleReferenceException = false;
             if(ignoringExceptions != null && ignoringExceptions.Count() > 0)
             {
                 wait.IgnoreExceptionTypes(ignoringExceptions);
+                isStaleReferenceException =  ignoringExceptions.Contains(typeof(StaleElementReferenceException));
+            }
+            if(!isStaleReferenceException)
+            {
+                wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
             }
 
             return wait.Until(x=> f(x));
         } 
 
-        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(()=>driver.FindElement(by),driver);
-        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => new ElementsKeeper<T>(driver, elementFinder, by);
+        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(by,ind,this);
+        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => new ElementsKeeper<T>(by, this);
         public void Click() => Element.Click();
 
-        public void ScrollToElement()
-        {
-            actions.MoveToElement(Element);
-            actions.Perform();
-        }
     }
 
     internal sealed class DefaultElement<T> : BaseElement where T : BaseElement
     {
-        public DefaultElement(Func<IWebElement> elementFinder, IWebDriver driver) : base(elementFinder,driver)
+        public DefaultElement(By by, int ind, BaseElement parentElemen) : base(by,ind, parentElemen)
         {
         }
 
         public static implicit operator T(DefaultElement<T> element)
         {
-            return (T)Activator.CreateInstance(typeof(T),element.elementFinder, element.driver);
+            return (T)Activator.CreateInstance(typeof(T),element.By, element.ind, element.parentElement);
         }
     }
 
