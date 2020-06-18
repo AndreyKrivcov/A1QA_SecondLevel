@@ -13,65 +13,87 @@ using LogType = SeleniumWrapper.Logging.LogType;
 
 namespace Tests.Pages
 {
+    struct MainPageSettings
+    {
+        public IBrowser Browser;
+        public string Url; 
+        public Language Language;
+        public Localisation<MainPageParams,Language> Localisation;
+        public TimeSpan Timeout;
+        public Dictionary<Language, string> LanguageToLanguageName;
+        public string PathToLogFile; 
+        public string PathToDownload;
+    }
+
     class MainPage : BaseForm
     {
-        public MainPage(IBrowser browser, string url, Language language, 
-                        Localisation<MainPageParams,Language> localisation, 
-                        TimeSpan timeout, Dictionary<Language, string> languageToLanguageName,
-                        string pathToFileName, bool openNewWindow = false, bool threadSaveLogs = false) : 
-            base(browser, url, openNewWindow, threadSaveLogs)
+        public MainPage(MainPageSettings settings) : 
+            base(settings.Browser, settings.Url, false,false)
         {
-            if(!string.IsNullOrEmpty(pathToFileName) && !string.IsNullOrWhiteSpace(pathToFileName))
+            this.settings = settings;
+
+            if(!string.IsNullOrEmpty(settings.PathToLogFile) && !string.IsNullOrWhiteSpace(settings.PathToLogFile))
             {
-                loggers.Add(LoggerCreator.GetLogger(LoggerTypes.FileLogger,pathToFileName));
+                loggers.Add(LoggerCreator.GetLogger(LoggerTypes.FileLogger,settings.PathToLogFile));
             }
             browser.Window.Maximize();
             browser.Window.Scroll(0,0);
 
-            this.localisation = localisation;
-            this.language = language;
-            this.timeout = timeout;
+            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
 
-            ChangeLanguage(languageToLanguageName);
+            ChangeLanguage();
         }
 
 #region Selectors
         private readonly string LanguageButton = "//span[@id=\"language_pulldown\"]";
         private readonly string InstallSteam = "//a[@class = \"header_installsteam_btn_content\"]";
         private readonly string GamesDiv = "//div[@id=\"genre_tab\"]";
-        private readonly string ActionGames = "//div[@class=\"popup_body popup_menu_twocol\"]/div[2]//a[1]";
+       // private readonly string ActionGames = "//div[@class=\"popup_body popup_menu_twocol\"]/div[2]//a[1]";
 #endregion
+
+        private readonly MainPageSettings settings;
 
 #region Locatisation
-        private readonly Language language;
-        private readonly Localisation<MainPageParams,Language> localisation;
         
-        private void ChangeLanguage(Dictionary<Language, string> languageToLanguageName)
+        private void ChangeLanguage()
         {
             BaseElement element = browser.Window.FindElement<Span>(By.XPath(LanguageButton));
-            Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,0);
-            var data = new LanguageDropDown(element,logger,browser,timeout);
+            Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,1);
+            var data = new LanguageDropDown(element,logger,browser,settings.Timeout);
 
-            foreach (var item in data.Items)
+            if(data.Items.Any(x=>x.Name == settings.LanguageToLanguageName[settings.Language]))
             {
-                if(item.Name == languageToLanguageName[language])
+                foreach (var item in data.Items)
                 {
-                    item.Click();
-                    break;
+                    if(item.Name == settings.LanguageToLanguageName[settings.Language])
+                    {
+                        item.Click();
+                        System.Threading.Thread.Sleep(10000);
+                        break;
+                    }
                 }
             }
-
-            System.Threading.Thread.Sleep(10000);            
+            else
+            {
+                element.Click();
+            }           
         }
 #endregion
 
-        private readonly TimeSpan timeout;
-        public InstallSteam InstallationPage => new InstallSteam(browser,WaitForElement<A>(By.XPath(InstallSteam),timeout));
-        public void MouseOverAndClick() 
+        public DownloadSteam InstallationPage
         {
-            var element = WaitForElement<Div>(By.XPath(GamesDiv),timeout);
-            browser.MouseUtils.MoveToElement(element).Perform();
-            WaitForElement<A>(By.XPath(ActionGames),timeout).Click();
+            get
+            {
+                return new DownloadSteam(browser,
+                    WaitForElement<A>(By.XPath(InstallSteam),settings.Timeout),
+                    settings.PathToDownload, settings.Timeout, settings.PathToLogFile);
+            }
         }
+      /*  public void MouseOverAndClick() 
+        {
+            var element = WaitForElement<Div>(By.XPath(GamesDiv),settings.Timeout);
+            browser.MouseUtils.MoveToElement(element).Perform();
+            WaitForElement<A>(By.XPath(ActionGames),settings.Timeout).Click();
+        }*/
     }
 }

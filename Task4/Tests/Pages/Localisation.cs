@@ -17,6 +17,5 @@ namespace Tests.Pages
 
     enum MainPageParams
     {
-        Games
     }
 }

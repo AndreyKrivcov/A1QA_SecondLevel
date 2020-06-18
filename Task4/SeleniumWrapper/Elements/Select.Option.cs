@@ -16,7 +16,6 @@ namespace SeleniumWrapper.Elements
 
             private readonly bool isAllSelected;
 
-            private readonly Func<IWebElement> elementCreator;
             public override bool IsExists
             {
                 get

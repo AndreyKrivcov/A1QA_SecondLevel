@@ -150,7 +150,7 @@ namespace SeleniumWrapper
                 browser.Window.Url = Url;
                 if(!disableStandartLogging)
                 {
-                    Log(LogType.Warning, $"Restore URL adress from ({lastUrl}), to URL ({Url})", 
+                    Log(LogType.Info, $"Restore URL adress from ({lastUrl}), to URL ({Url})", 
                         System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
                 }
             }

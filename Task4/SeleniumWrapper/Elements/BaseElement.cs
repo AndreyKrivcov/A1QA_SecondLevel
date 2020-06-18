@@ -78,6 +78,7 @@ namespace SeleniumWrapper.Elements
         public System.Drawing.Size Size => Element.Size;
         public string TagName=> Element.TagName;
         public bool Displayed => Element.Displayed;
+        public string GetAttribute(string name) => Element.GetAttribute(name);
         public bool Disabled => Element.GetAttribute("disabled") == "disabled"; 
         public string InnerHTML => Element.GetAttribute("innerHTML");
         public void WaitForDisplayed(TimeSpan timeout, TimeSpan? sleepInterval = null)
