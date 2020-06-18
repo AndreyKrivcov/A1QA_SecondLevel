@@ -11,7 +11,7 @@ namespace SeleniumWrapper.Elements
             public Option(By by, int ind, bool isAllSelected) : base(by,ind, null)
             {
                 this.isAllSelected = isAllSelected;
-                CheckTag("option");
+               // CheckTag("option");
             }
 
             private readonly bool isAllSelected;

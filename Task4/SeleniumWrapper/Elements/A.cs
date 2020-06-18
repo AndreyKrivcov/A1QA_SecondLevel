@@ -7,12 +7,12 @@ namespace SeleniumWrapper.Elements
     {
         public A(By by, int ind, BaseElement parentElemen) : base(by,ind,parentElemen)
         {
-            CheckTag("a");
+            //CheckTag("a");
         }
-        public string AccessKey => Element.GetAttribute("accesskey");
-        public string Coords => Element.GetAttribute("coords");
-        public string Href => Element.GetAttribute("href");
-        public string Hreflang => Element.GetAttribute("hreflang");
+        public string AccessKey => Element?.GetAttribute("accesskey");
+        public string Coords => Element?.GetAttribute("coords");
+        public string Href => Element?.GetAttribute("href");
+        public string Hreflang => Element?.GetAttribute("hreflang");
         public string Name => Element.GetAttribute("name");
         public string Rel => Element.GetAttribute("rel");
         public string Rev => Element.GetAttribute("rev");

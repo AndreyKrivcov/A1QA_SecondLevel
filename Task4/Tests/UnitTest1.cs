@@ -32,7 +32,8 @@ namespace Tests
         [Test]
         public void Test1()
         {
-        
+        try
+        {
             Dictionary<Language,string> ls = new Dictionary<Language, string>
             {
                 {Language.Ru, "Русский (Russian)"},
@@ -46,6 +47,11 @@ namespace Tests
 
             MainPage mainPage = new MainPage(browser,"https://store.steampowered.com/",Language.En,localisation,TimeSpan.FromMinutes(1),ls,null);
             mainPage.MouseOver();
+        }
+        catch(Exception e)
+        {
+            loggers.Log(e);
+        }
         }
     }
 }

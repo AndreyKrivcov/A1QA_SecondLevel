@@ -33,11 +33,11 @@ namespace SeleniumWrapper.Elements
             {
                 try
                 {
-                    element = null;
+                   // element = null;
 
-                    return Wait(TimeSpan.FromMinutes(1),(IWebDriver driver) =>
-                    {
-                        ISearchContext finder = (parentElement == null ? driver : (ISearchContext)parentElement.IWebElement);
+                    //return Wait(TimeSpan.FromMinutes(1),(IWebDriver driver) =>
+                  //  {
+                        ISearchContext finder = (parentElement == null ? DriverKeeper.GetDriver : (ISearchContext)parentElement.IWebElement);
                         if(ind < 0)
                         {
                             element = finder.FindElement(By);
@@ -45,11 +45,11 @@ namespace SeleniumWrapper.Elements
                         else
                         {
                             var data = finder.FindElements(By);
-                            element = (data.Count > ind ? data[ind] : null);
+                            element = data[ind];
                         }
                         
                         return element !=null;
-                    });
+                 //   });
                 }
                 catch(Exception e)
                 {
@@ -73,15 +73,15 @@ namespace SeleniumWrapper.Elements
             }
         }
 
-        protected void CheckTag(string expectedTag)
+        /*protected void CheckTag(string expectedTag)
         {
-            WaitForExists(TimeSpan.FromMinutes(1));
+           // WaitForExists(TimeSpan.FromMinutes(1));
             
             if(Element.TagName != expectedTag)
             {
                 throw new Exception($"Wrong tag name. Expected \"{expectedTag}\", but current is \"{Element.TagName}\"");
             }
-        }
+        }*/
 
         public string GetSccValue(string property) => Element.GetCssValue(property);
         public System.Drawing.Point Location => Element.Location;

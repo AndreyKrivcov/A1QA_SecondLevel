@@ -11,7 +11,7 @@ namespace SeleniumWrapper.Elements
     {
         public Select(By by, int ind, BaseElement parentElemen) : base(by, ind, parentElemen)
         {
-            CheckTag("select");
+           // CheckTag("select");
             dropDownManager = new SelectElement(Element);
         }
 
