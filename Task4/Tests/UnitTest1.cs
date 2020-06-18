@@ -8,6 +8,8 @@ using SeleniumWrapper.Utils;
 using System.Collections.Generic;
 
 using Tests.Pages;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 
 namespace Tests
 {
@@ -17,7 +19,15 @@ namespace Tests
         public void Setup()
         {
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,"")});
-            browser = BrowserFabric.GetBrowser(BrowserType.Chrome);
+
+            ChromeOptions options = new ChromeOptions();
+            options.AddUserProfilePreference("safebrowsing.enabled","false");
+
+            FirefoxOptions ffOptions = new FirefoxOptions();
+            ffOptions.AddAdditionalOption("safebrowsing.enabled","false");
+            
+
+            browser = BrowserFabric.GetBrowser(BrowserType.FireFox,ffOptions);
         }
 
         [TearDown]
@@ -45,8 +55,9 @@ namespace Tests
             localisation.AddOrReplace(MainPageParams.Games,Language.En,"Games");
 
 
-            MainPage mainPage = new MainPage(browser,"https://store.steampowered.com/",Language.En,localisation,TimeSpan.FromMinutes(1),ls,null);
-            mainPage.MouseOver();
+            MainPage mainPage = new MainPage(browser,"https://store.steampowered.com/",Language.Ru,localisation,TimeSpan.FromMinutes(1),ls,null);
+           // mainPage.MouseOverAndClick();
+            mainPage.InstallationPage.Install();
         }
         catch(Exception e)
         {

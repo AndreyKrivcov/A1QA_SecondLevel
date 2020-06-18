@@ -7,9 +7,9 @@ using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser
 {
-    public class BrowserWindow : IBrowserWindow
+    internal class BrowserWindow : IBrowserWindow
     {
-        internal BrowserWindow(){}
+        public BrowserWindow(){}
         public string Url 
         { 
             get => DriverKeeper.GetDriver.Url; 

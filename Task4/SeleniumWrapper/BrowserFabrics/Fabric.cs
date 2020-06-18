@@ -10,7 +10,7 @@ namespace SeleniumWrapper.BrowserFabrics
 
     public abstract class Fabric
     {
-        protected Fabric(string browserName, IDriverConfig config, Func<IWebDriver> driverCreator)
+        protected Fabric(string browserName, IDriverConfig config, Func<DriverOptions,IWebDriver> driverCreator)
         {
             if(driverCreator == null)
             {
@@ -22,19 +22,19 @@ namespace SeleniumWrapper.BrowserFabrics
         }
         
         protected readonly IDriverConfig config;
-        protected readonly Func<IWebDriver> driverCreator;
+        protected readonly Func<DriverOptions,IWebDriver> driverCreator;
 
-        public virtual IBrowser Create(string version)
+        public virtual IBrowser Create(string version, DriverOptions options)
         {
             new DriverManager().SetUpDriver(config,version);
-            Instance(version);
+            Instance(version, options);
             return new Browser.Browser();
         }
         public string BrowserName{ get; }
 
-        protected void Instance(string version)
+        protected void Instance(string version, DriverOptions options)
         {
-            DriverKeeper.Instance(driverCreator,version,BrowserName);
+            DriverKeeper.Instance(driverCreator,options,version,BrowserName);
         }
     }
     

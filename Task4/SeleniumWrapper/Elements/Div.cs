@@ -1,4 +1,3 @@
-using System;
 using OpenQA.Selenium;
 
 namespace SeleniumWrapper.Elements
@@ -7,7 +6,6 @@ namespace SeleniumWrapper.Elements
     {
         public Div(By by, int ind, BaseElement parentElemen) : base(by, ind, parentElemen)
         {
-          //  CheckTag("div");
         }
 
         public string Title => Element.GetAttribute("title");

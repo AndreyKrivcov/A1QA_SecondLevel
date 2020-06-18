@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-
+using OpenQA.Selenium;
 using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.BrowserFabrics
@@ -14,14 +14,17 @@ namespace SeleniumWrapper.BrowserFabrics
             new FireFoxFabric()
         };
 
-        public static IBrowser GetBrowser(BrowserType type, string version = "Latest") => GetBrowser(type.ToString(), version);
+        public static IBrowser GetBrowser(BrowserType type, DriverOptions options = null, string version = "Latest")
+        {
+            return GetBrowser(type.ToString(), options, version);
+        }
             
-        public static IBrowser GetBrowser(string browserName, string version = "Latest")
+        public static IBrowser GetBrowser(string browserName, DriverOptions options = null, string version = "Latest")
         {
             int i = fabrics.FindIndex(x=>x.BrowserName ==browserName);
             if(i > -1)
             {
-                return fabrics[i].Create(version);
+                return fabrics[i].Create(version,options);
             }
 
             return null;

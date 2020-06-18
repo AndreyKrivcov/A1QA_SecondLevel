@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
@@ -11,7 +9,6 @@ namespace SeleniumWrapper.Elements
     {
         public Select(By by, int ind, BaseElement parentElemen) : base(by, ind, parentElemen)
         {
-           // CheckTag("select");
             dropDownManager = new SelectElement(Element);
         }
 

@@ -10,9 +10,9 @@ using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
 {
-    public class Browser : IBrowser
+    internal class Browser : IBrowser
     {    
-        internal Browser(){}
+        public Browser(){}
         public string BrowserName => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.BrowserName);
         public string Version => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.Version);
         public bool IsOpened => DriverKeeper.GetDriver.IsOpened;
@@ -22,6 +22,10 @@ namespace SeleniumWrapper.Browser
         public ReadOnlyCollection<string> OpenedWindows => 
             (IsOpened ? new List<string>().AsReadOnly() : DriverKeeper.GetDriver.WindowHandles);
 
+        public override int GetHashCode()
+        {
+            return DriverKeeper.GetDriver.GetHashCode();
+        }
 
 #region  Window keeper
         private IBrowserWindow myWindow;

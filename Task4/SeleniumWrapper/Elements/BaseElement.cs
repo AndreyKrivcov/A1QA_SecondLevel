@@ -27,35 +27,34 @@ namespace SeleniumWrapper.Elements
         protected BaseElement parentElement;
         protected Exception lastException;
         protected IWebElement element;
+
+        private void GetElement()
+        {
+            try
+            {
+                element = null;
+                ISearchContext finder = (parentElement == null ? DriverKeeper.GetDriver : (ISearchContext)parentElement.IWebElement);
+                if(ind < 0)
+                {
+                    element = finder.FindElement(By);
+                }
+                else
+                {
+                    var data = finder.FindElements(By);
+                    element = (data.Count > ind ? data[ind] : null);
+                }
+            }
+            catch(Exception e)
+            {
+                lastException = e;
+            }
+        }
         public virtual bool IsExists 
         {
             get
             {
-                try
-                {
-                   // element = null;
-
-                    //return Wait(TimeSpan.FromMinutes(1),(IWebDriver driver) =>
-                  //  {
-                        ISearchContext finder = (parentElement == null ? DriverKeeper.GetDriver : (ISearchContext)parentElement.IWebElement);
-                        if(ind < 0)
-                        {
-                            element = finder.FindElement(By);
-                        }
-                        else
-                        {
-                            var data = finder.FindElements(By);
-                            element = data[ind];
-                        }
-                        
-                        return element !=null;
-                 //   });
-                }
-                catch(Exception e)
-                {
-                    lastException = e;
-                    return false;
-                }
+                GetElement();    
+                return element !=null;
             }
         } 
 
@@ -72,16 +71,6 @@ namespace SeleniumWrapper.Elements
                 return element;
             }
         }
-
-        /*protected void CheckTag(string expectedTag)
-        {
-           // WaitForExists(TimeSpan.FromMinutes(1));
-            
-            if(Element.TagName != expectedTag)
-            {
-                throw new Exception($"Wrong tag name. Expected \"{expectedTag}\", but current is \"{Element.TagName}\"");
-            }
-        }*/
 
         public string GetSccValue(string property) => Element.GetCssValue(property);
         public System.Drawing.Point Location => Element.Location;

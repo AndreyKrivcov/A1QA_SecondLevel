@@ -7,7 +7,6 @@ namespace SeleniumWrapper.Elements
     {
         public A(By by, int ind, BaseElement parentElemen) : base(by,ind,parentElemen)
         {
-            //CheckTag("a");
         }
         public string AccessKey => Element?.GetAttribute("accesskey");
         public string Coords => Element?.GetAttribute("coords");

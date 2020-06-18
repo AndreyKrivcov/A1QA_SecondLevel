@@ -39,6 +39,7 @@ namespace Tests.Pages
         private readonly string LanguageButton = "//span[@id=\"language_pulldown\"]";
         private readonly string InstallSteam = "//a[@class = \"header_installsteam_btn_content\"]";
         private readonly string GamesDiv = "//div[@id=\"genre_tab\"]";
+        private readonly string ActionGames = "//div[@class=\"popup_body popup_menu_twocol\"]/div[2]//a[1]";
 #endregion
 
 #region Locatisation
@@ -60,32 +61,17 @@ namespace Tests.Pages
                 }
             }
 
-          //  WaitForElement<Div>(By.XPath("//div[@class=\"home_cluster_ctn home_ctn\"]"),timeout).WaitForAvailibility(timeout);
-            
-         //   browser.Window.FindElement<A>(By.XPath(InstallSteam)).WaitForAvailibility(timeout);
-         //   browser.Window.FindElement<Div>(By.XPath(GamesDiv)).WaitForAvailibility(timeout);
-
-            
+            System.Threading.Thread.Sleep(10000);            
         }
 #endregion
 
         private readonly TimeSpan timeout;
         public InstallSteam InstallationPage => new InstallSteam(browser,WaitForElement<A>(By.XPath(InstallSteam),timeout));
-        public void MouseOver() 
+        public void MouseOverAndClick() 
         {
-            Wait(timeout,(IBrowser)=>
-            {
-                var element = WaitForElement<Div>(By.XPath(GamesDiv),timeout);
-
-                browser.MouseUtils.MoveToElement(element).Perform();
-               // element.Click();
-                var div = browser.Window.FindElement<Div>(By.XPath("//div[@class=\"tab  flyout_tab focus\"]"));
-
-                Log(LogType.Info, $"IsExists={div.IsExists} Displayed={div.Displayed} Disabled={div.Disabled}","",0);
-
-                return div.IsExists ;
-            },null,typeof(NoSuchElementException), typeof(StaleElementReferenceException));
-            Log(LogType.Info, "Done","",0);
+            var element = WaitForElement<Div>(By.XPath(GamesDiv),timeout);
+            browser.MouseUtils.MoveToElement(element).Perform();
+            WaitForElement<A>(By.XPath(ActionGames),timeout).Click();
         }
     }
 }

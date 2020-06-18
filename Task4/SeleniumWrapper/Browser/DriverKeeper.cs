@@ -8,16 +8,18 @@ namespace SeleniumWrapper.Browser
 {
     internal sealed class DriverKeeper : IWebDriver, IActionExecutor
     {
-        private DriverKeeper(Func<IWebDriver> driverCreator, string version, string browserName)
+        private DriverKeeper(Func<DriverOptions,IWebDriver> driverCreator, DriverOptions options, string version, string browserName)
         {
             this.driverCreator = driverCreator;
+            this.options = options;
             this.Version = version;
             this.BrowserName = browserName;
         }
         
 #region Driver
         private static IWebDriver driver;
-        private readonly Func<IWebDriver> driverCreator;
+        private readonly Func<DriverOptions,IWebDriver> driverCreator;
+        private readonly DriverOptions options;
         private IWebDriver Driver
         {
             get
@@ -28,7 +30,7 @@ namespace SeleniumWrapper.Browser
                 }
                 if(driver == null)
                 {
-                    driver = driverCreator();
+                    driver = driverCreator(options);
                 }
                 return driver;
             }
@@ -39,11 +41,11 @@ namespace SeleniumWrapper.Browser
 #endregion
 #region Instamce
         private static DriverKeeper instance;
-        public static void Instance(Func<IWebDriver> creator, string version, string browserName)
+        public static void Instance(Func<DriverOptions,IWebDriver> creator, DriverOptions options, string version, string browserName)
         {
             if(instance == null)
             {
-                instance = new DriverKeeper(creator,version,browserName);
+                instance = new DriverKeeper(creator,options,version,browserName);
             }
         }
         public static DriverKeeper GetDriver => instance;
