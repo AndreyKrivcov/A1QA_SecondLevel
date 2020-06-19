@@ -22,19 +22,20 @@ namespace SeleniumWrapper.Elements
 
 #region Wrapper for SelectElement
         public bool IsMultiple => dropDownManager.IsMultiple;
-        public ReadOnlyCollection<Option> Options => GetOptions(()=>dropDownManager.Options);
-        public Option SelectedOption => new Option(new WebElementKeeper(()=>dropDownManager.SelectedOption));
-        public ReadOnlyCollection<Option> AllSelectedOptions => GetOptions(()=>dropDownManager.AllSelectedOptions);
-
-        private ReadOnlyCollection<Option> GetOptions(Func<IEnumerable<IWebElement>> getter)
+        public ReadOnlyCollection<Option> Options 
         {
-            return ElementFinder.FindElements(getter,(int n)=>
+            get
             {
-                return new Option(new WebElementKeeper(()=>
-                {
-                    return getter().ElementAt(n);
-                }));
-            }).AsReadOnly();
+                return dropDownManager.Options.Select(x=>new Option(x as WebElementKeeper)).ToList().AsReadOnly();
+            }
+        }
+        public Option SelectedOption => new Option(dropDownManager.SelectedOption as WebElementKeeper);
+        public ReadOnlyCollection<Option> AllSelectedOptions
+        {
+            get 
+            {
+                return dropDownManager.Options.Select(x=>new Option(x as WebElementKeeper)).ToList().AsReadOnly();
+            }
         }
         
         public void DeselectAll()=>dropDownManager.DeselectAll();

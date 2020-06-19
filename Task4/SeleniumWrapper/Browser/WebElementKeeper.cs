@@ -90,19 +90,14 @@ namespace SeleniumWrapper.Browser
             return ElementFinder.FindElements(()=>Get(()=>element.FindElements(by)),
             (int n)=>
             {
-                if(element is WebElementKeeper)
+                IWebElement elementGetter()
                 {
                     var elements = Get(()=>element.FindElements(by));
                     return (n < elements.Count ? elements[n] : null);
-                }
-                else
-                {
-                    return new WebElementKeeper(()=>
-                    {
-                        var elements = Get(()=>element.FindElements(by));
-                        return (n < elements.Count ? elements[n] : null);
-                    });
-                }
+                };
+
+                return ((element is WebElementKeeper) ? elementGetter() : new WebElementKeeper(elementGetter));
+                
             }).AsReadOnly();
         } 
 

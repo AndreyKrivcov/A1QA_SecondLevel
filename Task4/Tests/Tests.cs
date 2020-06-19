@@ -61,8 +61,8 @@ namespace Tests
                 loggers.Log(e);
             }
         }
-     /*   
-        [TestCase(Test_2.Action, true)]
+        
+       // [TestCase(Test_2.Action, true)]
         [TestCase(Test_2.Indie, false)]
         public void DiscountTest(Test_2 gameType, bool isHigestDiscount)  
         {
@@ -73,24 +73,26 @@ namespace Tests
                 var verificationPage = new AgeVerificationPage(browser,TimeSpan.FromMinutes(1));
                 if(verificationPage.IsPageOpened)
                 {
-                    foreach (var item in verificationPage.Year.Options)
+                    var years = verificationPage.Year.Options;
+                    foreach (var item in years)
                     {
                         loggers.Log(LogType.Warning, item.InnerHTML);
                     }
-                    System.Threading.Thread.Sleep(5000);
-                    foreach (var item in verificationPage.Month.Options)
+
+                    var month = verificationPage.Month.Options;
+                    foreach (var item in month)
                     {
                         loggers.Log(LogType.Warning, item.InnerHTML);
                     }
-                    System.Threading.Thread.Sleep(5000);
-                    foreach (var item in verificationPage.Day.Options)
+
+                    var days = verificationPage.Day.Options;
+                    foreach (var item in days)
                     {
                         loggers.Log(LogType.Warning, item.InnerHTML);
                     }
-                    System.Threading.Thread.Sleep(5000);
 
                     verificationPage.Day.SelectByValue("31");
-                    verificationPage.Month.SelectByValue("октября");
+                    verificationPage.Month.SelectByIndex(10);
                     verificationPage.Year.SelectByValue("1991");
                     verificationPage.Submit();
                 }
@@ -100,7 +102,7 @@ namespace Tests
                 loggers.Log(e);
             }
         }
-*/
+
         
     }
 }
