@@ -148,7 +148,6 @@ namespace Tests.Pages
         private readonly TimeSpan timeout;
         private readonly Language language;
 
-        private readonly string confirmView = "//*[@id=\"app_agegate\"]//a/span[contains(text(),\"View\")]/..";
         private readonly string programNameLocator = "//div[@class=\"apphub_AppName\"]";
         private readonly string discountPercent = "//div[@class=\"game_purchase_action\"]//div[1][@class=\"discount_pct\"]";
         private readonly string discountedPrice = "//div[@class=\"game_purchase_action\"]//div[1][@class=\"discount_pct\"]/../div[@class=\"discount_prices\"]/div[@class=\"discount_final_price\"]";
