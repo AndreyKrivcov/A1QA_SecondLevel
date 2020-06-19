@@ -16,7 +16,7 @@ namespace Tests.Pages
 {
     class DownloadSteam : BaseForm
     {
-        public DownloadSteam(IBrowser browser, A link, string pathToDownload, TimeSpan timeout, string logFilePath) : base(browser)
+        public DownloadSteam(IBrowser browser, A link, string pathToDownload, TimeSpan timeout, string logFilePath, string url) : base(browser)
         {
             link.Click();
             this.Url = browser.Window.Url;
@@ -28,6 +28,7 @@ namespace Tests.Pages
             }
 
             Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
+            Assert.AreEqual(url,Url);
         }
 
         private readonly string InstallBtn = "//a[@class=\"about_install_steam_link\"]";

@@ -11,6 +11,7 @@ using SeleniumWrapper.Utils;
 
 using LogType = SeleniumWrapper.Logging.LogType;
 using System.Collections.ObjectModel;
+using NUnit.Framework;
 
 namespace Tests.Pages
 {
@@ -18,10 +19,9 @@ namespace Tests.Pages
     {
         public IBrowser Browser;
         public string Url; 
+        public string DownloadUrl;
         public Language Language;
-        public Localisation<MainPageParams,Language> Localisation;
         public TimeSpan Timeout;
-        public Dictionary<Language, string> LanguageToLanguageName;
         public string PathToLogFile; 
         public string PathToDownload;
     }
@@ -43,6 +43,8 @@ namespace Tests.Pages
             Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
 
             ChangeLanguage();
+
+            Assert.AreEqual(settings.Url,browser.Window.Url);
         }
 
 #region Selectors
@@ -63,15 +65,17 @@ namespace Tests.Pages
             Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,1);
             var data = new LanguageDropDown(element,logger,browser,settings.Timeout);
 
-            if(data.Items.Any(x=>x.Name == settings.LanguageToLanguageName[settings.Language]))
+            if(data.Items.Any(x=>x.Name == LocalisationKeeper.LanguageNames[settings.Language]))
             {
                 foreach (var item in data.Items)
                 {
-                    if(item.Name == settings.LanguageToLanguageName[settings.Language])
+                    if(item.Name == LocalisationKeeper.LanguageNames[settings.Language])
                     {
                         item.Click();
-                        browser.Window.WaitForLoading(settings.Timeout);
-                      //  System.Threading.Thread.Sleep(5000);
+                        Wait(settings.Timeout,(IBrowser b) =>
+                        {
+                            return b.Window.Title == GetParamName(Test_1.Title);
+                        });
                         break;
                     }
                 }
@@ -89,7 +93,8 @@ namespace Tests.Pages
             {
                 return new DownloadSteam(browser,
                     WaitForElement<A>(By.XPath(InstallSteam),settings.Timeout),
-                    settings.PathToDownload, settings.Timeout, settings.PathToLogFile);
+                    settings.PathToDownload, settings.Timeout, settings.PathToLogFile,
+                    settings.DownloadUrl);
             }
         }
 
@@ -105,14 +110,14 @@ namespace Tests.Pages
             }, null, typeof(NoSuchElementException), typeof(StaleElementReferenceException));
         }
 
-        private string GetParamName(MainPageParams param)
+        private string GetParamName(Test_1 param)
         {
-            return settings.Localisation[param][settings.Language];
+            return LocalisationKeeper.LocalisationForTest_1[param][settings.Language];
         }
 
         public void MouseOverAndClick() 
         {
-            var action = GetDropDownElement(GamesDiv,string.Format(GamesA,GetParamName(MainPageParams.Action)));
+            var action = GetDropDownElement(GamesDiv,string.Format(GamesA,GetParamName(Test_1.Action)));
             
             action.Click();
         }

@@ -23,25 +23,15 @@ namespace Tests
 
             browser = BrowserCreator.GetConfiguredBrowser(config.browser);
 
-            Localisation<MainPageParams,Language> mainPageLocalisation 
-                = new Localisation<MainPageParams,Language>();
-                mainPageLocalisation.AddOrReplace(MainPageParams.Action, new Dictionary<Language,string>
-                {
-                    {Language.Ru, "Экшен"},
-                    {Language.En, "Action"}
-                });
-            
-
             homePage = new MainPage(new MainPageSettings
             {
                 Browser = browser,
                 Language = config.Language,
-                LanguageToLanguageName = languageNames,
-                Localisation = mainPageLocalisation,
                 PathToDownload = config.PathToDownload,
                 PathToLogFile = config.LogFileName,
                 Timeout = TimeSpan.FromSeconds(config.TimeautSeconds),
-                Url = config.MainUrl
+                Url = config.MainUrl,
+                DownloadUrl = config.DownloadUrl
             });
         }
 
@@ -55,11 +45,6 @@ namespace Tests
         IBrowser browser;
         readonly LoggersCollection loggers = new LoggersCollection();
         MainPage homePage;
-        readonly Dictionary<Language,string> languageNames = new Dictionary<Language, string>
-            {
-                {Language.Ru, "Русский (Russian)"},
-                {Language.En, "English (английский)"}
-            };
 #endregion
 
 

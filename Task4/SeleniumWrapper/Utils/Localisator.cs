@@ -6,7 +6,7 @@ namespace SeleniumWrapper.Utils
 {
     public sealed class Localisation<Param, Language> where Param : Enum where Language : Enum
     {
-        private readonly Dictionary<Param, Dictionary <Language, string> > collection = 
+        private Dictionary<Param, Dictionary <Language, string> > collection = 
                         new Dictionary<Param, Dictionary<Language, string>>();
 
 #region  Getters
@@ -69,6 +69,12 @@ namespace SeleniumWrapper.Utils
             {
                 collection.Add(param,dictionary);
             }
+        }
+        public static implicit operator Localisation<Param, Language>(Dictionary<Param,Dictionary<Language,string>> item)
+        {
+            Localisation<Param, Language> localisation = new Localisation<Param, Language>();
+            localisation.collection = item;
+            return localisation;
         }
 #endregion
 
