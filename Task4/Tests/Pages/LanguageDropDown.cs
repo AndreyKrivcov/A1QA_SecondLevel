@@ -17,13 +17,13 @@ namespace Tests.Pages
         }
 
         private readonly string DDMenuSelector = "//div[@id=\"global_actions\"]//div[@class=\"popup_body popup_menu\"]";
-        private readonly ElementsKeeper<A> elements;
+        private readonly ReadOnlyCollection<A> elements;
         private readonly Action<string> logger;
 
         public ReadOnlyCollection<LanguageItem> Items => 
-            elements.Elements.Select(x=>new LanguageItem(x,logger)).ToList().AsReadOnly();
+            elements.Select(x=>new LanguageItem(x,logger)).ToList().AsReadOnly();
 
-        private ElementsKeeper<A> WaitForElements(IBrowser b, TimeSpan timeout)
+        private ReadOnlyCollection<A> WaitForElements(IBrowser b, TimeSpan timeout)
         {
             BrowserWait wait = new BrowserWait(b,timeout);
             wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
@@ -37,7 +37,7 @@ namespace Tests.Pages
             return contaner.FindElements<A>(By.TagName("a"));
         }
 
-        private ElementsKeeper<A> GetLanguages(IBrowser b, TimeSpan timeout)
+        private ReadOnlyCollection<A> GetLanguages(IBrowser b, TimeSpan timeout)
         {
             bool tryToWait = true;
             try

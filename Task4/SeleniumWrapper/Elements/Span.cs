@@ -1,10 +1,11 @@
 using OpenQA.Selenium;
+using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
 {
     public sealed class Span : BaseElement
     {
-        public Span(By by, int ind, BaseElement parentElemen) : base(by,ind, parentElemen)
+        public Span(WebElementKeeper elementKeeper) : base(elementKeeper)
         {
         }
     }

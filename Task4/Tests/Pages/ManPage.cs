@@ -52,7 +52,6 @@ namespace Tests.Pages
         private readonly string InstallSteam = "//a[@class = \"header_installsteam_btn_content\"]";
         private readonly string GamesDiv = "//div[@id=\"genre_tab\"]";
         private readonly string GamesA = "//div[@class=\"popup_body popup_menu_twocol\"]//a[contains(text(),\"{0}\")]";
-       // private readonly string ActionGames = "//div[@class=\"popup_body popup_menu_twocol\"]/div[2]//a[1]";
 #endregion
 
         private readonly MainPageSettings settings;
@@ -74,7 +73,7 @@ namespace Tests.Pages
                         item.Click();
                         Wait(settings.Timeout,(IBrowser b) =>
                         {
-                            return b.Window.Title == GetParamName(Test_1.Title);
+                            return b.Window.Title == LocalisationKeeper.Get(Test_1.Title,settings.Language);
                         });
                         break;
                     }
@@ -110,16 +109,11 @@ namespace Tests.Pages
             }, null, typeof(NoSuchElementException), typeof(StaleElementReferenceException));
         }
 
-        private string GetParamName(Test_1 param)
+        /*public GamesPage Action 
         {
-            return LocalisationKeeper.LocalisationForTest_1[param][settings.Language];
-        }
-
-        public void MouseOverAndClick() 
-        {
-            var action = GetDropDownElement(GamesDiv,string.Format(GamesA,GetParamName(Test_1.Action)));
+            var action = GetDropDownElement(GamesDiv,string.Format(GamesA,LocalisationKeeper.Get(Test_2.Action)));
             
             action.Click();
-        }
+        }*/
     }
 }

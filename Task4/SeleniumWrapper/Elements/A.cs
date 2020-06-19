@@ -1,11 +1,12 @@
 using System;
 using OpenQA.Selenium;
+using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
 {
     public sealed class A : BaseElement
     {
-        public A(By by, int ind, BaseElement parentElemen) : base(by,ind,parentElemen)
+        public A(WebElementKeeper elementKeeper) : base(elementKeeper)
         {
         }
         public string AccessKey => Element?.GetAttribute("accesskey");

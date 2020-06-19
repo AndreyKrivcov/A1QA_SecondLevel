@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 using OpenQA.Selenium;
@@ -9,88 +11,32 @@ namespace SeleniumWrapper.Elements
 {
     public abstract class BaseElement 
     {
-        protected BaseElement(By by, int ind, BaseElement parentElement)
+        protected BaseElement(WebElementKeeper element)
         {
-            if(by == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            By = by;
-            this.ind = ind;
-            this.parentElement = parentElement;
+            this.element = element;
         }
 
-        public By By { get; }
-        internal readonly int ind;
-
-        protected BaseElement parentElement;
-        protected IWebElement element;
-        protected virtual void GetElement(int counter = -1, bool force = false)
-        {
-            if(element == null || force)
-            {
-                if(counter++ > 10)
-                {
-                    throw new TimeoutException("Can`t create new element");
-                }
-
-                try
-                {
-                    element = null;
-                    ISearchContext finder = (parentElement == null ? DriverKeeper.GetDriver : (ISearchContext)parentElement.IWebElement);
-                    if(ind < 0)
-                    {
-                        element = finder.FindElement(By);
-                    }
-                    else
-                    {
-                        var data = finder.FindElements(By);
-                        element = (data.Count > ind ? data[ind] : null);
-                    }
-                }
-                catch(Exception e)
-                {
-                    if(counter > 10)
-                    {
-                        throw e;
-                    }   
-                }
-
-                if(counter > 0)
-                {
-                    System.Threading.Thread.Sleep(6000);
-                    GetElement(counter, false);
-                }
-            }
-        }      
+        private readonly WebElementKeeper element;
         public virtual bool IsExists
         {
             get
             {
                 if(element == null)
                 {
-                    GetElement();
+                    element.CreateElement();
                 }
                 
                 return(element != null && ((WebElementKeeper)element).IsExists);
             }
         }
-        internal IWebElement IWebElement
-        {
-            get
-            {
-                GetElement(-1,true);
-                return Element;
-            }
-        }
-        protected IWebElement Element
+        internal IWebElement IWebElement => Element;
+        protected IWebElement Element 
         {
             get
             {
                 if(!IsExists)
                 {
-                    GetElement();
+                    element.CreateElement();
                 }
                 return element;
             }
@@ -138,21 +84,37 @@ namespace SeleniumWrapper.Elements
             return wait.Until(x=> f(x));
         } 
 
-        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(by,ind,this);
-        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => new ElementsKeeper<T>(by, this);
+        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(Element.FindElement(by) as WebElementKeeper);
+        public ReadOnlyCollection<T> FindElements<T>(By by) where T : BaseElement 
+        {
+            var elements = Element.FindElements(by)
+                .Select(x=>new DefaultElement<T>(x as WebElementKeeper));
+            return DefaultElement<T>.ConvertArray(elements).AsReadOnly();
+        }
         public void Click() => Element.Click();
 
     }
 
     internal sealed class DefaultElement<T> : BaseElement where T : BaseElement
     {
-        public DefaultElement(By by, int ind, BaseElement parentElemen) : base(by,ind, parentElemen)
+        public DefaultElement(WebElementKeeper elementKeeper) : base(elementKeeper)
         {
         }
 
         public static implicit operator T(DefaultElement<T> element)
         {
-            return (T)Activator.CreateInstance(typeof(T),element.By, element.ind, element.parentElement);
+            return (T)Activator.CreateInstance(typeof(T),element.Element);
+        }
+
+        public static List<T> ConvertArray(IEnumerable<DefaultElement<T>> collection)
+        {
+            List<T> ans = new List<T>();
+            foreach (var item in collection)
+            {
+                ans.Add(item);
+            }
+
+            return ans;
         }
     }
 

@@ -1,10 +1,8 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Interactions.Internal;
 
 namespace SeleniumWrapper.Browser
 {
@@ -85,19 +83,15 @@ namespace SeleniumWrapper.Browser
 
         public ReadOnlyCollection<IWebElement> FindElements(By by)
         {
-            int total = Driver.FindElements(by).Count;
-            List<IWebElement> ans = new List<IWebElement>();
-            for (int i = 0; i < total; i++)
+            return ElementFinder.FindElements<IWebElement>(()=>Driver.FindElements(by),
+            (int n)=>
             {
-                int n = i;
-                ans.Add(new WebElementKeeper(()=>
+                return new WebElementKeeper(()=>
                 {
                     var elements = Driver.FindElements(by);
                     return (n < elements.Count ? elements[n] : null);
-                }));
-            }
-
-            return ans.AsReadOnly();
+                });
+            }).AsReadOnly();
         }
 
         public void Dispose()
@@ -127,107 +121,19 @@ namespace SeleniumWrapper.Browser
         public IWebDriver WrappedDriver => Driver;
     }
 
-    internal sealed class WebElementKeeper : IWebElement, IWrapsElement
+    internal static class ElementFinder
     {
-        public WebElementKeeper(Func<IWebElement> creator)
+        public static List<T> FindElements<T>(Func<IEnumerable<IWebElement>> inputElementCreator, 
+                                              Func<int,T> outputElementCreator)
         {
-            this.creator = creator;
-            this.element = creator();
+            var data = inputElementCreator();
+            List<T> ans = new List<T>();
+            for (int i = 0; i < data.Count(); i++)
+            {
+                ans.Add(outputElementCreator(i));
+            }
+
+            return ans;
         }
-
-        private IWebElement element;
-        public bool IsExists => (element = creator()) != null;
-        private readonly Func<IWebElement> creator;
-
-        private T Get<T>(Func<T> f)
-        {
-            try
-            {
-                return f();
-            }
-            catch(StaleElementReferenceException)
-            {
-                System.Threading.Thread.Sleep(5000);
-                element = creator();
-                return f();
-            }
-        }
-        private void Get(Action f)
-        {
-            try
-            {
-                f();
-            }
-            catch(StaleElementReferenceException)
-            {
-                System.Threading.Thread.Sleep(5000);
-                element = creator();
-                f();
-            }
-        }
-
-        public string TagName => Get(()=>element.TagName);
-
-        public string Text => Get(()=>element.Text);
-
-        public bool Enabled => Get(()=>element.Enabled);
-
-        public bool Selected => Get(()=>element.Selected);
-
-        public Point Location => Get(()=>element.Location);
-
-        public Size Size => Get(()=>element.Size);
-
-        public bool Displayed => Get(()=>element.Displayed);
-        public IWebElement WrappedElement 
-        {
-            get
-            {
-                element = creator();
-                if(element is WebElementKeeper elementKeeper)
-                {
-                    return elementKeeper.WrappedElement;
-                }
-                
-                return element;
-            }
-        }
-
-        public void Clear()=>Get(()=>element.Clear());
-
-        public void Click()=>Get(()=>element.Click());
-
-        public IWebElement FindElement(By by)
-        {
-            return new WebElementKeeper(()=>Get(()=>element.FindElement(by)));
-        }
-
-        public ReadOnlyCollection<IWebElement> FindElements(By by) 
-        {
-            int total = Get(()=>element.FindElements(by)).Count;
-            List<IWebElement> ans = new List<IWebElement>();
-            for (int i = 0; i < total; i++)
-            {
-                int n = i;
-                ans.Add(new WebElementKeeper(()=>
-                {
-                    var elements = Get(()=>element.FindElements(by));
-                    return (n < elements.Count ? elements[n] : null);
-                }));
-            }
-
-            return ans.AsReadOnly();
-        } 
-
-        public string GetAttribute(string attributeName)=>Get(()=>element.GetAttribute(attributeName));
-
-        public string GetCssValue(string propertyName)=>Get(()=>element.GetCssValue(propertyName));
-
-        public string GetProperty(string propertyName)=>Get(()=>element.GetProperty(propertyName));
-
-        public void SendKeys(string text)=>Get(()=>element.SendKeys(text));
-
-        public void Submit()=>Get(()=>element.Submit());
     }
-
 }

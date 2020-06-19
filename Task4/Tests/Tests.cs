@@ -51,6 +51,7 @@ namespace Tests
         [Test]
         public void DownloadSteam()
         {
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} ==================");
             try
             {
                 homePage.InstallationPage.Download();
@@ -60,5 +61,46 @@ namespace Tests
                 loggers.Log(e);
             }
         }
+     /*   
+        [TestCase(Test_2.Action, true)]
+        [TestCase(Test_2.Indie, false)]
+        public void DiscountTest(Test_2 gameType, bool isHigestDiscount)  
+        {
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} ==================");
+            try
+            {
+                browser.Window.Url = "https://store.steampowered.com/agecheck/app/1282690/";
+                var verificationPage = new AgeVerificationPage(browser,TimeSpan.FromMinutes(1));
+                if(verificationPage.IsPageOpened)
+                {
+                    foreach (var item in verificationPage.Year.Options)
+                    {
+                        loggers.Log(LogType.Warning, item.InnerHTML);
+                    }
+                    System.Threading.Thread.Sleep(5000);
+                    foreach (var item in verificationPage.Month.Options)
+                    {
+                        loggers.Log(LogType.Warning, item.InnerHTML);
+                    }
+                    System.Threading.Thread.Sleep(5000);
+                    foreach (var item in verificationPage.Day.Options)
+                    {
+                        loggers.Log(LogType.Warning, item.InnerHTML);
+                    }
+                    System.Threading.Thread.Sleep(5000);
+
+                    verificationPage.Day.SelectByValue("31");
+                    verificationPage.Month.SelectByValue("октября");
+                    verificationPage.Year.SelectByValue("1991");
+                    verificationPage.Submit();
+                }
+            }
+            catch(Exception e)
+            {
+                loggers.Log(e);
+            }
+        }
+*/
+        
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using SeleniumWrapper.Elements;
 
@@ -22,7 +23,7 @@ namespace SeleniumWrapper.Browser
         /// <value>unique handle</value>
         string Handle { get; }
         T FindElement<T>(By by) where T : BaseElement;
-        ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement;
+        ReadOnlyCollection<T> FindElements<T>(By by) where T : BaseElement;
 
         void Scroll(int x, int y);
         void WaitForLoading(TimeSpan timeout, TimeSpan? sleep = null, params Type[] ignoringExceptions);

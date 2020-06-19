@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
 {
     public sealed partial class Select : BaseElement
     {
-        public Select(By by, int ind, BaseElement parentElemen) : base(by, ind, parentElemen)
+        public Select(WebElementKeeper elementKeeper) : base(elementKeeper)
         {
             dropDownManager = new SelectElement(Element);
         }
@@ -19,34 +22,19 @@ namespace SeleniumWrapper.Elements
 
 #region Wrapper for SelectElement
         public bool IsMultiple => dropDownManager.IsMultiple;
-        public ReadOnlyCollection<Option> Options 
-        {
-            get
-            {
-                var data = dropDownManager.Options;
-                List<Option> ans = new List<Option>();
-                for (int i = 0; i < data.Count; i++)
-                {
-                    ans.Add(new Option(By,i,false));
-                }
+        public ReadOnlyCollection<Option> Options => GetOptions(()=>dropDownManager.Options);
+        public Option SelectedOption => new Option(new WebElementKeeper(()=>dropDownManager.SelectedOption));
+        public ReadOnlyCollection<Option> AllSelectedOptions => GetOptions(()=>dropDownManager.AllSelectedOptions);
 
-                return ans.AsReadOnly();
-            }
-        }
-        public Option SelectedOption => new Option(By,-1,false);
-        public ReadOnlyCollection<Option> AllSelectedOptions
+        private ReadOnlyCollection<Option> GetOptions(Func<IEnumerable<IWebElement>> getter)
         {
-            get
+            return ElementFinder.FindElements(getter,(int n)=>
             {
-                var data = dropDownManager.AllSelectedOptions;
-                List<Option> ans = new List<Option>();
-                for (int i = 0; i < data.Count; i++)
+                return new Option(new WebElementKeeper(()=>
                 {
-                    ans.Add(new Option(By,i,true));
-                }
-
-                return ans.AsReadOnly();
-            }
+                    return getter().ElementAt(n);
+                }));
+            }).AsReadOnly();
         }
         
         public void DeselectAll()=>dropDownManager.DeselectAll();

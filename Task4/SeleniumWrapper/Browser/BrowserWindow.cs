@@ -1,7 +1,8 @@
 
 using System;
+using System.Collections.ObjectModel;
 using System.Drawing;
-
+using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Elements;
@@ -34,10 +35,17 @@ namespace SeleniumWrapper.Browser
 
         public void Back() => DriverKeeper.GetDriver.Navigate().Back(); 
 
-        public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(by,-1,null);
+        public T FindElement<T>(By by) where T : BaseElement
+        {
+            return new DefaultElement<T>(DriverKeeper.GetDriver.FindElement(by) as WebElementKeeper);
+        }
 
-        public ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement => 
-            new ElementsKeeper<T>(by);
+        public ReadOnlyCollection<T> FindElements<T>(By by) where T : BaseElement
+        { 
+            var elements = DriverKeeper.GetDriver.FindElements(by)
+                .Select(x=>new DefaultElement<T>(x as WebElementKeeper));
+            return DefaultElement<T>.ConvertArray(elements).AsReadOnly();
+        }
 
         public void Forward() => DriverKeeper.GetDriver.Navigate().Forward();
 

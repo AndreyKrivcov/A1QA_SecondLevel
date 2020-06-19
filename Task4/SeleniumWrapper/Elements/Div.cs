@@ -1,10 +1,11 @@
 using OpenQA.Selenium;
+using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
 {
     public sealed class Div : BaseElement
     {
-        public Div(By by, int ind, BaseElement parentElemen) : base(by, ind, parentElemen)
+        public Div(WebElementKeeper elementKeeper) : base(elementKeeper)
         {
         }
 

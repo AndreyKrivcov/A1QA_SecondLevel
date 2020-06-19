@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -202,7 +203,7 @@ namespace SeleniumWrapper
             }, sleepInterval, ignoringExceptions);
         }
 
-        protected ElementsKeeper<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
+        protected ReadOnlyCollection<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
                                     where T : BaseElement
         {
             CheckWindow();
@@ -213,11 +214,11 @@ namespace SeleniumWrapper
                 ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
             }
 
-            ElementsKeeper<T> elements = null;
+            ReadOnlyCollection<T> elements = null;
             Wait(timeout, (IBrowser b)=>
             {
                 elements = b.Window.FindElements<T>(by);
-                foreach (var item in elements.Elements)
+                foreach (var item in elements)
                 {
                     if(!item.IsExists)
                     {
