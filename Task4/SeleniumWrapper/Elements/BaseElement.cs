@@ -25,48 +25,72 @@ namespace SeleniumWrapper.Elements
         internal readonly int ind;
 
         protected BaseElement parentElement;
-        protected Exception lastException;
         protected IWebElement element;
-
-        private void GetElement()
+        protected virtual void GetElement(int counter = -1, bool force = false)
         {
-            try
+            if(element == null || force)
             {
-                element = null;
-                ISearchContext finder = (parentElement == null ? DriverKeeper.GetDriver : (ISearchContext)parentElement.IWebElement);
-                if(ind < 0)
+                if(counter++ > 10)
                 {
-                    element = finder.FindElement(By);
+                    throw new TimeoutException("Can`t create new element");
                 }
-                else
+
+                try
                 {
-                    var data = finder.FindElements(By);
-                    element = (data.Count > ind ? data[ind] : null);
+                    element = null;
+                    ISearchContext finder = (parentElement == null ? DriverKeeper.GetDriver : (ISearchContext)parentElement.IWebElement);
+                    if(ind < 0)
+                    {
+                        element = finder.FindElement(By);
+                    }
+                    else
+                    {
+                        var data = finder.FindElements(By);
+                        element = (data.Count > ind ? data[ind] : null);
+                    }
+                }
+                catch(Exception e)
+                {
+                    if(counter > 10)
+                    {
+                        throw e;
+                    }   
+                }
+
+                if(counter > 0)
+                {
+                    System.Threading.Thread.Sleep(6000);
+                    GetElement(counter, false);
                 }
             }
-            catch(Exception e)
-            {
-                lastException = e;
-            }
-        }
-        public virtual bool IsExists 
+        }      
+        public virtual bool IsExists
         {
             get
             {
-                GetElement();    
-                return element !=null;
+                if(element == null)
+                {
+                    GetElement();
+                }
+                
+                return(element != null && ((WebElementKeeper)element).IsExists);
             }
-        } 
-
-
-        internal IWebElement IWebElement => Element;
+        }
+        internal IWebElement IWebElement
+        {
+            get
+            {
+                GetElement(-1,true);
+                return Element;
+            }
+        }
         protected IWebElement Element
         {
             get
             {
                 if(!IsExists)
                 {
-                    throw lastException;
+                    GetElement();
                 }
                 return element;
             }

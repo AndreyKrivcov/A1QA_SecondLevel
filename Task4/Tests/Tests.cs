@@ -25,6 +25,11 @@ namespace Tests
 
             Localisation<MainPageParams,Language> mainPageLocalisation 
                 = new Localisation<MainPageParams,Language>();
+                mainPageLocalisation.AddOrReplace(MainPageParams.Action, new Dictionary<Language,string>
+                {
+                    {Language.Ru, "Экшен"},
+                    {Language.En, "Action"}
+                });
             
 
             homePage = new MainPage(new MainPageSettings
@@ -43,7 +48,7 @@ namespace Tests
         [TearDown]
         public void Teardown()
         {
-            browser.Dispose();
+       //     browser.Dispose();
         }
 
 #region Static objects

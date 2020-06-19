@@ -17,5 +17,6 @@ namespace Tests.Pages
 
     enum MainPageParams
     {
+        Action
     }
 }

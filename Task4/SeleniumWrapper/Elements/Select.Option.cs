@@ -1,6 +1,7 @@
 using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
 {
@@ -16,39 +17,45 @@ namespace SeleniumWrapper.Elements
 
             private readonly bool isAllSelected;
 
-            public override bool IsExists
+            protected override void GetElement(int counter = -1, bool force = false)
             {
-                get
+                if(element == null || force)
                 {
+                    if(counter++ > 10)
+                    {
+                        throw new TimeoutException("Can`t create new element");
+                    }
+
                     try
                     {
-                        element = null;
-
-                        return Wait(TimeSpan.FromMinutes(1),(IWebDriver driver) => 
+                        var select = new SelectElement(DriverKeeper.GetDriver.FindElement(By));
+                        if(ind < 0)
                         {
-                            var select = new SelectElement(driver.FindElement(By));
-                            if(ind < 0)
-                            {
-                                element = select.SelectedOption;
-                            }
-                            else if(isAllSelected)
-                            {
-                                var data = select.AllSelectedOptions;
-                                element = (data.Count > ind ? data[ind] : null);
-                            }
-                            else
-                            {
-                                var data = select.Options;
-                                element = (data.Count > ind ? data[ind] : null);
-                            }
-
-                            return select != null;
-                        });
+                            element = select.SelectedOption;
+                        }
+                        else if(isAllSelected)
+                        {
+                            var data = select.AllSelectedOptions;
+                            element = (data.Count > ind ? data[ind] : null);
+                        }
+                        else
+                        {
+                            var data = select.Options;
+                            element = (data.Count > ind ? data[ind] : null);
+                        }
                     }
                     catch(Exception e)
                     {
-                        lastException = e;
-                        return false;
+                        if(counter > 10)
+                        {
+                            throw e;
+                        }   
+                    }
+
+                    if(counter > 0)
+                    {
+                        System.Threading.Thread.Sleep(6000);
+                        GetElement(counter, false);
                     }
                 }
             }

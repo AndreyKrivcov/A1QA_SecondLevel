@@ -10,6 +10,7 @@ using SeleniumWrapper.Logging;
 using SeleniumWrapper.Utils;
 
 using LogType = SeleniumWrapper.Logging.LogType;
+using System.Collections.ObjectModel;
 
 namespace Tests.Pages
 {
@@ -48,6 +49,7 @@ namespace Tests.Pages
         private readonly string LanguageButton = "//span[@id=\"language_pulldown\"]";
         private readonly string InstallSteam = "//a[@class = \"header_installsteam_btn_content\"]";
         private readonly string GamesDiv = "//div[@id=\"genre_tab\"]";
+        private readonly string GamesA = "//div[@class=\"popup_body popup_menu_twocol\"]//a[contains(text(),\"{0}\")]";
        // private readonly string ActionGames = "//div[@class=\"popup_body popup_menu_twocol\"]/div[2]//a[1]";
 #endregion
 
@@ -68,7 +70,8 @@ namespace Tests.Pages
                     if(item.Name == settings.LanguageToLanguageName[settings.Language])
                     {
                         item.Click();
-                        System.Threading.Thread.Sleep(10000);
+                        browser.Window.WaitForLoading(settings.Timeout);
+                      //  System.Threading.Thread.Sleep(5000);
                         break;
                     }
                 }
@@ -89,11 +92,29 @@ namespace Tests.Pages
                     settings.PathToDownload, settings.Timeout, settings.PathToLogFile);
             }
         }
-      /*  public void MouseOverAndClick() 
+
+        private A GetDropDownElement(string divLocator, string elementLocator)
         {
-            var element = WaitForElement<Div>(By.XPath(GamesDiv),settings.Timeout);
-            browser.MouseUtils.MoveToElement(element).Perform();
-            WaitForElement<A>(By.XPath(ActionGames),settings.Timeout).Click();
-        }*/
+            return Wait(settings.Timeout,(IBrowser b)=>
+            {
+                var div = b.Window.FindElement<Div>(By.XPath(divLocator));
+                b.MouseUtils.MoveToElement(div).Perform();
+            
+                A element  = b.Window.FindElement<A>(By.XPath(elementLocator));
+                return (element.IsExists && element.Displayed ? element : null);
+            }, null, typeof(NoSuchElementException), typeof(StaleElementReferenceException));
+        }
+
+        private string GetParamName(MainPageParams param)
+        {
+            return settings.Localisation[param][settings.Language];
+        }
+
+        public void MouseOverAndClick() 
+        {
+            var action = GetDropDownElement(GamesDiv,string.Format(GamesA,GetParamName(MainPageParams.Action)));
+            
+            action.Click();
+        }
     }
 }

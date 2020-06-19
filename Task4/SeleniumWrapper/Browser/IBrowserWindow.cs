@@ -1,3 +1,4 @@
+using System;
 using OpenQA.Selenium;
 using SeleniumWrapper.Elements;
 
@@ -24,6 +25,6 @@ namespace SeleniumWrapper.Browser
         ElementsKeeper<T> FindElements<T>(By by) where T : BaseElement;
 
         void Scroll(int x, int y);
-        void WaitForLoading();
+        void WaitForLoading(TimeSpan timeout, TimeSpan? sleep = null, params Type[] ignoringExceptions);
     } 
 }

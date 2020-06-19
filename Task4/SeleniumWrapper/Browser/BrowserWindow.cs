@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser
@@ -56,9 +57,21 @@ namespace SeleniumWrapper.Browser
         {
             DriverKeeper.GetDriver.JavaScriptExecutor.ExecuteScript($"window.scrollBy({x},{y})");
         }
-        public void WaitForLoading()
+        public void WaitForLoading(TimeSpan timeout, TimeSpan? sleep = null, params Type[] ignoringExceptions)
         {
-            DriverKeeper.GetDriver.JavaScriptExecutor.ExecuteScript("window.onload");
+            WebDriverWait wait = (sleep.HasValue ? new WebDriverWait(new SystemClock(), DriverKeeper.GetDriver,timeout, sleep.Value)
+                                                 : new WebDriverWait(DriverKeeper.GetDriver, timeout));
+            
+            if(ignoringExceptions != null && ignoringExceptions.Length >0)
+            {
+                wait.IgnoreExceptionTypes(ignoringExceptions);
+            }
+
+            wait.Until((IWebDriver driver)=>
+            {
+                return DriverKeeper.GetDriver.JavaScriptExecutor
+                    .ExecuteScript("return document.readyState").Equals("complete");
+            });
         }
     }
 }
