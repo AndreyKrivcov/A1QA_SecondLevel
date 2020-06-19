@@ -24,6 +24,8 @@ namespace Tests.Pages
         public TimeSpan Timeout;
         public string PathToLogFile; 
         public string PathToDownload;
+
+        public AgeVerificationData verificationData;
     }
 
     class MainPage : BaseForm
@@ -109,11 +111,14 @@ namespace Tests.Pages
             }, null, typeof(NoSuchElementException), typeof(StaleElementReferenceException));
         }
 
-        /*public GamesPage Action 
+        public GamesPage Games(Test_2 gameType)
         {
-            var action = GetDropDownElement(GamesDiv,string.Format(GamesA,LocalisationKeeper.Get(Test_2.Action)));
-            
-            action.Click();
-        }*/
+            var element = GetDropDownElement(GamesDiv,string.Format(GamesA,LocalisationKeeper.Get(gameType,settings.Language)));
+            element.Click();
+                
+            return new GamesPage(browser, settings.verificationData, 
+                    settings.Timeout,settings.Language, 
+                    LocalisationKeeper.Get(gameType,settings.Language));
+        }
     }
 }

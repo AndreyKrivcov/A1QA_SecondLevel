@@ -1,13 +1,10 @@
 using System;
 using NUnit.Framework;
 using SeleniumWrapper.Browser;
-using SeleniumWrapper.BrowserFabrics;
 using SeleniumWrapper.Logging;
-using SeleniumWrapper.Utils;
-
-using System.Collections.Generic;
 
 using Tests.Pages;
+using System.Linq;
 
 namespace Tests
 {
@@ -31,7 +28,13 @@ namespace Tests
                 PathToLogFile = config.LogFileName,
                 Timeout = TimeSpan.FromSeconds(config.TimeautSeconds),
                 Url = config.MainUrl,
-                DownloadUrl = config.DownloadUrl
+                DownloadUrl = config.DownloadUrl,
+                verificationData = new AgeVerificationData
+                {
+                    Day = config.Day,
+                    Month = config.Month,
+                    Year = config.Year
+                }
             });
         }
 
@@ -59,6 +62,7 @@ namespace Tests
             catch(Exception e)
             {
                 loggers.Log(e);
+                Assert.Fail();
             }
             loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================");
         }
@@ -70,20 +74,19 @@ namespace Tests
             loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================");
             try
             {
-                browser.Window.Url = "https://store.steampowered.com/agecheck/app/1282690/";
-                var verificationPage = new AgeVerificationPage(browser,TimeSpan.FromMinutes(1));
-                if(verificationPage.IsPageOpened)
-                {
-                    var month = verificationPage.Month.Options;
-                    foreach (var item in month)
-                    {
-                        loggers.Log(LogType.Warning, item.InnerHTML);
-                    }
-                }
+                var games = homePage.Games(gameType).Games.Where(x=>x.Discount > 0);
+                
+                int selectedDiscount = (isHigestDiscount ? games.Max(x=>x.Discount) : games.Min(x=>x.Discount));
+                var selectedGameItem = games.First(x=>x.Discount == selectedDiscount);
+
+                var gamePage = selectedGameItem.Page;
+                Assert.AreEqual(selectedGameItem.Discount,gamePage.Discount);
+                Assert.AreEqual(selectedGameItem.DiscountedPrice, gamePage.DiscountedPrice);
             }
             catch(Exception e)
             {
                 loggers.Log(e);
+                Assert.Fail();
             }
 
             loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================");

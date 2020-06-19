@@ -59,8 +59,8 @@ namespace Tests.Pages
             }},
             {Test_2.Indie, new Dictionary<Language, string>
             {
-                {Language.Ru, "Indie"},
-                {Language.En, "Инди"}
+                {Language.Ru, "Инди"},
+                {Language.En, "Indie"}
             }},
         };
         private static readonly SeleniumWrapper.Utils.Localisation<Month,Language> MonthLocalisation = 
@@ -132,6 +132,7 @@ namespace Tests.Pages
             {Language.Ru, "Русский (Russian)"},
             {Language.En, "English (английский)"}
         };
+
 #endregion
 
         public static string Get(Test_1 param, Language ln)
@@ -141,6 +142,10 @@ namespace Tests.Pages
         public static string Get(Test_2 param, Language ln)
         {
             return LocalisationForTest_2[param][ln];
+        }
+        public static string Get(Month month, Language ln)
+        {
+            return MonthLocalisation[month][ln];
         }
     }
 }

@@ -9,8 +9,11 @@ namespace Tests
         public BrowserType browser { get; } = BrowserType.Chrome;
         public string MainUrl { get; } = "https://store.steampowered.com/";
         public string DownloadUrl { get; } = "https://store.steampowered.com/about/";
-        public Language Language { get; } = Language.Ru;
+        public Language Language { get; } = Language.En;
         public uint TimeautSeconds { get; } = 60;
         public string PathToDownload { get; } = "/home/andrey/Загрузки/";
+        public int Day { get; } = 31;
+        public Month Month {get;} = Month.October;
+        public int Year { get; } = 1991; 
     }
 }

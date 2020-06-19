@@ -1,4 +1,3 @@
-using OpenQA.Selenium;
 using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
