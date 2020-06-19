@@ -28,7 +28,7 @@ namespace SeleniumWrapper.BrowserFabrics
         {
             new DriverManager().SetUpDriver(config,version);
             Instance(version, options);
-            return new Browser.Browser();
+            return Browser.Browser.Instance();
         }
         public string BrowserName{ get; }
 

@@ -12,7 +12,16 @@ namespace SeleniumWrapper.Browser
 {
     internal class Browser : IBrowser
     {    
-        public Browser(){}
+        private Browser(){}
+        private static Browser instance;
+        public static IBrowser Instance()
+        {
+            if(instance == null)
+            {
+                instance = new Browser();
+            }
+            return instance;
+        }
         public string BrowserName => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.BrowserName);
         public string Version => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.Version);
         public bool IsOpened => DriverKeeper.GetDriver.IsOpened;

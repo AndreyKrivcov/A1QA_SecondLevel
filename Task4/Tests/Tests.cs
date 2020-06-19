@@ -38,7 +38,7 @@ namespace Tests
         [TearDown]
         public void Teardown()
         {
-       //     browser.Dispose();
+            browser.Dispose();
         }
 
 #region Static objects
@@ -51,7 +51,7 @@ namespace Tests
         [Test]
         public void DownloadSteam()
         {
-            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} ==================");
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================");
             try
             {
                 homePage.InstallationPage.Download();
@@ -60,47 +60,33 @@ namespace Tests
             {
                 loggers.Log(e);
             }
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================");
         }
-        
-       // [TestCase(Test_2.Action, true)]
+       
+        [TestCase(Test_2.Action, true)]
         [TestCase(Test_2.Indie, false)]
         public void DiscountTest(Test_2 gameType, bool isHigestDiscount)  
         {
-            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} ==================");
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================");
             try
             {
                 browser.Window.Url = "https://store.steampowered.com/agecheck/app/1282690/";
                 var verificationPage = new AgeVerificationPage(browser,TimeSpan.FromMinutes(1));
                 if(verificationPage.IsPageOpened)
                 {
-                    var years = verificationPage.Year.Options;
-                    foreach (var item in years)
-                    {
-                        loggers.Log(LogType.Warning, item.InnerHTML);
-                    }
-
                     var month = verificationPage.Month.Options;
                     foreach (var item in month)
                     {
                         loggers.Log(LogType.Warning, item.InnerHTML);
                     }
-
-                    var days = verificationPage.Day.Options;
-                    foreach (var item in days)
-                    {
-                        loggers.Log(LogType.Warning, item.InnerHTML);
-                    }
-
-                    verificationPage.Day.SelectByValue("31");
-                    verificationPage.Month.SelectByIndex(10);
-                    verificationPage.Year.SelectByValue("1991");
-                    verificationPage.Submit();
                 }
             }
             catch(Exception e)
             {
                 loggers.Log(e);
             }
+
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================");
         }
 
         

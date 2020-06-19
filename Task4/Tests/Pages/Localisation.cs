@@ -18,7 +18,23 @@ namespace Tests.Pages
     public enum Test_2
     {
         Action,
-        Indie
+        Indie,
+    }
+
+    enum Month
+    {
+        January,
+        February,
+        March,
+        April,
+        May,
+        June,
+        July,
+        August,
+        September,
+        October,
+        November,
+        December
     }
 
     static class LocalisationKeeper
@@ -45,6 +61,70 @@ namespace Tests.Pages
             {
                 {Language.Ru, "Indie"},
                 {Language.En, "Инди"}
+            }},
+        };
+        private static readonly SeleniumWrapper.Utils.Localisation<Month,Language> MonthLocalisation = 
+            new Dictionary<Month, Dictionary<Language, string>>
+        {
+            {Month.January, new Dictionary<Language, string>
+            {
+                {Language.Ru, "января"},
+                {Language.En, "January"}
+            }},
+            {Month.February, new Dictionary<Language, string>
+            {
+                {Language.Ru, "февраля"},
+                {Language.En, "February"}
+            }},
+            {Month.March, new Dictionary<Language, string>
+            {
+                {Language.Ru, "марта"},
+                {Language.En, "March"}
+            }},
+            {Month.April, new Dictionary<Language, string>
+            {
+                {Language.Ru, "апреля"},
+                {Language.En, "April"}
+            }},
+            {Month.May, new Dictionary<Language, string>
+            {
+                {Language.Ru, "мая"},
+                {Language.En, "May"}
+            }},
+            {Month.June, new Dictionary<Language, string>
+            {
+                {Language.Ru, "июня"},
+                {Language.En, "June"}
+            }},
+            {Month.July, new Dictionary<Language, string>
+            {
+                {Language.Ru, "июля"},
+                {Language.En, "July"}
+            }},
+            {Month.August, new Dictionary<Language, string>
+            {
+                {Language.Ru, "августа"},
+                {Language.En, "August"}
+            }},
+            {Month.September, new Dictionary<Language, string>
+            {
+                {Language.Ru, "сентября"},
+                {Language.En, "September"}
+            }},
+            {Month.October, new Dictionary<Language, string>
+            {
+                {Language.Ru, "октября"},
+                {Language.En, "October"}
+            }},
+            {Month.November, new Dictionary<Language, string>
+            {
+                {Language.Ru, "ноября"},
+                {Language.En, "November"}
+            }},
+            {Month.December, new Dictionary<Language, string>
+            {
+                {Language.Ru, "декабря"},
+                {Language.En, "December"}
             }}
         };
         public static Dictionary<Language,string> LanguageNames { get; }= new Dictionary<Language, string>

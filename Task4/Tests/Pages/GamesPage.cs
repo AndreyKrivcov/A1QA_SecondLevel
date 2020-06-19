@@ -13,15 +13,11 @@ namespace Tests.Pages
         {
 
         }
-        public GamesPage()
-        {
-
-        }
     }
 
     struct AgeVerificationData
     {
-
+        public int Day;
     }
 
     class AgeVerificationPage : BaseForm
