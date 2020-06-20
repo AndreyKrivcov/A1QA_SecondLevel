@@ -101,8 +101,7 @@ namespace Tests.Pages
         }
         private double GetPrice()
         {
-            string s = a.FindElement<Div>(By.XPath(discountedPrice)).InnerHTML
-                .Replace(@"\W","");
+            string s = a.FindElement<Div>(By.XPath(discountedPrice)).InnerHTML;
             Regex regex = new Regex("[^0-9]");
             s = regex.Replace(s,"");
             return (string.IsNullOrEmpty(s) ? 0 : Convert.ToDouble(s));

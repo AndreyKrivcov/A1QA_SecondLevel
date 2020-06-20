@@ -4,7 +4,7 @@ using SeleniumWrapper.Utils;
 
 namespace Tests.Pages
 {
-    enum Language
+    public enum Language
     {
         Ru,
         En
@@ -21,7 +21,7 @@ namespace Tests.Pages
         Indie,
     }
 
-    enum Month
+    public enum Month
     {
         January,
         February,

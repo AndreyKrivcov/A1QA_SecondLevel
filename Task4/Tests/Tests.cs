@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NUnit.Framework;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Logging;
@@ -13,7 +14,16 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            Config config = new Config();
+            Config config;
+            if(File.Exists(fileWithSettings))
+            {
+                config = Config.Deserialization();
+            }
+            else
+            {
+                config = new Config();
+                config.Serialization();
+            }
 
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,""),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,config.LogFileName)});
@@ -44,11 +54,10 @@ namespace Tests
             browser.Dispose();
         }
 
-#region Static objects
         IBrowser browser;
         readonly LoggersCollection loggers = new LoggersCollection();
+        readonly string fileWithSettings = "TestConfigurationFile.txt";
         MainPage homePage;
-#endregion
 
 
         [Test]
