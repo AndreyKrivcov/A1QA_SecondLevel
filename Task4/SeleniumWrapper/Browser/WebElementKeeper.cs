@@ -15,38 +15,23 @@ namespace SeleniumWrapper.Browser
         }
 
         private IWebElement element;
-        public bool IsExists => (element = creator()) != null;
+        public bool IsExists => element != null;
         private readonly Func<IWebElement> creator;
 
         private T Get<T>(Func<T> f)
         {
-            try
-            {
-                return f();
-            }
-            catch(StaleElementReferenceException)
-            {
-                System.Threading.Thread.Sleep(5000);
-                CreateElement();
-                return f();
-            }
+            CreateElement();
+            return f();
         }
         public void CreateElement()
         {
-            element = creator();
+            if(element == null || !(element is WebElementKeeper))
+                element = creator();
         }
         private void Get(Action f)
         {
-            try
-            {
-                f();
-            }
-            catch(StaleElementReferenceException)
-            {
-                System.Threading.Thread.Sleep(5000);
-                CreateElement();
-                f();
-            }
+            CreateElement();
+            f();
         }
 
         public string TagName => Get(()=>element.TagName);
@@ -67,12 +52,7 @@ namespace SeleniumWrapper.Browser
             get
             {
                 CreateElement();
-                if(element is WebElementKeeper elementKeeper)
-                {
-                    return elementKeeper.WrappedElement;
-                }
-                
-                return element;
+                return (element is WebElementKeeper elementKeeper ? elementKeeper.WrappedElement : element);
             }
         }
 

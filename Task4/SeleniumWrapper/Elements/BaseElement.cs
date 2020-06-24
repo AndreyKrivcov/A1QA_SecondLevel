@@ -13,22 +13,16 @@ namespace SeleniumWrapper.Elements
     {
         protected BaseElement(WebElementKeeper element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException();
+            }
             this.element = element;
         }
 
         private readonly WebElementKeeper element;
-        public virtual bool IsExists
-        {
-            get
-            {
-                if(element == null)
-                {
-                    element.CreateElement();
-                }
-                
-                return(element != null && ((WebElementKeeper)element).IsExists);
-            }
-        }
+        public virtual bool IsExists =>
+            (element != null && ((WebElementKeeper)element).IsExists);
         internal IWebElement IWebElement => Element;
         protected IWebElement Element 
         {
@@ -53,36 +47,16 @@ namespace SeleniumWrapper.Elements
         public string InnerHTML => Element.GetAttribute("innerHTML");
         public void WaitForDisplayed(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
-            Wait(timeout, (IWebDriver x) => Displayed, sleepInterval, typeof(NoSuchElementException));
+            BrowserWait.Wait(timeout, (IBrowser x) => Displayed, sleepInterval, typeof(NoSuchElementException));
         }       
         public void WaitForExists(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
-            Wait(timeout, (IWebDriver x) => IsExists, sleepInterval, typeof(NoSuchElementException));
+            BrowserWait.Wait(timeout, (IBrowser x) => IsExists, sleepInterval, typeof(NoSuchElementException));
         }
-
         public void WaitForAvailibility(TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
-            Wait(timeout, (IWebDriver x) => !Disabled, sleepInterval, typeof(NoSuchElementException));
+            BrowserWait.Wait(timeout,(IBrowser) =>!Disabled, sleepInterval, typeof(NoSuchElementException));
         }
-
-        protected T Wait<T>(TimeSpan timeout, Func<IWebDriver, T> f, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions )
-        {
-            var wait = sleepInterval.HasValue ? new WebDriverWait(new SystemClock(),DriverKeeper.GetDriver,timeout, sleepInterval.Value) 
-                                              : new WebDriverWait(DriverKeeper.GetDriver,timeout);
-
-            bool isStaleReferenceException = false;
-            if(ignoringExceptions != null && ignoringExceptions.Count() > 0)
-            {
-                wait.IgnoreExceptionTypes(ignoringExceptions);
-                isStaleReferenceException =  ignoringExceptions.Contains(typeof(StaleElementReferenceException));
-            }
-            if(!isStaleReferenceException)
-            {
-                wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
-            }
-
-            return wait.Until(x=> f(x));
-        } 
 
         public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(Element.FindElement(by) as WebElementKeeper);
         public ReadOnlyCollection<T> FindElements<T>(By by) where T : BaseElement 

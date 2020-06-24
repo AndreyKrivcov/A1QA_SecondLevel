@@ -5,21 +5,28 @@ namespace SeleniumWrapper.Logging
 {
     internal sealed class ConsoleLoggerCreator : LoggerFabric
     {
-        public override Logger GetLogger(string pathToFile) => new ConsoleLogger();
+        public override Logger GetLogger(Func<LogType, string, string, int?,string> textCreator, params object [] inputData)
+        {
+            return (textCreator == null ? new ConsoleLogger() : new ConsoleLogger(textCreator));
+        } 
     }
 
     internal sealed class ConsoleLogger : Logger
     {
-        public ConsoleLogger() : base(()=>new StreamWriter(Console.OpenStandardOutput()), LoggerTypes.ConsoleLogger.ToString())
+        public ConsoleLogger() : this(TextCreator)
+        {
+        }
+        public ConsoleLogger(Func<LogType, string, string, int?,string> textCreator) : 
+            base(()=>new StreamWriter(Console.OpenStandardOutput()), LoggerTypes.ConsoleLogger.ToString(), textCreator)
         {
             defaultColor = Console.ForegroundColor;
         }
 
         private readonly ConsoleColor defaultColor;
 
-        protected override string TextCreator(LogType type, string msg)
+        private static string TextCreator(LogType type, string msg, string testName, int? testStep)
         {
-            return string.Format(string.Concat(">>> {0} \t | \t", $"Test \t\"{TestName}\" \t | \t Step \t#{TestStep} \t ||\t{msg}"), type.ToString());
+            return string.Format(string.Concat(">>> {0} \t | \t", $"Test \t\"{testName}\" \t | \t Step \t#{testStep?? testStep.Value} \t ||\t{msg}"), type.ToString());
         }
 
         public override void Log(LogType type, string msg)

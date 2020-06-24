@@ -11,39 +11,41 @@ using LogType = SeleniumWrapper.Logging.LogType;
 
 namespace SeleniumWrapper
 {
+
+    public class InputParams
+    {
+        public IBrowser Browser = SeleniumWrapper.Browser.Browser.Instance();
+        public bool ThreadSaveLogs = false;
+        public bool DisableStandartLogging = false;
+    }
+
     public abstract class BaseForm
     {
-        protected BaseForm(IBrowser browser, string url = null, 
-                            bool openNewWindow = false, 
-                            bool threadSaveLogs = false, 
-                            bool disableStandartLogging = false)
+        protected BaseForm(InputParams settings = null,
+                           bool addDefaultConsoleLogger = true, 
+                           params Logger[] loggersCollection)
         {
-            this.browser = browser;
-            this.threadSaveLogs = threadSaveLogs;
-            this.disableStandartLogging = disableStandartLogging;
-            browserClosedTougle = false;
-            logedBrowserClosed = false;
-
-            if(!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
+            if(settings != null)
             {
-                if(openNewWindow)
-                {
-                    browser.NewWindow(url);
-                }
-                else
-                {
-                    browser.Window.Url = url;
-                }
+                this.settings = settings;
             }
+            browserClosedTougle = !this.settings.Browser.IsOpened;
+            logedBrowserClosed = browserClosedTougle;
 
-            Handle = browser.Window.Handle;
-            Url = browser.Window.Url;
+            Handle = this.settings.Browser.Window.Handle;
 
-            browser.WindowChanged += WindowChanged;
-            browser.BrowserClosed += BrowserClosed;
-            browser.WindowClosed += WindowClosed;
+            this.settings.Browser.WindowChanged += WindowChanged;
+            this.settings.Browser.BrowserClosed += BrowserClosed;
+            this.settings.Browser.WindowClosed += WindowClosed;
 
-            loggers.Add(LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,""));
+            if(loggersCollection != null && loggersCollection.Length > 0)
+            {
+                loggers.Add(loggersCollection);
+            }
+            if(addDefaultConsoleLogger)
+            {
+                loggers.Add(LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,null));
+            }
         }
 
         ~BaseForm()
@@ -51,10 +53,8 @@ namespace SeleniumWrapper
             Unsubscribe();
         }
 
-        protected readonly IBrowser browser;
+        protected readonly InputParams settings = new InputParams();
         protected readonly LoggersCollection loggers = new LoggersCollection();
-        private readonly bool threadSaveLogs;
-        private readonly bool disableStandartLogging;
 
 #region Properties
         public string Handle { get; }
@@ -64,10 +64,9 @@ namespace SeleniumWrapper
             get
             {
                 CheckWindow();
-                return browser.Window.Title;
+                return settings.Browser.Window.Title;
             }
         }
-        public string Url { get; protected set; }
 #endregion
 
 #region Callbacks
@@ -77,15 +76,15 @@ namespace SeleniumWrapper
         private void WindowChanged(string newHandle)
         {
             bool wasChanged = newHandle != Handle;
-            if(!disableStandartLogging && wasChanged && !windowChangedTougle)
+            if(!settings.DisableStandartLogging && wasChanged && !windowChangedTougle)
             {
-                Log(LogType.Info, $"Window with URL address ({Url}) switched to window with URL address ({browser.Window.Url})", 
-                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);            
+                Log(LogType.Info, $"Window with handle \"{Handle}\" switched to window with Title address ({settings.Browser.Window.Title})", 
+                    System.Reflection.MethodBase.GetCurrentMethod().Name);            
             }
-            else if(!disableStandartLogging && !wasChanged && windowChangedTougle)
+            else if(!settings.DisableStandartLogging && !wasChanged && windowChangedTougle)
             {
-                Log(LogType.Info, $"Window with URL address ({Url}) switched back",
-                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);                
+                Log(LogType.Info, $"Window with handle \"{Handle}\" switched back",
+                    System.Reflection.MethodBase.GetCurrentMethod().Name);                
             }
 
             windowChangedTougle = wasChanged;
@@ -101,10 +100,10 @@ namespace SeleniumWrapper
             {
                 browserClosedTougle = true;
             }
-            if(!disableStandartLogging && !logedBrowserClosed)
+            if(!settings.DisableStandartLogging && !logedBrowserClosed)
             {
                 Log(LogType.Info, "Browser closed", 
-                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
+                    System.Reflection.MethodBase.GetCurrentMethod().Name);
                 logedBrowserClosed = true;
             }
             Unsubscribe();
@@ -116,20 +115,21 @@ namespace SeleniumWrapper
         private void WindowClosed(string handle)
         {
             windowClosedTougle = handle == Handle;
-            Unsubscribe();
-            if(!disableStandartLogging)
+            
+            if(!settings.DisableStandartLogging)
             {
-                Log(LogType.Info, $"Window with URL address ({Url}) was closed",
-                    System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
+                Log(LogType.Info, $"Window with handle \"{Handle}\" was closed",
+                    System.Reflection.MethodBase.GetCurrentMethod().Name);
             }
+            Unsubscribe();
         }
 #endregion
 
         private void Unsubscribe()
         {
-            browser.WindowChanged -= WindowChanged;
-            browser.BrowserClosed -= BrowserClosed;
-            browser.WindowClosed -= WindowClosed;
+            settings.Browser.WindowChanged -= WindowChanged;
+            settings.Browser.BrowserClosed -= BrowserClosed;
+            settings.Browser.WindowClosed -= WindowClosed;
         }
 #endregion
 
@@ -142,107 +142,32 @@ namespace SeleniumWrapper
 
             if(windowChangedTougle)
             {
-                browser.SwitchToWindow(Handle);
-            }
-
-            string lastUrl = browser.Window.Url;
-            if(Url != lastUrl)
-            {
-                browser.Window.Url = Url;
-                if(!disableStandartLogging)
-                {
-                    Log(LogType.Info, $"Restore URL adress from ({lastUrl}), to URL ({Url})", 
-                        System.Reflection.MethodBase.GetCurrentMethod().Name, 0);
-                }
+                settings.Browser.SwitchToWindow(Handle);
             }
         }
 
 #region Logger
-        protected void Log(LogType type, string msg, string testName, int testStep)
+        protected void Log(LogType type, string msg, string testName, int? testStep = null)
         {
-            if(threadSaveLogs)
+            if(settings.ThreadSaveLogs)
             {
                 loggers.ThreadSaveLog(type, msg, testName, testStep);
             }
             else
             {
-                loggers.TestName = testName;
-                loggers.TestStep = testStep;
-                loggers.Log(type, msg);
+                loggers.Log(type, msg,testName,testStep);
             }
         }
-        protected void Log(Exception e, string testName, int testStep)
+        protected void Log(Exception e, string testName, int? testStep)
         {
-            if(threadSaveLogs)
+            if(settings.ThreadSaveLogs)
             {
                 loggers.ThreadSaveLog(e, testName, testStep);
             }
             else
             {
-                loggers.TestName = testName;
-                loggers.TestStep = testStep;
-                loggers.Log(e);
+                loggers.Log(e,testName,testStep);
             }
-        }
-#endregion
-
-#region Wait
-        protected T WaitForElement<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions) where T : BaseElement
-        {
-            CheckWindow();
-
-            if(ignoringExceptions != null && 
-               ignoringExceptions.Contains(typeof(NoSuchElementException)))
-            {
-                ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
-            }
-            return Wait(timeout, (IBrowser b)=> 
-            {
-                var element = b.Window.FindElement<T>(by);
-                return (element.IsExists ? element : null);
-            }, sleepInterval, ignoringExceptions);
-        }
-
-        protected ReadOnlyCollection<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
-                                    where T : BaseElement
-        {
-            CheckWindow();
-            
-            if(ignoringExceptions != null && 
-               ignoringExceptions.Contains(typeof(NoSuchElementException)))
-            {
-                ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
-            }
-
-            ReadOnlyCollection<T> elements = null;
-            Wait(timeout, (IBrowser b)=>
-            {
-                elements = b.Window.FindElements<T>(by);
-                foreach (var item in elements)
-                {
-                    if(!item.IsExists)
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            },sleepInterval,ignoringExceptions);
-
-            return elements;
-        }
-
-        protected T Wait<T>(TimeSpan timeout, Func<IBrowser, T> f, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
-        {
-            var wait = sleepInterval.HasValue ? new BrowserWait(new SystemClock(),browser,timeout, sleepInterval.Value) 
-                                              : new BrowserWait(browser,timeout);
-
-            if(ignoringExceptions != null && ignoringExceptions.Count() > 0)
-            {
-                wait.IgnoreExceptionTypes(ignoringExceptions);
-            }
-
-            return wait.Until(x=> f(x));
         }
 #endregion
 

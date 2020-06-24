@@ -1,6 +1,9 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser
 {
@@ -33,6 +36,74 @@ namespace SeleniumWrapper.Browser
         private static TimeSpan DefaultSleepTimeout
         {
             get { return TimeSpan.FromMilliseconds(500); }
+        } 
+
+        private static IBrowser Browser
+        {
+            get
+            {
+                IBrowser browser = SeleniumWrapper.Browser.Browser.Instance();
+                if(!browser.IsOpened)
+                {
+                    throw new Exception("Browser closed");
+                }
+                return browser;
+            }
+        } 
+
+        public static T WaitForElement<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions) where T : BaseElement
+        {
+            if(ignoringExceptions != null && 
+               ignoringExceptions.Contains(typeof(NoSuchElementException)))
+            {
+                ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
+            }
+            return Wait(timeout, (IBrowser b)=> 
+            {
+                var element = b.Window.FindElement<T>(by);
+                return (element.IsExists ? element : null);
+            }, sleepInterval, ignoringExceptions);
         }
+
+        public static ReadOnlyCollection<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
+                                    where T : BaseElement
+        {
+            if(ignoringExceptions != null && 
+               ignoringExceptions.Contains(typeof(NoSuchElementException)))
+            {
+                ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
+            }
+
+            ReadOnlyCollection<T> elements = null;
+            Wait(timeout, (IBrowser b)=>
+            {
+                elements = b.Window.FindElements<T>(by);
+                foreach (var item in elements)
+                {
+                    if(!item.IsExists)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            },sleepInterval,ignoringExceptions);
+
+            return elements;
+        }
+
+        public static T Wait<T>(TimeSpan timeout, Func<IBrowser, T> f, TimeSpan? sleepInterval = null, params Type[] ignoringExceptions)
+        {
+            var wait = sleepInterval.HasValue ? new BrowserWait(new SystemClock(),Browser,timeout, sleepInterval.Value) 
+                                              : new BrowserWait(Browser,timeout);
+
+            if(ignoringExceptions != null && ignoringExceptions.Count() > 0)
+            {
+                wait.IgnoreExceptionTypes(ignoringExceptions);
+            }
+
+            return wait.Until(x=> f(x));
+        }
+
     }
 }

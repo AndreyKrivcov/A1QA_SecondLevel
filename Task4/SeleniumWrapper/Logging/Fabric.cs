@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace SeleniumWrapper.Logging
@@ -10,12 +11,16 @@ namespace SeleniumWrapper.Logging
             {LoggerTypes.FileLogger, new FileLoggerCreator()}
         };
 
-        public static Logger GetLogger(LoggerTypes type, string pathToFile) => loggersCollection[type].GetLogger(pathToFile);
+        public static Logger GetLogger(LoggerTypes type, 
+            Func<LogType, string, string, int?, string> textCreator, params object [] inputData)
+        {
+            return loggersCollection[type].GetLogger(textCreator,inputData);
+        }
     }
 
     internal abstract class LoggerFabric
     {
-        public abstract Logger GetLogger(string pathToFile);
+        public abstract Logger GetLogger(Func<LogType, string, string, int?,string> textCreator, params object [] inputData);
     }
 
     public enum LoggerTypes
