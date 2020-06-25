@@ -1,10 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Browser;
-using SeleniumWrapper.Elements;
 using SeleniumWrapper.Logging;
 
 using LogType = SeleniumWrapper.Logging.LogType;

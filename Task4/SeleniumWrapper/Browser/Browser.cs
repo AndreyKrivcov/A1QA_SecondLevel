@@ -1,12 +1,9 @@
-
+using System;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
 using OpenQA.Selenium;
-
-using System.Linq;
-using System;
-using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
 {

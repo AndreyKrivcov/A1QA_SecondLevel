@@ -1,5 +1,3 @@
-using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser

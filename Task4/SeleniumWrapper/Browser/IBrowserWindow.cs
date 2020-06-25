@@ -27,5 +27,9 @@ namespace SeleniumWrapper.Browser
 
         void Scroll(int x, int y);
         void WaitForLoading(TimeSpan timeout, TimeSpan? sleep = null, params Type[] ignoringExceptions);
+        T WaitForElement<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval, params Type[] ignoringExceptions) 
+            where T : BaseElement;
+        ReadOnlyCollection<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval, params Type[] ignoringExceptions)
+            where T : BaseElement;
     } 
 }

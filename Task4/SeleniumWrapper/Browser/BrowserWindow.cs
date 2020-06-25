@@ -81,5 +81,45 @@ namespace SeleniumWrapper.Browser
                     .ExecuteScript("return document.readyState").Equals("complete");
             });
         }
+        public T WaitForElement<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval, params Type[] ignoringExceptions) where T : BaseElement
+        {
+            if(ignoringExceptions != null && 
+               ignoringExceptions.Contains(typeof(NoSuchElementException)))
+            {
+                ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
+            }
+            return BrowserWait.Wait(timeout, (IBrowser b)=> 
+            {
+                var element = b.Window.FindElement<T>(by);
+                return (element.IsExists ? element : null);
+            }, sleepInterval, ignoringExceptions);
+        }
+
+        public ReadOnlyCollection<T> WaitForElements<T>(By by, TimeSpan timeout, TimeSpan? sleepInterval, params Type[] ignoringExceptions)
+                                    where T : BaseElement
+        {
+            if(ignoringExceptions != null && 
+               ignoringExceptions.Contains(typeof(NoSuchElementException)))
+            {
+                ignoringExceptions = ignoringExceptions.Concat(new [] { typeof(NoSuchElementException)}).ToArray();
+            }
+
+            ReadOnlyCollection<T> elements = null;
+            BrowserWait.Wait(timeout, (IBrowser b)=>
+            {
+                elements = b.Window.FindElements<T>(by);
+                foreach (var item in elements)
+                {
+                    if(!item.IsExists)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            },sleepInterval,ignoringExceptions);
+
+            return elements;
+        }
     }
 }

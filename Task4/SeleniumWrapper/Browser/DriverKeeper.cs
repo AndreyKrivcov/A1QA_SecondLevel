@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using SeleniumWrapper.Elements;

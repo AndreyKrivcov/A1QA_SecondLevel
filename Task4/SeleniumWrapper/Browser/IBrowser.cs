@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using SeleniumWrapper.Elements;
-using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
 {
