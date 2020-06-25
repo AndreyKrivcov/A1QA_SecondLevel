@@ -25,19 +25,20 @@ namespace Tests
                 config.Serialization();
             }
 
-            loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,""),
-                                LoggerCreator.GetLogger(LoggerTypes.FileLogger,config.LogFileName)});
+            loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
+                                LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
 
             browser = BrowserCreator.GetConfiguredBrowser(config.browser);
+            browser.Window.Url = config.MainUrl;
+            browser.Window.Maximize();
+            browser.Window.Scroll(0,0);
 
             homePage = new MainPage(new MainPageSettings
             {
-                Browser = browser,
                 Language = config.Language,
                 PathToDownload = config.PathToDownload,
                 PathToLogFile = config.LogFileName,
                 Timeout = TimeSpan.FromSeconds(config.TimeautSeconds),
-                Url = config.MainUrl,
                 DownloadUrl = config.DownloadUrl,
                 verificationData = new AgeVerificationData
                 {
@@ -63,24 +64,27 @@ namespace Tests
         [Test]
         public void DownloadSteam()
         {
-            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================");
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================",
+                System.Reflection.MethodBase.GetCurrentMethod().Name,null);
             try
             {
                 homePage.InstallationPage.Download();
             }
             catch(Exception e)
             {
-                loggers.Log(e);
+                loggers.Log(e,System.Reflection.MethodBase.GetCurrentMethod().Name, null);
                 Assert.Fail();
             }
-            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================");
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================",
+                System.Reflection.MethodBase.GetCurrentMethod().Name, null);
         }
        
         [TestCase(Test_2.Action, true)]
         [TestCase(Test_2.Indie, false)]
         public void DiscountTest(Test_2 gameType, bool isHigestDiscount)  
         {
-            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================");
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Start ==================",
+                System.Reflection.MethodBase.GetCurrentMethod().Name, null);
             try
             {
                 var games = homePage.Games(gameType).Games.Where(x=>x.Discount > 0);
@@ -94,11 +98,12 @@ namespace Tests
             }
             catch(Exception e)
             {
-                loggers.Log(e);
+                loggers.Log(e,System.Reflection.MethodBase.GetCurrentMethod().Name,null);
                 Assert.Fail();
             }
 
-            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================");
+            loggers.Log(LogType.Info,$"================== {System.Reflection.MethodBase.GetCurrentMethod().Name} Finished ==================",
+                System.Reflection.MethodBase.GetCurrentMethod().Name, null);
         }
 
         

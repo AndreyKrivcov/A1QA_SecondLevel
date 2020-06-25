@@ -26,7 +26,7 @@ namespace SeleniumWrapper.Logging
 
         private static string TextCreator(LogType type, string msg, string testName, int? testStep)
         {
-            return string.Format(string.Concat(">>> {0} \t | \t", $"Test \t\"{testName}\" \t | \t Step \t#{testStep?? testStep.Value} \t ||\t{msg}"), type.ToString());
+            return string.Format(string.Concat(">>> {0} \t | \t", $"Test \t\"{testName}\" \t | \t Step \t#{testStep?? null} \t ||\t{msg}"), type.ToString());
         }
 
         public override void Log(LogType type, string msg)

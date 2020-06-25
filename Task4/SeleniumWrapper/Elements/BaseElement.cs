@@ -5,6 +5,8 @@ using System.Linq;
 using OpenQA.Selenium;
 using SeleniumWrapper.Browser;
 
+using BrowserWait = SeleniumWrapper.Utils.BrowserWait;
+
 namespace SeleniumWrapper.Elements
 {
     public abstract class BaseElement 
@@ -46,17 +48,15 @@ namespace SeleniumWrapper.Elements
         public string GetAttribute(string name) => Element.GetAttribute(name);
         public bool Disabled => Element.GetAttribute("disabled") == "disabled"; 
         public string InnerHTML => Element.GetAttribute("innerHTML");
-        public void WaitForDisplayed(TimeSpan timeout, TimeSpan? sleepInterval = null)
+        public T WaitForDisplayed<T>(TimeSpan timeout, TimeSpan? sleepInterval = null) where T : BaseElement
         {
-            BrowserWait.Wait(timeout, (IBrowser x) => Displayed, sleepInterval, typeof(NoSuchElementException));
+            BrowserWait.Wait(timeout, (IBrowser x) => IsExists && Displayed, sleepInterval, typeof(NoSuchElementException));
+            return this as T;
         }       
-        public void WaitForExists(TimeSpan timeout, TimeSpan? sleepInterval = null)
+        public T WaitForExists<T>(TimeSpan timeout, TimeSpan? sleepInterval = null) where T : BaseElement
         {
             BrowserWait.Wait(timeout, (IBrowser x) => IsExists, sleepInterval, typeof(NoSuchElementException));
-        }
-        public void WaitForAvailibility(TimeSpan timeout, TimeSpan? sleepInterval = null)
-        {
-            BrowserWait.Wait(timeout,(IBrowser) =>!Disabled, sleepInterval, typeof(NoSuchElementException));
+            return this as T;
         }
 
         public T FindElement<T>(By by) where T : BaseElement => new DefaultElement<T>(Element.FindElement(by) as WebElementKeeper);

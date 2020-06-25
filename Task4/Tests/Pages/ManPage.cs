@@ -21,29 +21,25 @@ namespace Tests.Pages
         public TimeSpan Timeout;
         public string PathToLogFile; 
         public string PathToDownload;
+        public string DownloadUrl;
 
         public AgeVerificationData verificationData;
     }
 
     class MainPage : BaseForm
     {
-        public MainPage(MainPageSettings settings) : 
-            base(settings.Browser, settings.Url, false,false)
+        public MainPage(MainPageSettings settings) : base(null, true, LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,settings.PathToLogFile))
         {
-            this.settings = settings;
+            pageSettings = settings;
 
             if(!string.IsNullOrEmpty(settings.PathToLogFile) && !string.IsNullOrWhiteSpace(settings.PathToLogFile))
             {
-                loggers.Add(LoggerCreator.GetLogger(LoggerTypes.FileLogger,settings.PathToLogFile));
+                loggers.Add();
             }
-            browser.Window.Maximize();
-            browser.Window.Scroll(0,0);
 
-            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
+            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{this.settings.Browser.Window.Url}\"","", 0);
 
             ChangeLanguage();
-
-            Assert.AreEqual(settings.Url,browser.Window.Url);
         }
 
 #region Selectors
@@ -53,26 +49,26 @@ namespace Tests.Pages
         private readonly string GamesA = "//div[@class=\"popup_body popup_menu_twocol\"]//a[contains(text(),\"{0}\")]";
 #endregion
 
-        private readonly MainPageSettings settings;
+        private readonly MainPageSettings pageSettings;
 
 #region Locatisation
         
         private void ChangeLanguage()
         {
-            BaseElement element = browser.Window.FindElement<Span>(By.XPath(LanguageButton));
+            BaseElement element = settings.Browser.Window.FindElement<Contaner>(By.XPath(LanguageButton));
             Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,1);
-            var data = new LanguageDropDown(element,logger,browser,settings.Timeout);
+            var data = new LanguageDropDown(element,logger,settings.Browser,pageSettings.Timeout);
 
-            if(data.Items.Any(x=>x.Name == LocalisationKeeper.LanguageNames[settings.Language]))
+            if(data.Items.Any(x=>x.Name == LocalisationKeeper.LanguageNames[pageSettings.Language]))
             {
                 foreach (var item in data.Items)
                 {
-                    if(item.Name == LocalisationKeeper.LanguageNames[settings.Language])
+                    if(item.Name == LocalisationKeeper.LanguageNames[pageSettings.Language])
                     {
                         item.Click();
-                        Wait(settings.Timeout,(IBrowser b) =>
+                        BrowserWait.Wait(pageSettings.Timeout,(IBrowser b) =>
                         {
-                            return b.Window.Title == LocalisationKeeper.Get(Test_1.Title,settings.Language);
+                            return b.Window.Title == LocalisationKeeper.Get(Test_1.Title,pageSettings.Language);
                         });
                         break;
                     }
@@ -89,33 +85,35 @@ namespace Tests.Pages
         {
             get
             {
-                return new DownloadSteam(browser,
-                    WaitForElement<A>(By.XPath(InstallSteam),settings.Timeout),
-                    settings.PathToDownload, settings.Timeout, settings.PathToLogFile,
-                    settings.DownloadUrl);
+                var link = settings.Browser.Window.FindElement<Link>(By.XPath(InstallSteam))
+                    .WaitForDisplayed<Link>(pageSettings.Timeout);
+                return new DownloadSteam(settings.Browser,
+                    link,
+                    pageSettings.PathToDownload, pageSettings.Timeout, pageSettings.PathToLogFile,
+                    pageSettings.DownloadUrl);
             }
         }
 
-        private A GetDropDownElement(string divLocator, string elementLocator)
+        private Link GetDropDownElement(string divLocator, string elementLocator)
         {
-            return Wait(settings.Timeout,(IBrowser b)=>
+            return BrowserWait.Wait(pageSettings.Timeout,(IBrowser b)=>
             {
-                var div = b.Window.FindElement<Div>(By.XPath(divLocator));
-                b.MouseUtils.MoveToElement(div).Perform();
+                var div = b.Window.FindElement<Contaner>(By.XPath(divLocator));
+                b.MouseActions.MoveToElement(div).Perform();
             
-                A element  = b.Window.FindElement<A>(By.XPath(elementLocator));
+                Link element  = b.Window.FindElement<Link>(By.XPath(elementLocator));
                 return (element.IsExists && element.Displayed ? element : null);
             }, null, typeof(NoSuchElementException), typeof(StaleElementReferenceException));
         }
 
         public GamesPage Games(Test_2 gameType)
         {
-            var element = GetDropDownElement(GamesDiv,string.Format(GamesA,LocalisationKeeper.Get(gameType,settings.Language)));
+            var element = GetDropDownElement(GamesDiv,string.Format(GamesA,LocalisationKeeper.Get(gameType,pageSettings.Language)));
             element.Click();
                 
-            return new GamesPage(browser, settings.verificationData, 
-                    settings.Timeout,settings.Language, 
-                    LocalisationKeeper.Get(gameType,settings.Language));
+            return new GamesPage(settings.Browser, pageSettings.verificationData, 
+                    pageSettings.Timeout,pageSettings.Language, 
+                    LocalisationKeeper.Get(gameType,pageSettings.Language));
         }
     }
 }

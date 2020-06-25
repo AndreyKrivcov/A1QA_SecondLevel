@@ -8,18 +8,20 @@ using OpenQA.Selenium;
 using SeleniumWrapper;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Elements;
+using SeleniumWrapper.Utils;
 
 namespace Tests.Pages
 {
     class GamesPage : BaseForm
     {
-        public GamesPage(IBrowser browser, AgeVerificationData verificationData, TimeSpan timeout, Language ln, string gameType) : base(browser)
+        public GamesPage(IBrowser browser, AgeVerificationData verificationData, TimeSpan timeout, Language ln, string gameType) : base()
         {
             this.verificationData = verificationData;
             this.timeout = timeout;
             this.language = ln;
 
-            Headder = WaitForElement<H2>(By.XPath(headderLocator),timeout).InnerHTML;
+            var elem = settings.Browser.Window.FindElement<Text>(By.XPath(headderLocator)).WaitForExists<Text>(timeout);
+            Headder = elem.InnerHTML;
             Assert.True(Regex.Match(Headder, gameType, RegexOptions.IgnoreCase).Success);
         }
 
@@ -35,13 +37,14 @@ namespace Tests.Pages
         {
             get
             {
-                WaitForElement<Div>(By.XPath(topSellersLocator),timeout).Click();
-                return Wait(timeout,(IBrowser b)=>
+                var div = settings.Browser.Window.FindElement<Contaner>(By.XPath(topSellersLocator)).WaitForExists<Contaner>(timeout);
+                div.Click();
+                return BrowserWait.Wait(timeout,b=>
                 {
-                    var elem = browser.Window.FindElements<A>(By.XPath(itemLocator));
+                    var elem = settings.Browser.Window.FindElements<Link>(By.XPath(itemLocator));
                     return (elem.Count == 0 ? null : elem);
                 },null,typeof(NoSuchElementException))
-                .Select(x=>new GameItem(x,browser,timeout,verificationData,language))
+                .Select(x=>new GameItem(x,settings.Browser,timeout,verificationData,language))
                 .ToList();
             }
         }
@@ -51,13 +54,13 @@ namespace Tests.Pages
 
     class GameItem
     {
-        public GameItem(A a, IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln)
+        public GameItem(Link a, IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln)
         {
             this.a = a;
             href = a.Href;
             this.browser = browser;
             Discount = GetDiscount();
-            Name = a.FindElement<Div>(By.XPath(itemName)).InnerHTML;
+            Name = a.FindElement<Contaner>(By.XPath(itemName)).InnerHTML;
             DiscountedPrice = GetPrice();
             this.verificationData = verificationData;
             this.timeout = timeout;
@@ -68,7 +71,7 @@ namespace Tests.Pages
         private readonly string itemName = ".//div[@class=\"tab_item_name\"]";
         private readonly string discountedPrice = ".//div[@class=\"discount_final_price\"]";
 
-        private readonly A a;
+        private readonly Link a;
         private readonly string href;
         private readonly IBrowser browser;
         private readonly AgeVerificationData verificationData;
@@ -91,7 +94,7 @@ namespace Tests.Pages
         {
             try
             {
-                var discount = a.FindElement<Div>(By.XPath(discountPercent));
+                var discount = a.FindElement<Contaner>(By.XPath(discountPercent));
                 return Math.Abs(Convert.ToInt32(discount.InnerHTML.Replace("%","")));
             }
             catch(Exception)
@@ -101,7 +104,7 @@ namespace Tests.Pages
         }
         private double GetPrice()
         {
-            string s = a.FindElement<Div>(By.XPath(discountedPrice)).InnerHTML;
+            string s = a.FindElement<Contaner>(By.XPath(discountedPrice)).InnerHTML;
             Regex regex = new Regex("[^0-9]");
             s = regex.Replace(s,"");
             return (string.IsNullOrEmpty(s) ? 0 : Convert.ToDouble(s));
@@ -121,7 +124,7 @@ namespace Tests.Pages
 
     class SelectedGamePage : BaseForm
     {
-        public SelectedGamePage(IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln, string gameName) : base(browser)
+        public SelectedGamePage(IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln, string gameName) : base()
         {
             AgeVerificationPage verificationPage = new AgeVerificationPage(browser,timeout);
             if(verificationPage.IsPageOpened)
@@ -132,15 +135,14 @@ namespace Tests.Pages
                 verificationPage.Submit();
             }
 
-            Assert.True(Wait(timeout,(IBrowser b)=>
+            Assert.True(BrowserWait.Wait(timeout,(IBrowser b)=>
             {
-                return b.Window.FindElement<Div>(By.XPath(programNameLocator)).InnerHTML == gameName;
+                return b.Window.FindElement<Contaner>(By.XPath(programNameLocator)).InnerHTML == gameName;
             }, null, typeof(NoSuchElementException)));
 
             Name = gameName;
             this.timeout = timeout;
             this.language = ln;
-            Url = browser.Window.Url;
         }   
 
         public string Name { get; }
@@ -155,7 +157,7 @@ namespace Tests.Pages
         {
             get
             {
-                var discount = WaitForElement<Div>(By.XPath(discountPercent),timeout);
+                var discount = settings.Browser.Window.FindElement<Contaner>(By.XPath(discountPercent)).WaitForExists<Contaner>(timeout);
                 return Math.Abs(Convert.ToInt32(discount.InnerHTML.Replace("%","")));
             }
         }
@@ -164,7 +166,7 @@ namespace Tests.Pages
         {
             get
             {
-                var price = WaitForElement<Div>(By.XPath(discountedPrice),timeout).InnerHTML;
+                var price = settings.Browser.Window.FindElement<Contaner>(By.XPath(discountedPrice)).WaitForExists<Contaner>(timeout).InnerHTML;
                 Regex regex = new Regex("[^0-9]");
                 price = regex.Replace(price,"");
                 return (string.IsNullOrEmpty(price) ? 0 :Convert.ToDouble(price));
@@ -182,10 +184,10 @@ namespace Tests.Pages
 
     class AgeVerificationPage : BaseForm
     {
-        public AgeVerificationPage(IBrowser browser, TimeSpan timeout) : base(browser)
+        public AgeVerificationPage(IBrowser browser, TimeSpan timeout) : base()
         {
             this.timeout = timeout;
-            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
+           // Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
         }
 
         private readonly TimeSpan timeout;
@@ -223,7 +225,8 @@ namespace Tests.Pages
             CheckWindow();
             if(element == null)
             {
-                element = WaitForElement<T>(By.XPath(xPath), timeout);
+                element = settings.Browser.Window.FindElement<T>(By.XPath(xPath));
+                element.WaitForExists<T>(timeout);
             }
 
             return element;
@@ -235,8 +238,8 @@ namespace Tests.Pages
         public Select Month => Getter(monthLocator,ref month);
         private Select year;
         public Select Year => Getter(yearLocator,ref year);
-        private A submit;
-        private A OpenPage => Getter(submitLocator,ref submit);
+        private Link submit;
+        private Link OpenPage => Getter(submitLocator,ref submit);
 
         public void Submit()
         {

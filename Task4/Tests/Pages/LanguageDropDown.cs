@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Elements;
+using SeleniumWrapper.Utils;
 
 namespace Tests.Pages
 {
@@ -17,35 +18,35 @@ namespace Tests.Pages
         }
 
         private readonly string DDMenuSelector = "//div[@id=\"global_actions\"]//div[@class=\"popup_body popup_menu\"]";
-        private readonly ReadOnlyCollection<A> elements;
+        private readonly ReadOnlyCollection<Link> elements;
         private readonly Action<string> logger;
 
         public ReadOnlyCollection<LanguageItem> Items => 
             elements.Select(x=>new LanguageItem(x,logger)).ToList().AsReadOnly();
 
-        private ReadOnlyCollection<A> WaitForElements(IBrowser b, TimeSpan timeout)
+        private ReadOnlyCollection<Link> WaitForElements(IBrowser b, TimeSpan timeout)
         {
             BrowserWait wait = new BrowserWait(b,timeout);
             wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
 
-            Div contaner = wait.Until(x=>
+            Contaner contaner = wait.Until(x=>
             {
-                Div div = b.Window.FindElement<Div>(By.XPath(DDMenuSelector));
+                Contaner div = b.Window.FindElement<Contaner>(By.XPath(DDMenuSelector));
                 return ((!div.Disabled && !div.Disabled && div.Disabled) ? div : null);
             });
 
-            return contaner.FindElements<A>(By.TagName("a"));
+            return contaner.FindElements<Link>(By.TagName("a"));
         }
 
-        private ReadOnlyCollection<A> GetLanguages(IBrowser b, TimeSpan timeout)
+        private ReadOnlyCollection<Link> GetLanguages(IBrowser b, TimeSpan timeout)
         {
             bool tryToWait = true;
             try
             {
-                Div contaner = b.Window.FindElement<Div>(By.XPath(DDMenuSelector));
+                Contaner contaner = b.Window.FindElement<Contaner>(By.XPath(DDMenuSelector));
                 if(contaner.Displayed)
                 {
-                    return contaner.FindElements<A>(By.TagName("a"));
+                    return contaner.FindElements<Link>(By.TagName("a"));
                 }
                 else
                 {
@@ -69,13 +70,13 @@ namespace Tests.Pages
 
     class LanguageItem
     {
-        public LanguageItem(A a, Action<string> logger)
+        public LanguageItem(Link a, Action<string> logger)
         {
 
             this.logger = logger;
             this.a = a;
         }
-        private readonly A a;
+        private readonly Link a;
         Action<string> logger;
         public string Name => a.InnerHTML; 
         

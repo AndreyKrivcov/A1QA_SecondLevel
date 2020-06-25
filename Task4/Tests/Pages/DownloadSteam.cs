@@ -11,24 +11,20 @@ using System.Collections.ObjectModel;
 using System;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SeleniumWrapper.Utils;
 
 namespace Tests.Pages
 {
     class DownloadSteam : BaseForm
     {
-        public DownloadSteam(IBrowser browser, A link, string pathToDownload, TimeSpan timeout, string logFilePath, string url) : base(browser)
+        public DownloadSteam(IBrowser browser, Link link, string pathToDownload, TimeSpan timeout, string logFilePath, string url) : 
+            base(null,true,LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,logFilePath))
         {
             link.Click();
-            this.Url = browser.Window.Url;
             this.pathToDownload = pathToDownload;
             this.timeout = timeout;
-            if(logFilePath != null)
-            {
-                loggers.Add(LoggerCreator.GetLogger(LoggerTypes.FileLogger,logFilePath));
-            }
 
-            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
-            Assert.AreEqual(url,Url);
+            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{settings.Browser.Window.Url}\"","", 0);
         }
 
         private readonly string InstallBtn = "//a[@class=\"about_install_steam_link\"]";
@@ -39,7 +35,7 @@ namespace Tests.Pages
         public void Download()
         {
             var files = Directory.GetFiles(pathToDownload);
-            ReadOnlyCollection<A> buttons = browser.Window.FindElements<A>(By.XPath(InstallBtn));
+            ReadOnlyCollection<Link> buttons = settings.Browser.Window.FindElements<Link>(By.XPath(InstallBtn));
             buttons.First().Click();
 
             Assert.True(CheckDownloading(files));
@@ -62,7 +58,7 @@ namespace Tests.Pages
                     return false;
                 }
 
-                ans = Wait(timeout, (IBrowser) => 
+                ans = BrowserWait.Wait(timeout, (IBrowser) => 
                 {
                     var newFiles = Directory.GetFiles(pathToDownload);
                     return(files.Count() < newFiles.Count() && Compare(newFiles));
