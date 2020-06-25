@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using OpenQA.Selenium;
+using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser
 {
@@ -67,8 +68,7 @@ namespace SeleniumWrapper.Browser
 
         public ReadOnlyCollection<IWebElement> FindElements(By by) 
         {
-            return ElementFinder.FindElements(()=>Get(()=>element.FindElements(by)),
-            (int n)=>
+            return Get(()=>element.FindElements(by)).ToElementArray<IWebElement>((int n)=>
             {
                 IWebElement elementGetter()
                 {

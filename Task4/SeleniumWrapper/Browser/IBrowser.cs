@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using SeleniumWrapper.Elements;
 using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
@@ -14,9 +16,6 @@ namespace SeleniumWrapper.Browser
 
         ReadOnlyCollection<string> OpenedWindows { get; }
         IJavaScriptExecutor JavaScriptExecutor { get; }
-        MouseUtils MouseUtils { get; }
-        KeyUtils KeyUtils { get; }
-
         event Action<string> WindowChanged;
         event Action<string> WindowClosed;
         event Action BrowserClosed;
@@ -27,6 +26,41 @@ namespace SeleniumWrapper.Browser
         void NewWindow();
         void CloseWindow(string windowHandle);
         void SwitchToWindow(string windowHandle);
+
+        IMouseActions MouseActions { get; }
+        IKeyActions KeyActions { get; }
+    }
+
+    public interface IMouseActions  : IAction
+    {
+        IMouseActions Click();
+        IMouseActions Click(BaseElement onElement);
+        IMouseActions ClickAndHold(BaseElement onElement);
+        IMouseActions ClickAndHold();
+        IMouseActions ContextClick();
+        IMouseActions ContextClick(BaseElement onElement);
+        IMouseActions DoubleClick();
+        IMouseActions DoubleClick(BaseElement onElement);
+        IMouseActions DragAndDrop(BaseElement source, BaseElement target);
+        IMouseActions DragAndDropToOffset(BaseElement source, int offsetX, int offsetY);
+        IMouseActions MoveByOffset(int offsetX, int offsetY);
+        IMouseActions MoveToElement(BaseElement toElement);
+        IMouseActions MoveToElement(BaseElement toElement, int offsetX, int offsetY);
+        IMouseActions MoveToElement(BaseElement toElement, int offsetX, int offsetY, MoveToElementOffsetOrigin offsetOrigin);
+        IMouseActions Release(BaseElement onElement);
+        IMouseActions Release();
+        void Reset();
+    }
+
+    public interface IKeyActions : IAction
+    {
+        IKeyActions KeyDown(string theKey);
+        IKeyActions KeyDown(BaseElement element, string theKey);
+        IKeyActions KeyUp(BaseElement element, string theKey);
+        IKeyActions KeyUp(string theKey);
+        IKeyActions SendKeys(BaseElement element, string keysToSend);
+        IKeyActions SendKeys(string keysToSend);
+        void Reset();
     }
 
 }

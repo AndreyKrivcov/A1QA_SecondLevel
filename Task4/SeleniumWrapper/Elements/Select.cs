@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Browser;
 
@@ -18,7 +15,6 @@ namespace SeleniumWrapper.Elements
         private readonly SelectElement dropDownManager;
         public string AccessKey => Element.GetAttribute("accesskey");
         public string Form => Element.GetAttribute("form");
-        public string Name => Element.GetAttribute("name");
 
 #region Wrapper for SelectElement
         public bool IsMultiple => dropDownManager.IsMultiple;

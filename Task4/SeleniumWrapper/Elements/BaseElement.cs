@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using SeleniumWrapper.Browser;
 
 namespace SeleniumWrapper.Elements
@@ -36,6 +35,9 @@ namespace SeleniumWrapper.Elements
             }
         }
 
+        public string Name => Element.GetAttribute("name");
+        public string Title => Element.GetAttribute("title");
+        public string Type => Element.GetAttribute("type");
         public string GetSccValue(string property) => Element.GetCssValue(property);
         public System.Drawing.Point Location => Element.Location;
         public bool Selected => Element.Selected;
@@ -63,7 +65,7 @@ namespace SeleniumWrapper.Elements
         {
             var elements = Element.FindElements(by)
                 .Select(x=>new DefaultElement<T>(x as WebElementKeeper));
-            return DefaultElement<T>.ConvertArray(elements).AsReadOnly();
+            return elements.ToElementArray().AsReadOnly();
         }
         public void Click() => Element.Click();
 
@@ -79,8 +81,11 @@ namespace SeleniumWrapper.Elements
         {
             return (T)Activator.CreateInstance(typeof(T),element.Element);
         }
+    }
 
-        public static List<T> ConvertArray(IEnumerable<DefaultElement<T>> collection)
+    internal static class ElementCollectionExtention
+    {
+        public static List<T> ToElementArray<T>(this IEnumerable<DefaultElement<T>> collection) where T : BaseElement
         {
             List<T> ans = new List<T>();
             foreach (var item in collection)
@@ -90,21 +95,16 @@ namespace SeleniumWrapper.Elements
 
             return ans;
         }
-    }
 
-    public enum Sharpe
-    {
-        Circle,
-        Default,
-        Poly,
-        Rect
-    }
+        public static List<T> ToElementArray<T>(this IEnumerable<IWebElement> collection, Func<int,T> outputElementCreator)
+        {
+            List<T> ans = new List<T>();
+            for (int i = 0; i < collection.Count(); i++)
+            {
+                ans.Add(outputElementCreator(i));
+            }
 
-    public enum Align
-    {
-        Center,
-        Left,
-        Right,
-        Justify,
+            return ans;
+        }
     }
 }

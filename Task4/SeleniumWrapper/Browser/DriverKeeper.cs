@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
+using SeleniumWrapper.Elements;
 
 namespace SeleniumWrapper.Browser
 {
@@ -83,8 +84,7 @@ namespace SeleniumWrapper.Browser
 
         public ReadOnlyCollection<IWebElement> FindElements(By by)
         {
-            return ElementFinder.FindElements<IWebElement>(()=>Driver.FindElements(by),
-            (int n)=>
+            return Driver.FindElements(by).ToElementArray<IWebElement>((int n)=>
             {
                 return new WebElementKeeper(()=>
                 {
@@ -121,7 +121,7 @@ namespace SeleniumWrapper.Browser
         public IWebDriver WrappedDriver => Driver;
     }
 
-    internal static class ElementFinder
+    /*internal static class ElementFinder
     {
         public static List<T> FindElements<T>(Func<IEnumerable<IWebElement>> inputElementCreator, 
                                               Func<int,T> outputElementCreator)
@@ -135,5 +135,5 @@ namespace SeleniumWrapper.Browser
 
             return ans;
         }
-    }
+    }*/
 }

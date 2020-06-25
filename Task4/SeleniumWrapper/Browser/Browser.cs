@@ -10,7 +10,7 @@ using SeleniumWrapper.Utils;
 
 namespace SeleniumWrapper.Browser
 {
-    internal class Browser : IBrowser
+    internal partial class Browser : IBrowser
     {    
         private Browser(){}
         private static Browser instance;
@@ -25,8 +25,6 @@ namespace SeleniumWrapper.Browser
         public string BrowserName => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.BrowserName);
         public string Version => (DriverKeeper.GetDriver == null ? null : DriverKeeper.GetDriver.Version);
         public bool IsOpened => DriverKeeper.GetDriver.IsOpened;
-        public MouseUtils MouseUtils => new MouseUtils(DriverKeeper.GetDriver);
-        public KeyUtils KeyUtils => new KeyUtils(DriverKeeper.GetDriver);
         public IJavaScriptExecutor JavaScriptExecutor => DriverKeeper.GetDriver.JavaScriptExecutor;
         public ReadOnlyCollection<string> OpenedWindows => 
             (IsOpened ? new List<string>().AsReadOnly() : DriverKeeper.GetDriver.WindowHandles);
@@ -50,7 +48,10 @@ namespace SeleniumWrapper.Browser
             } 
         } 
 #endregion
-
+#region Actions
+        public IKeyActions KeyActions => new KeyActionsManager();
+        public IMouseActions MouseActions => new MouseActionsManager();
+#endregion
         public event Action<string> WindowChanged;
         public event Action<string> WindowClosed;
         public event Action BrowserClosed;

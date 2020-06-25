@@ -17,9 +17,6 @@ namespace Tests.Pages
 {
     struct MainPageSettings
     {
-        public IBrowser Browser;
-        public string Url; 
-        public string DownloadUrl;
         public Language Language;
         public TimeSpan Timeout;
         public string PathToLogFile; 

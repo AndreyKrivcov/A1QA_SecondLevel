@@ -44,7 +44,7 @@ namespace SeleniumWrapper.Browser
         { 
             var elements = DriverKeeper.GetDriver.FindElements(by)
                 .Select(x=>new DefaultElement<T>(x as WebElementKeeper));
-            return DefaultElement<T>.ConvertArray(elements).AsReadOnly();
+            return elements.ToElementArray().AsReadOnly();
         }
 
         public void Forward() => DriverKeeper.GetDriver.Navigate().Forward();
