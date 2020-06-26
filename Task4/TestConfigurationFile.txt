@@ -10,4 +10,8 @@
   <DayOfBirth>31</DayOfBirth>
   <MonthOfBirth>October</MonthOfBirth>
   <YearOfBirth>1991</YearOfBirth>
+  <PathToLocatlisation__Test_1>../../../../Test_1_Localisation.txt</PathToLocatlisation__Test_1>
+  <PathToLocatlisation__Test_2>../../../../Test_2_Localisation.txt</PathToLocatlisation__Test_2>
+  <PathToLocatlisation__MonthNames>../../../../MonthNames_Localisation.txt</PathToLocatlisation__MonthNames>
+  <PathToLocatlisation__LanguageNames>../../../../LanguageNames_Localisation.txt</PathToLocatlisation__LanguageNames>
 </Settings>
