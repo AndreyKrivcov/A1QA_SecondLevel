@@ -37,10 +37,15 @@ namespace Tests.Pages
         December
     }
 
+    public enum GenericParams
+    {
+        Language
+    }
+
     static class LocalisationKeeper
     {
 #region Localisation comparation
-        private static readonly SeleniumWrapper.Utils.Localisation<Test_1,Language> LocalisationForTest_1 
+        public static readonly SeleniumWrapper.Utils.Localisation<Test_1,Language> LocalisationForTest_1 
             = new Dictionary<Test_1,Dictionary<Language,string>>
         {
             {Test_1.Title, new Dictionary<Language, string>
@@ -49,7 +54,7 @@ namespace Tests.Pages
                 {Language.En, "Welcome to Steam"}
             }}
         };
-        private static readonly SeleniumWrapper.Utils.Localisation<Test_2,Language> LocalisationForTest_2 
+        public static readonly SeleniumWrapper.Utils.Localisation<Test_2,Language> LocalisationForTest_2 
         = new Dictionary<Test_2,Dictionary<Language,string>> 
         {
             {Test_2.Action, new Dictionary<Language,string>
@@ -63,7 +68,7 @@ namespace Tests.Pages
                 {Language.En, "Indie"}
             }},
         };
-        private static readonly SeleniumWrapper.Utils.Localisation<Month,Language> MonthLocalisation = 
+        public static readonly SeleniumWrapper.Utils.Localisation<Month,Language> MonthLocalisation = 
             new Dictionary<Month, Dictionary<Language, string>>
         {
             {Month.January, new Dictionary<Language, string>
@@ -127,10 +132,13 @@ namespace Tests.Pages
                 {Language.En, "December"}
             }}
         };
-        public static Dictionary<Language,string> LanguageNames { get; }= new Dictionary<Language, string>
+        public static readonly SeleniumWrapper.Utils.Localisation<GenericParams,Language> LanguageNames = new Dictionary<GenericParams, Dictionary<Language, string>>
         {
-            {Language.Ru, "Русский (Russian)"},
-            {Language.En, "English (английский)"}
+            {GenericParams.Language, new Dictionary<Language, string>
+            {
+                {Language.Ru, "Русский (Russian)"},
+                {Language.En, "English (английский)"}
+            }}
         };
 
 #endregion

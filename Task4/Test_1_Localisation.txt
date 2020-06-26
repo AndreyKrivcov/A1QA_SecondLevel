@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Localisation>
+    <Item Name="Title">
+        <Param Language="Ru">Добро пожаловать в Steam</Param>
+        <Param Language="En">Welcome to Steam</Param>
+    </Item>
+</Localisation>

@@ -6,6 +6,7 @@ using SeleniumWrapper.Logging;
 
 using Tests.Pages;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -14,7 +15,6 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            Config config;
             if(File.Exists(fileWithSettings))
             {
                 config = Config.Deserialization();
@@ -24,6 +24,9 @@ namespace Tests
                 config = new Config();
                 config.Serialization();
             }
+
+            SeleniumWrapper.Utils.Localisation<Month,Language> data = new SeleniumWrapper.Utils.Localisation<Month,Language>();
+            data.Deserialization(config.PathToMonthLocalisation);
 
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
@@ -58,6 +61,7 @@ namespace Tests
         IBrowser browser;
         readonly LoggersCollection loggers = new LoggersCollection();
         readonly string fileWithSettings = "TestConfigurationFile.txt";
+        private Config config;
         MainPage homePage;
 
 
@@ -69,6 +73,7 @@ namespace Tests
             try
             {
                 homePage.InstallationPage.Download();
+                LocalisationKeeper.LocalisationForTest_1.Serialization(config.PathToLocalisationForTest_1);
             }
             catch(Exception e)
             {

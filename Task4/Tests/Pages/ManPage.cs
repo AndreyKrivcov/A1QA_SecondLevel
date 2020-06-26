@@ -59,11 +59,11 @@ namespace Tests.Pages
             Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,1);
             var data = new LanguageDropDown(element,logger,settings.Browser,pageSettings.Timeout);
 
-            if(data.Items.Any(x=>x.Name == LocalisationKeeper.LanguageNames[pageSettings.Language]))
+            if(data.Items.Any(x=>x.Name == LocalisationKeeper.LanguageNames[GenericParams.Language][pageSettings.Language]))
             {
                 foreach (var item in data.Items)
                 {
-                    if(item.Name == LocalisationKeeper.LanguageNames[pageSettings.Language])
+                    if(item.Name == LocalisationKeeper.LanguageNames[GenericParams.Language][pageSettings.Language])
                     {
                         item.Click();
                         BrowserWait.Wait(pageSettings.Timeout,(IBrowser b) =>

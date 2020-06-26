@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Localisation>
+    <Item Name="January">
+        <Param Language="Ru">января</Param>
+        <Param Language="En">January</Param>
+    </Item>
+    <Item Name="February">
+        <Param Language="Ru">февраля</Param>
+        <Param Language="En">February</Param>
+    </Item>
+    <Item Name="March">
+        <Param Language="Ru">марта</Param>
+        <Param Language="En">March</Param>
+    </Item>
+    <Item Name="April">
+        <Param Language="Ru">апреля</Param>
+        <Param Language="En">April</Param>
+    </Item>
+    <Item Name="May">
+        <Param Language="Ru">мая</Param>
+        <Param Language="En">May</Param>
+    </Item>
+    <Item Name="June">
+        <Param Language="Ru">июня</Param>
+        <Param Language="En">June</Param>
+    </Item>
+    <Item Name="July">
+        <Param Language="Ru">июля</Param>
+        <Param Language="En">July</Param>
+    </Item>
+    <Item Name="August">
+        <Param Language="Ru">августа</Param>
+        <Param Language="En">August</Param>
+    </Item>
+    <Item Name="September">
+        <Param Language="Ru">сентября</Param>
+        <Param Language="En">September</Param>
+    </Item>
+    <Item Name="October">
+        <Param Language="Ru">октября</Param>
+        <Param Language="En">October</Param>
+    </Item>
+    <Item Name="November">
+        <Param Language="Ru">ноября</Param>
+        <Param Language="En">November</Param>
+    </Item>
+    <Item Name="December">
+        <Param Language="Ru">декабря</Param>
+        <Param Language="En">December</Param>
+    </Item>
+</Localisation>

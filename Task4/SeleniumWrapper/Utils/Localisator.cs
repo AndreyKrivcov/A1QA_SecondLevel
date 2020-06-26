@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml;
 
 namespace SeleniumWrapper.Utils
 {
@@ -81,6 +84,73 @@ namespace SeleniumWrapper.Utils
         public void Clear()
         {
             collection.Clear();
+        }
+
+        public void Serialization(string fileName)
+        {
+            using (var xmlWriter = new XmlTextWriter(fileName, null))
+            {
+                void WriteAttribute(string attr, string value)
+                {
+                    xmlWriter.WriteStartAttribute(attr);
+                    xmlWriter.WriteString(value);
+                    xmlWriter.WriteEndAttribute();
+                }
+
+                xmlWriter.Formatting = Formatting.Indented;
+                xmlWriter.IndentChar = ' ';
+                xmlWriter.Indentation = 4;
+
+                xmlWriter.WriteStartDocument();
+
+                xmlWriter.WriteStartElement("Localisation");
+
+                foreach (var item in collection)
+                {
+                    xmlWriter.WriteStartElement("Item");
+
+                    WriteAttribute("Name",item.Key.ToString());
+
+                    foreach (var element in item.Value)
+                    {
+                        xmlWriter.WriteStartElement("Param");
+
+                        WriteAttribute("Language",element.Key.ToString());
+                        xmlWriter.WriteString(element.Value);
+
+                        xmlWriter.WriteEndElement();
+                    }
+                    xmlWriter.WriteEndElement();
+                }
+
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.WriteEndDocument();
+                xmlWriter.Close();
+            }
+        }
+        public void Deserialization(string fileName)
+        {
+            XmlDocument document = new XmlDocument();
+            
+            document.Load(fileName);
+
+            var elements = document["Localisation"].ChildNodes;
+            foreach (XmlElement item in elements)
+            {
+                Param param = (Param)Enum.Parse(typeof(Param), item.GetAttribute("Name"));
+                var data = item.ChildNodes;
+
+                collection.Add(param,new Dictionary<Language, string>());
+
+                foreach (XmlElement translateItem in data)
+                {
+                    Language language = (Language)Enum.Parse(typeof(Language), translateItem.GetAttribute("Language"));
+                    string translate = translateItem.InnerText;
+
+                    collection[param].Add(language,translate);
+                }
+            }
         }
     }
 }

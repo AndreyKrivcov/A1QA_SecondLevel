@@ -30,6 +30,14 @@ namespace Tests
         public Month Month {get; set;} = Month.October;
         [XmlElement("YearOfBirth")]
         public int Year { get; set;} = 1991; 
+        [XmlElement("PathToLocatlisation__Test_1")]
+        public string PathToLocalisationForTest_1 {get;set;} = "../../../../Test_1_Localisation.txt";
+        [XmlElement("PathToLocatlisation__Test_2")]
+        public string PathToLocalisationForTest_2 {get;set;}="../../../../Test_2_Localisation.txt";
+        [XmlElement("PathToLocatlisation__MonthNames")]
+        public string PathToMonthLocalisation {get;set;}="../../../../MonthNames_Localisation.txt";
+        [XmlElement("PathToLocatlisation__LanguageNames")]
+        public string PathToLanguageNames {get;set;}="../../../../LanguageNames_Localisation.txt";
 
         [NonSerialized]
         private static readonly XmlSerializer serializer = new XmlSerializer(typeof(Config));
