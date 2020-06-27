@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 
 using OpenQA.Selenium;
 using SeleniumWrapper;
@@ -10,8 +9,6 @@ using SeleniumWrapper.Logging;
 using SeleniumWrapper.Utils;
 
 using LogType = SeleniumWrapper.Logging.LogType;
-using System.Collections.ObjectModel;
-using NUnit.Framework;
 
 namespace Tests.Pages
 {
@@ -37,8 +34,6 @@ namespace Tests.Pages
                 loggers.Add();
             }
 
-            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{this.settings.Browser.Window.Url}\"","", 0);
-
             ChangeLanguage();
         }
 
@@ -56,7 +51,7 @@ namespace Tests.Pages
         private void ChangeLanguage()
         {
             BaseElement element = settings.Browser.Window.FindElement<Contaner>(By.XPath(LanguageButton));
-            Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,1);
+            Action<string> logger = (string msg)=> Log(LogType.Info,msg,null,null);
             var data = new LanguageDropDown(element,logger,settings.Browser,pageSettings.Timeout);
 
             if(data.Items.Any(x=>x.Name == LocalisationKeeper.LanguageNames[GenericParams.Language][pageSettings.Language]))
@@ -85,6 +80,7 @@ namespace Tests.Pages
         {
             get
             {
+                Log(LogType.Info, "Opening Steam downloading page",null,null);
                 var link = settings.Browser.Window.FindElement<Link>(By.XPath(InstallSteam))
                     .WaitForDisplayed<Link>(pageSettings.Timeout);
                 return new DownloadSteam(settings.Browser,
@@ -96,6 +92,7 @@ namespace Tests.Pages
 
         private Link GetDropDownElement(string divLocator, string elementLocator)
         {
+            Log(LogType.Info,$"Mouse over to dropdown element",null,null);
             return BrowserWait.Wait(pageSettings.Timeout,(IBrowser b)=>
             {
                 var div = b.Window.FindElement<Contaner>(By.XPath(divLocator));
@@ -108,12 +105,14 @@ namespace Tests.Pages
 
         public GamesPage Games(Test_2 gameType)
         {
+            Log(LogType.Info,$"Open pagewith list of games",null,null);
             var element = GetDropDownElement(GamesDiv,string.Format(GamesA,LocalisationKeeper.Get(gameType,pageSettings.Language)));
             element.Click();
                 
             return new GamesPage(settings.Browser, pageSettings.verificationData, 
                     pageSettings.Timeout,pageSettings.Language, 
-                    LocalisationKeeper.Get(gameType,pageSettings.Language));
+                    LocalisationKeeper.Get(gameType,pageSettings.Language),
+                    pageSettings.PathToLogFile);
         }
     }
 }

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-using SeleniumWrapper.Utils;
-
 namespace Tests.Pages
 {
     public enum Language

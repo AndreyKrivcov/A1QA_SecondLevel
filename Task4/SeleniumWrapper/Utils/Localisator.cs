@@ -131,6 +131,11 @@ namespace SeleniumWrapper.Utils
         }
         public void Deserialization(string fileName)
         {
+            if(!File.Exists(fileName))
+            {
+                throw new ArgumentException($"Can`t find file \"{fileName}\"");
+            }
+
             XmlDocument document = new XmlDocument();
             
             document.Load(fileName);

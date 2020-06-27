@@ -11,7 +11,6 @@ namespace SeleniumWrapper.Browser
         public WebElementKeeper(Func<IWebElement> creator)
         {
             this.creator = creator;
-           // this.element = creator();
         }
 
         private IWebElement element;

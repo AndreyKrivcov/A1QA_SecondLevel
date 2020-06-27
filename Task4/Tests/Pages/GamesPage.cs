@@ -1,51 +1,99 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using NUnit.Framework;
 using OpenQA.Selenium;
 using SeleniumWrapper;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Elements;
 using SeleniumWrapper.Utils;
+using SeleniumWrapper.Logging;
+
+using LogType = SeleniumWrapper.Logging.LogType;
 
 namespace Tests.Pages
 {
     class GamesPage : BaseForm
     {
-        public GamesPage(IBrowser browser, AgeVerificationData verificationData, TimeSpan timeout, Language ln, string gameType) : base()
+        public GamesPage(IBrowser browser, AgeVerificationData verificationData, TimeSpan timeout, Language ln, string gameType, string pathToLogFile) : 
+            base(null, true, LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,pathToLogFile))
         {
             this.verificationData = verificationData;
             this.timeout = timeout;
             this.language = ln;
+            this.pathToLogFile = pathToLogFile;
+            this.gameType = gameType;
 
             var elem = settings.Browser.Window.FindElement<Text>(By.XPath(headderLocator)).WaitForExists<Text>(timeout);
             Headder = elem.InnerHTML;
-            Assert.True(Regex.Match(Headder, gameType, RegexOptions.IgnoreCase).Success);
+        }
+
+        public bool IsPageCorrect
+        {
+            get
+            {
+                return Regex.Match(Headder, gameType, RegexOptions.IgnoreCase).Success;
+            }
         }
 
         private readonly AgeVerificationData verificationData;
         private readonly TimeSpan timeout;
         private readonly Language language;
+        private readonly string pathToLogFile;
+        private readonly string gameType;
 
         private readonly string itemLocator = "//div[@id=\"TopSellersRows\"]/a";
         private readonly string topSellersLocator = "//div[@id=\"tab_select_TopSellers\"]";
         private readonly string headderLocator = "//h2[@class=\"pageheader\"]";
+        private readonly string itemName = ".//div[@class=\"tab_item_name\"]";
+        private readonly string discountPercent = ".//div[@class=\"discount_pct\"]";
+        private readonly string discountedPrice = ".//div[@class=\"discount_final_price\"]";
 
         public List<GameItem> Games 
         {
             get
             {
+                Log(LogType.Info, "Create list of games", null);
                 var div = settings.Browser.Window.FindElement<Contaner>(By.XPath(topSellersLocator)).WaitForExists<Contaner>(timeout);
                 div.Click();
-                return BrowserWait.Wait(timeout,b=>
+                var elements = BrowserWait.Wait(timeout,b=>
                 {
                     var elem = settings.Browser.Window.FindElements<Link>(By.XPath(itemLocator));
                     return (elem.Count == 0 ? null : elem);
-                },null,typeof(NoSuchElementException))
-                .Select(x=>new GameItem(x,settings.Browser,timeout,verificationData,language))
-                .ToList();
+                },null,typeof(NoSuchElementException));
+
+                List<GameItem> games = new List<GameItem>();
+                foreach (var item in elements)
+                {
+                    string gameName = item.FindElement<Contaner>(By.XPath(itemName)).InnerHTML;
+                    SelectedGamePage gamePageCreator()
+                    {
+                        item.Click();
+                        return new SelectedGamePage(timeout,verificationData,language,gameName,pathToLogFile);
+                    }
+                    int getDiscount()
+                    {
+                        var discount = item.FindElement<Contaner>(By.XPath(discountPercent));
+                        return discount.IsExists ? Math.Abs(Convert.ToInt32(discount.InnerHTML.Replace("%",""))) : 0;
+                    }
+                    double getPrice()
+                    {
+                        var element = item.FindElement<Contaner>(By.XPath(discountedPrice));
+
+                        double ans = 0;
+                        if(element.IsExists)
+                        {
+                            Regex regex = new Regex("[^0-9]");
+                            string price = regex.Replace(element.InnerHTML,"");
+                            ans = (string.IsNullOrEmpty(price) ? 0 : Convert.ToDouble(price));
+                        }
+                        return ans;
+                    }
+
+                    games.Add(new GameItem(gamePageCreator,gameName,getDiscount(),getPrice()));
+                }
+
+                return games;
             }
         }
         public string Headder { get; } 
@@ -54,80 +102,29 @@ namespace Tests.Pages
 
     class GameItem
     {
-        public GameItem(Link a, IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln)
+        public GameItem(Func<SelectedGamePage> gamePageCreator, 
+                        string name, int discount, double discountedPrice)
         {
-            this.timeout = timeout;
-            this.a = a;
-            href = a.Href;
-            this.browser = browser;
-            Discount = GetDiscount();
-            Name = a.FindElement<Contaner>(By.XPath(itemName)).InnerHTML;
-            DiscountedPrice = GetPrice();
-            this.verificationData = verificationData;
-            this.language = ln;
+           this.gamePageCreator = gamePageCreator;
+           this.Name = name;
+           this.Discount = discount;
+           this.DiscountedPrice = discountedPrice;
         }
 
-        private readonly string discountPercent = ".//div[@class=\"discount_pct\"]";
-        private readonly string itemName = ".//div[@class=\"tab_item_name\"]";
-        private readonly string discountedPrice = ".//div[@class=\"discount_final_price\"]";
+        private readonly Func<SelectedGamePage> gamePageCreator;
 
-        private readonly Link a;
-        private readonly string href;
-        private readonly IBrowser browser;
-        private readonly AgeVerificationData verificationData;
-        private readonly TimeSpan timeout;
-        private readonly Language language;
-
-        public SelectedGamePage Page 
-        {
-            get
-            {
-                Click();
-                return new SelectedGamePage(browser,timeout,verificationData,language,Name);
-            }
-        }
+        public SelectedGamePage Page => gamePageCreator();
         public string Name { get; }
         public int Discount { get; }
         public double DiscountedPrice { get; }
-
-        private int GetDiscount()
-        {
-            try
-            {
-                var discount = a.FindElement<Contaner>(By.XPath(discountPercent));
-                return Math.Abs(Convert.ToInt32(discount.InnerHTML.Replace("%","")));
-            }
-            catch(Exception)
-            {
-                return 0;
-            }
-        }
-        private double GetPrice()
-        {
-            var element = a.FindElement<Contaner>(By.XPath(discountedPrice));
-            string s = element.WaitForExists<Contaner>(timeout).InnerHTML;
-            Regex regex = new Regex("[^0-9]");
-            s = regex.Replace(s,"");
-            return (string.IsNullOrEmpty(s) ? 0 : Convert.ToDouble(s));
-        }
-        private void Click()
-        {
-            try
-            {
-                a.Click();
-            }
-            catch(Exception)
-            {
-                browser.Window.Url = href;
-            }
-        }
     }
 
     class SelectedGamePage : BaseForm
     {
-        public SelectedGamePage(IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln, string gameName) : base()
+        public SelectedGamePage(TimeSpan timeout, AgeVerificationData verificationData, Language ln, string gameName, string pathToLogFile) : 
+            base(null, true, LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,pathToLogFile))
         {
-            AgeVerificationPage verificationPage = new AgeVerificationPage(browser,timeout);
+            AgeVerificationPage verificationPage = new AgeVerificationPage(pathToLogFile);
             if(verificationPage.IsPageOpened)
             {
                 verificationPage.Day.SelectByValue(verificationData.Day.ToString());
@@ -135,20 +132,23 @@ namespace Tests.Pages
                 verificationPage.Year.SelectByValue(verificationData.Year.ToString());
                 verificationPage.Submit();
             }
+            this.gameName = gameName;
 
-            Assert.True(BrowserWait.Wait(timeout,(IBrowser b)=>
+            BrowserWait.Wait(timeout,(IBrowser b)=>
             {
                 return b.Window.FindElement<Contaner>(By.XPath(programNameLocator)).InnerHTML == gameName;
-            }, null, typeof(NoSuchElementException)));
+            }, null, typeof(NoSuchElementException));
 
             Name = gameName;
             this.timeout = timeout;
             this.language = ln;
         }   
 
+        public bool IsItCorrectPage => settings.Browser.Window.FindElement<Contaner>(By.XPath(programNameLocator)).InnerHTML == gameName;
         public string Name { get; }
         private readonly TimeSpan timeout;
         private readonly Language language;
+        private readonly string gameName;
 
         private readonly string programNameLocator = "//div[@class=\"apphub_AppName\"]";
         private readonly string discountPercent = "//div[@class=\"game_purchase_action\"]//div[1][@class=\"discount_pct\"]";
@@ -159,7 +159,9 @@ namespace Tests.Pages
             get
             {
                 var discount = settings.Browser.Window.FindElement<Contaner>(By.XPath(discountPercent)).WaitForExists<Contaner>(timeout);
-                return Math.Abs(Convert.ToInt32(discount.InnerHTML.Replace("%","")));
+                int ans = Math.Abs(Convert.ToInt32(discount.InnerHTML.Replace("%","")));
+                Log(LogType.Info, $"Game`s {Name} discount is {ans}",null);
+                return ans;
             }
         }
 
@@ -170,7 +172,9 @@ namespace Tests.Pages
                 var price = settings.Browser.Window.FindElement<Contaner>(By.XPath(discountedPrice)).WaitForExists<Contaner>(timeout).InnerHTML;
                 Regex regex = new Regex("[^0-9]");
                 price = regex.Replace(price,"");
-                return (string.IsNullOrEmpty(price) ? 0 :Convert.ToDouble(price));
+                double ans = (string.IsNullOrEmpty(price) ? 0 :Convert.ToDouble(price));
+                Log(LogType.Info, $"Game`s {Name} price is {ans}",null);
+                return ans;
             }
         }
 
@@ -185,31 +189,25 @@ namespace Tests.Pages
 
     class AgeVerificationPage : BaseForm
     {
-        public AgeVerificationPage(IBrowser browser, TimeSpan timeout) : base()
+        public AgeVerificationPage(string pathToLogFile) : 
+            base(null, true, LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,pathToLogFile))
         {
-            this.timeout = timeout;
-           // Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{Url}\"","", 0);
         }
-
-        private readonly TimeSpan timeout;
 
         public bool IsPageOpened
         {
             get
             {
-                try
-                {
-                    bool isOpened = Day.Displayed && Month.Displayed && Year.Displayed && OpenPage.Displayed;
-                    if(isOpened)
-                    {
-                        Log(SeleniumWrapper.Logging.LogType.Info,"Age verification page opened", "DiscountTest", 1);
-                    }
-                    return isOpened;
-                }
-                catch(Exception)
+                if(!Day.IsExists || !Month.IsExists || !Year.IsExists || !OpenPage.IsExists)
                 {
                     return false;
                 }
+                bool isOpened = Day.Displayed && Month.Displayed && Year.Displayed && OpenPage.Displayed;
+                if(isOpened)
+                {
+                    Log(SeleniumWrapper.Logging.LogType.Info,"Age verification page opened", "DiscountTest");
+                }
+                return isOpened;
             }
         }
 
@@ -227,7 +225,6 @@ namespace Tests.Pages
             if(element == null)
             {
                 element = settings.Browser.Window.FindElement<T>(By.XPath(xPath));
-                element.WaitForExists<T>(timeout);
             }
 
             return element;
@@ -246,6 +243,7 @@ namespace Tests.Pages
         {
             CheckWindow();
             OpenPage.Click();
+            Log(LogType.Info, "Submit age verification",null);
         }
 
     }

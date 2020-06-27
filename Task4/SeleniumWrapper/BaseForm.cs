@@ -41,6 +41,8 @@ namespace SeleniumWrapper
             {
                 loggers.Add(LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger,null));
             }
+
+            Log(SeleniumWrapper.Logging.LogType.Info,$"Opened page \"{this.settings.Browser.Window.Url}\"",null);
         }
 
         ~BaseForm()
