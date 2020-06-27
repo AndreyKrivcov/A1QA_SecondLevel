@@ -14,7 +14,7 @@ namespace SeleniumWrapper.Elements
 
         public static implicit operator T(DefaultElement<T> element)
         {
-            return (T)Activator.CreateInstance(typeof(T),element.Element);
+            return (T)Activator.CreateInstance(typeof(T),element.element);
         }
     }
 

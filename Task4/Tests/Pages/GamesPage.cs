@@ -56,6 +56,7 @@ namespace Tests.Pages
     {
         public GameItem(Link a, IBrowser browser, TimeSpan timeout, AgeVerificationData verificationData, Language ln)
         {
+            this.timeout = timeout;
             this.a = a;
             href = a.Href;
             this.browser = browser;
@@ -63,7 +64,6 @@ namespace Tests.Pages
             Name = a.FindElement<Contaner>(By.XPath(itemName)).InnerHTML;
             DiscountedPrice = GetPrice();
             this.verificationData = verificationData;
-            this.timeout = timeout;
             this.language = ln;
         }
 
@@ -104,7 +104,8 @@ namespace Tests.Pages
         }
         private double GetPrice()
         {
-            string s = a.FindElement<Contaner>(By.XPath(discountedPrice)).InnerHTML;
+            var element = a.FindElement<Contaner>(By.XPath(discountedPrice));
+            string s = element.WaitForExists<Contaner>(timeout).InnerHTML;
             Regex regex = new Regex("[^0-9]");
             s = regex.Replace(s,"");
             return (string.IsNullOrEmpty(s) ? 0 : Convert.ToDouble(s));

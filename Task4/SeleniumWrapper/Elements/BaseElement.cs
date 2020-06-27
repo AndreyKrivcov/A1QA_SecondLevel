@@ -20,9 +20,8 @@ namespace SeleniumWrapper.Elements
             this.element = element;
         }
 
-        private readonly WebElementKeeper element;
-        public virtual bool IsExists =>
-            (element != null && ((WebElementKeeper)element).IsExists);
+        internal readonly WebElementKeeper element;
+        public virtual bool IsExists =>(element as WebElementKeeper).IsExists;
         internal IWebElement IWebElement => Element;
         protected IWebElement Element 
         {
@@ -30,7 +29,7 @@ namespace SeleniumWrapper.Elements
             {
                 if(!IsExists)
                 {
-                    element.CreateElement();
+                    throw new NoSuchElementException();
                 }
                 return element;
             }

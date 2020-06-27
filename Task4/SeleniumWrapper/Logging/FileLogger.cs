@@ -47,7 +47,7 @@ namespace SeleniumWrapper.Logging
                 default: return TextCreator(LogType.Info, msg, testName, testStep);
             }
 
-            return $"{notification};{testName};{testStep?? null};{msg}";
+            return $"{notification};{testName};{(testStep.HasValue ? testStep.Value.ToString() : "")};{msg}";
         }
 
         private static StreamWriter CreateStream(string fileName)

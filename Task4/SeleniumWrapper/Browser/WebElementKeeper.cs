@@ -11,11 +11,11 @@ namespace SeleniumWrapper.Browser
         public WebElementKeeper(Func<IWebElement> creator)
         {
             this.creator = creator;
-            this.element = creator();
+           // this.element = creator();
         }
 
         private IWebElement element;
-        public bool IsExists => element != null;
+        public bool IsExists => Get(()=>element != null);
         private readonly Func<IWebElement> creator;
 
         private T Get<T>(Func<T> f)
@@ -26,7 +26,16 @@ namespace SeleniumWrapper.Browser
         public void CreateElement()
         {
             if(element == null || !(element is WebElementKeeper))
-                element = creator();
+            {
+                try
+                {
+                    element = creator();
+                }
+                catch(Exception e)
+                {
+                    element = null;
+                }
+            }
         }
         private void Get(Action f)
         {

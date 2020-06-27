@@ -6,7 +6,6 @@ using SeleniumWrapper.Logging;
 
 using Tests.Pages;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Tests
 {
@@ -24,6 +23,9 @@ namespace Tests
                 config = new Config();
                 config.Serialization();
             }
+
+            LocalisationKeeper.Configure(config.PathToLocalisationForTest_1, config.PathToLocalisationForTest_2,
+                                        config.PathToMonthLocalisation,config.PathToLanguageNames);
 
             SeleniumWrapper.Utils.Localisation<Month,Language> data = new SeleniumWrapper.Utils.Localisation<Month,Language>();
             data.Deserialization(config.PathToMonthLocalisation);
@@ -73,7 +75,6 @@ namespace Tests
             try
             {
                 homePage.InstallationPage.Download();
-                LocalisationKeeper.LocalisationForTest_1.Serialization(config.PathToLocalisationForTest_1);
             }
             catch(Exception e)
             {

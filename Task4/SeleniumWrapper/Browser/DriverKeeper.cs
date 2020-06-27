@@ -118,20 +118,4 @@ namespace SeleniumWrapper.Browser
         public IJavaScriptExecutor JavaScriptExecutor => (IJavaScriptExecutor)Driver;
         public IWebDriver WrappedDriver => Driver;
     }
-
-    /*internal static class ElementFinder
-    {
-        public static List<T> FindElements<T>(Func<IEnumerable<IWebElement>> inputElementCreator, 
-                                              Func<int,T> outputElementCreator)
-        {
-            var data = inputElementCreator();
-            List<T> ans = new List<T>();
-            for (int i = 0; i < data.Count(); i++)
-            {
-                ans.Add(outputElementCreator(i));
-            }
-
-            return ans;
-        }
-    }*/
 }
