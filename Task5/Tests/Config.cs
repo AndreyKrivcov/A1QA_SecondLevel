@@ -3,7 +3,6 @@ using System.Xml.Serialization;
 using System.IO;
 
 using SeleniumWrapper.BrowserFabrics;
-using Tests.Pages;
 
 namespace Tests
 {
@@ -18,16 +17,12 @@ namespace Tests
         public string MainUrl { get; set;} = "https://store.steampowered.com/";
         [XmlElement("UrlOfDownloadingPage")]
         public string DownloadUrl { get; set;} = "https://store.steampowered.com/about/";
-        [XmlElement]
-        public Language Language { get; set;} = Language.En;
         [XmlElement("WaitForSeconds")]
         public uint TimeautSeconds { get; set;} = 60;
         [XmlElement("DownloadingDirectory")]
         public string PathToDownload { get; set;} = "/home/andrey/Загрузки/";
         [XmlElement("DayOfBirth")]
         public int Day { get; set;} = 31;
-        [XmlElement("MonthOfBirth")]
-        public Month Month {get; set;} = Month.October;
         [XmlElement("YearOfBirth")]
         public int Year { get; set;} = 1991; 
         [XmlElement("PathToLocatlisation__Test_1")]
