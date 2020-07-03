@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LogFilePath>MyLogs.csv</LogFilePath>
+  <BrowserType>Chrome</BrowserType>
+  <UrlOfMainPage>https://store.steampowered.com/</UrlOfMainPage>
+  <UrlOfDownloadingPage>https://store.steampowered.com/about/</UrlOfDownloadingPage>
+  <Language>En</Language>
+  <WaitForSeconds>60</WaitForSeconds>
+  <DownloadingDirectory>/home/andrey/Загрузки/</DownloadingDirectory>
+  <DayOfBirth>31</DayOfBirth>
+  <MonthOfBirth>October</MonthOfBirth>
+  <YearOfBirth>1991</YearOfBirth>
+  <PathToLocatlisation__Test_1>../../../../Test_1_Localisation.txt</PathToLocatlisation__Test_1>
+  <PathToLocatlisation__Test_2>../../../../Test_2_Localisation.txt</PathToLocatlisation__Test_2>
+  <PathToLocatlisation__MonthNames>../../../../MonthNames_Localisation.txt</PathToLocatlisation__MonthNames>
+  <PathToLocatlisation__LanguageNames>../../../../LanguageNames_Localisation.txt</PathToLocatlisation__LanguageNames>
+</Settings>
