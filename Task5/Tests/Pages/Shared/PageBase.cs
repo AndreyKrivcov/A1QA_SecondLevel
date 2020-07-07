@@ -10,7 +10,13 @@ namespace Tests.Pages.Shared
             Headder = GetHeadder();
         }
         public string Headder { get; }
-        public MainMenue MainMenue { get; } = new MainMenue();
+        public Menue MainMenue { get; } = new Menue();
         protected abstract string GetHeadder();
+
+        public class Menue
+        {
+            public ResearchPage Research => throw new NotImplementedException();
+            public HomePage Home => throw new NotImplementedException();
+        }
     }
 }
