@@ -40,7 +40,7 @@ namespace Tests.Pages
         public class CarSelectPopUp
         {
             public CarsSelector CarSelector => throw new NotImplementedException();
-            bool IsOpened => throw new NotImplementedException();
+            public void WaitForOpen() => throw new NotImplementedException();
             public void Done()
             {
                 throw new NotImplementedException();

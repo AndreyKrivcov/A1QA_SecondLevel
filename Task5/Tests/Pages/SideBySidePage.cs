@@ -7,7 +7,7 @@ namespace Tests.Pages
     class SideBySidePage : PageBase
     {
         public CarsSelector CarsSelector => throw new NotImplementedException();
-        public ComparationPage StartComparation()
+        public ComparationPage StartComparing()
         {
             throw new NotImplementedException();
         }

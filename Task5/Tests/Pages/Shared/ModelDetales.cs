@@ -7,6 +7,10 @@ namespace Tests.Pages.Shared
     {
         public string Engine { get; set; }
         public string Transmission { get; set; }
+
+        public int Year { get; set; }
+        public string Make { get; set; }
+        public string Model { get; set; }
         public static bool operator ==(ModelDetales x, ModelDetales y)
         {
             if (x is null && y is null) 
@@ -34,5 +38,10 @@ namespace Tests.Pages.Shared
         }
         
         public override int GetHashCode() => base.GetHashCode();
+
+        public override string ToString()
+        {
+            return $"Car: \"{Year} {Make} {Model}\" | Engine: \"{Engine}\", Transmission: \"{Transmission}\"";
+        }
     }
 }
