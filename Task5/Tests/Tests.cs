@@ -56,7 +56,7 @@ namespace Tests
                 Dictionary<string, ModelDetales> carsKeeper = new Dictionary<string, ModelDetales>();
 
                 loggers.Log(LogType.Info, "Open home page", method, testStep);
-                HomePage home = new HomePage();
+                HomePage home = new HomePage(TimeSpan.FromSeconds(config.TimeautSeconds), loggers.loggers.ToArray());
                 Assert.AreEqual(home.Headder, headders.HomePage);
 
                 loggers.Log(LogType.Info, "Select random cars", method, testStep);
@@ -115,7 +115,7 @@ namespace Tests
             selector.Year.Selected = year.ToString();
         }
 
-        KeyValuePair<string,ModelDetales> GetCarDetales(HomePage home, KeyValuePair<string, ModelDetales>? lastSelected, int testStep)
+        KeyValuePair<string,ModelDetales> GetCarDetales(HomePage home, KeyValuePair<string, ModelDetales>? lastSelected, int testStep, int recursionCounter = 0)
         {
             string method = System.Reflection.MethodBase.GetCurrentMethod().Name;
 
@@ -123,13 +123,21 @@ namespace Tests
             ResearchPage research = home.MainMenue.Research;
             Assert.AreEqual(research.Headder,headders.ResearchPage);
 
-            string selectCar()
+            string selectCar(int n = 0)
             {
                 string ans = SelectRandomCar(research.CarsSelector);
                 if(lastSelected.HasValue && ans == lastSelected.Value.Key)
                 {
-                    loggers.Log(LogType.Info, "Selectted car has already been selected. Useing recursion to select new car", method, testStep);
-                    return selectCar();
+                    if(n<10)
+                    {
+                        loggers.Log(LogType.Warning, $"Selectted car has already been selected. Useing recursion try #{n} to select new car", method, testStep);
+                        return selectCar(++n);
+                    }
+                    else
+                    {
+                        loggers.Log(LogType.Fatal, $"Failed after recursion try #{n} to select new car", method, testStep);
+                        Assert.Fail();
+                    }
                 }
 
                 return ans;
@@ -142,8 +150,16 @@ namespace Tests
 
             if(!carPage.IsTrimAvailible)
             {
-                loggers.Log(LogType.Info, "This car don`t has \"Trim\" oprtion. Using recursion to select new car ", method, testStep);
-                return GetCarDetales(carPage.MainMenue.Home, lastSelected, testStep);
+                if(recursionCounter < 10)
+                {
+                    loggers.Log(LogType.Warning, $"This car don`t has \"Trim\" oprtion. Using recursion try #{recursionCounter} to select new car ", method, testStep);
+                    return GetCarDetales(carPage.MainMenue.Home, lastSelected, testStep,++recursionCounter);
+                }
+                else
+                {
+                    loggers.Log(LogType.Fatal, $"Failed after recursion try #{recursionCounter} to select new car ", method, testStep);
+                    Assert.Fail();
+                }
             }
             
             loggers.Log(LogType.Info, "Open Trim page", method, testStep);

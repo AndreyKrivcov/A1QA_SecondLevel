@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 
-using SeleniumWrapper;
+using SeleniumWrapper.Logging;
 using Tests.Pages.Shared;
 
 namespace Tests.Pages
 {
     class ComparationPage : PageBase
     {
-        public ComparationPage()
+        public ComparationPage(TimeSpan timeout, Logger[] loggers) : base(timeout,loggers)
         {
             carSelector = new CarSelectPopUp();
             carSelector.SelectedCar += AddNewDetales; 

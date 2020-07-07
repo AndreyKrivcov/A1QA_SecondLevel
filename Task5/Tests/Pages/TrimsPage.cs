@@ -1,12 +1,12 @@
 using System;
-using SeleniumWrapper;
+using SeleniumWrapper.Logging;
 using Tests.Pages.Shared;
 
 namespace Tests.Pages
 {
     class TrimsPage : PageBase
     {
-        public TrimsPage(int year, string make, string model)
+        public TrimsPage(int year, string make, string model,TimeSpan timeout, Logger[] loggers) : base(timeout, loggers)
         {
             Year = year;
             Make = make;
