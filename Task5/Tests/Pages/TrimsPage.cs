@@ -48,8 +48,8 @@ namespace Tests.Pages
         {
             return new ModelDetales
             {
-                Engine = page.Engine,
-                Transmission = page.Transmission,
+                Engine = new []{ page.Engine },
+                Transmission = new []{ page.Transmission },
                 Make = page.Make,
                 Model = page.Model,
                 Year = page.Year

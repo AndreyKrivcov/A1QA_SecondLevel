@@ -6,6 +6,7 @@ using SeleniumWrapper.Logging;
 using SeleniumWrapper.Elements;
 using Tests.Pages.Shared;
 using SeleniumWrapper.Utils;
+using System.Collections.ObjectModel;
 
 namespace Tests.Pages
 {
@@ -13,6 +14,8 @@ namespace Tests.Pages
     {
         public ComparationPage(TimeSpan timeout, Logger[] loggers,string make, string model, int year) : base(timeout,loggers)
         {
+            engineLocator = string.Format(genericLocator,"Engine");
+            transmissionLocator = string.Format(genericLocator,"Transmission");
             carSelector = new CarSelectPopUp(settings.Browser,timeout);
             carSelector.SelectedCar += AddNewDetales; 
             AddNewDetales(make,model,year);
@@ -24,8 +27,11 @@ namespace Tests.Pages
 
         private readonly string headderLocator = "//h1[@id=\"main-headline\"]";
         private readonly string addNewCarLocator = "//a[@id=\"add-from-your-favorite-cars-link\"]";
-       // private readonly string carNameLocator = "(//div[@ng-switch-when=\"research-car-mmyt\"])[last()]";
-     //   private readonly string engineLocator = "((//div[@class=\"info-column\"])[6]//div)[last()-1]/p";
+
+        private readonly string genericLocator = "(//div[@class=\"header-column\"]//p[contains(text(), \"{0}\")]/../following::div[1]//div)[last()-1]//p";
+        private readonly string engineLocator;
+        private readonly string transmissionLocator;
+        private readonly string carNameLocator = "(//div[@ng-switch-when=\"research-car-mmyt\"]//h4)[last()]";
 
         protected override string GetHeadder()
         {
@@ -42,20 +48,45 @@ namespace Tests.Pages
             return carSelector;
         }
 
-        public Dictionary<string, ModelDetales> ComparationDetales => throw new NotImplementedException();
+        public Dictionary<string, ModelDetales> ComparationDetales { get; } = new Dictionary<string, ModelDetales>();
 
         private void AddNewDetales(string make, string model, int year)
         {
-          /*  string carName = settings.Browser.Window.FindElement<Text>(By.XPath(carNameLocator))
+            settings.Browser.Window.WaitForLoading(timeout);
+
+            string carName = settings.Browser.Window.FindElement<Text>(By.XPath(carNameLocator))
                                                     .WaitForDisplayed<Text>(timeout).InnerHTML;
+            if(ComparationDetales.Count > 0 && ComparationDetales.ContainsKey(carName))
+            {
+                BrowserWait.Wait(timeout,b =>
+                {
+                    carName = settings.Browser.Window.FindElement<Text>(By.XPath(carNameLocator))
+                                                    .WaitForDisplayed<Text>(timeout).InnerHTML;
+                    return !ComparationDetales.ContainsKey(carName);
+                });
+            }
+
+            string[] getPossibleValues(ReadOnlyCollection<Text> collection)
+            {
+                List<string> ans= new List<string>();
+                foreach (var item in collection)
+                {
+                    ans.Add(item.InnerHTML.Split('<')[0]);
+                }
+
+                return ans.ToArray();
+            }
+
             ModelDetales carDetales = new ModelDetales
             {
                 Make = make,
                 Model = model,
                 Year = year,
-                Engine = settings.Browser.Window.FindElement<Text>(By.XPath(engineLocator))
-                                                .WaitForDisplayed<Text>(timeout).InnerHTML,
-            }*/
+                Engine = getPossibleValues(settings.Browser.Window.FindElements<Text>(By.XPath(engineLocator))),
+                Transmission = getPossibleValues(settings.Browser.Window.FindElements<Text>(By.XPath(transmissionLocator)))
+            };
+
+            ComparationDetales.Add(carName,carDetales);
         }
 
         public class CarSelectPopUp
@@ -63,6 +94,7 @@ namespace Tests.Pages
             public CarSelectPopUp(IBrowser browser, TimeSpan timeout)
             {
                 this.timeout = timeout;
+                this.browser = browser;
 
                 CarSelector = new CarsSelector(
                     browser.Window.FindElement<Select>(By.XPath(makeLocator)),
@@ -75,6 +107,7 @@ namespace Tests.Pages
             }
 
             private readonly TimeSpan timeout;
+            private readonly IBrowser browser;
             
             private readonly string makeLocator = "//select[@id=\"make-dropdown\"]";
             private readonly string modelLocator = "//select[@id=\"model-dropdown\"]";
@@ -103,10 +136,7 @@ namespace Tests.Pages
 
             public void WaitForDisplayed()
             {
-                BrowserWait.Wait(timeout,b=>
-                {
-                    return CarSelector.Displayed && doneBtn.Displayed;
-                },null,typeof(NoSuchElementException));
+               browser.Window.WaitForLoading(timeout);
             }
 
             public event Action<string, string, int> SelectedCar;

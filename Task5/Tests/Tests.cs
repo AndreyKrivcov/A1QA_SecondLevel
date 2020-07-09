@@ -52,7 +52,6 @@ namespace Tests
             int testStep = 1;
             try
             {
-
                 Dictionary<string, ModelDetales> carsKeeper = new Dictionary<string, ModelDetales>();
 
                 loggers.Log(LogType.Info, "Open home page", method, testStep);
@@ -95,9 +94,9 @@ namespace Tests
                 loggers.Log(LogType.Info, "Compare cars", method, testStep);
                 foreach (var expectedCar in carsKeeper)
                 {
-                    var actualCar = comparationPage.ComparationDetales[expectedCar.Key];
-                    Assert.True(expectedCar.Value == actualCar,$"Expected: {expectedCar.Value.ToString()} \n Actual: {actualCar.ToString()}");
+                    Assert.AreEqual(expectedCar.Value,comparationPage.ComparationDetales[expectedCar.Key]);
                 }           
+                loggers.Log(LogType.Info,"Test finishes sucsessfyly",method,null);
             }
             catch(Exception e)
             {

@@ -1,12 +1,13 @@
 using System;
+using System.Linq;
 
 namespace Tests.Pages.Shared
 
 {
     class ModelDetales
     {
-        public string Engine { get; set; }
-        public string Transmission { get; set; }
+        public string[] Engine { get; set; }
+        public string[] Transmission { get; set; }
 
         public int Year { get; set; }
         public string Make { get; set; }
@@ -23,7 +24,7 @@ namespace Tests.Pages.Shared
             }
             else 
             {
-                return x.Engine == y.Engine && x.Transmission == y.Transmission;
+                return x.Engine.IsAnyRepeated(y.Engine) && x.Transmission.IsAnyRepeated(y.Transmission);
             }
         }
         public static bool operator !=(ModelDetales x, ModelDetales y) => !(x == y);
@@ -41,7 +42,30 @@ namespace Tests.Pages.Shared
 
         public override string ToString()
         {
-            return $"Car: \"{Year} {Make} {Model}\" | Engine: \"{Engine}\", Transmission: \"{Transmission}\"";
+            return $"Car: \"{Year} {Make} {Model}\" | Engine: \"{string.Join(',',Engine)}\", Transmission: \"{string.Join(',',Transmission)}\"";
+        }
+    }
+
+    static class StringArrayExtention
+    {
+        public static bool IsAnyRepeated(this string[] current, string[] other)
+        {
+            if(current.Length == 0 || other.Length == 0)
+            {
+                return false;
+            }
+
+            bool ans = false;
+            foreach (var item in current)
+            {
+                if(other.Contains(item))
+                {
+                    ans = true;
+                    break;
+                }
+            }
+
+            return ans;
         }
     }
 }

@@ -30,8 +30,6 @@ namespace Tests.Pages.Shared
                        Year.Selected.ToLower() != forbiddenValues.Year.ToLower();
             }
         }
-
-        public bool Displayed => Make.Displayed && Model.Displayed && Year.Displayed;
     }
 
     struct ForbiddenValues
