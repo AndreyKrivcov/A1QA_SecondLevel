@@ -17,17 +17,10 @@ namespace Tests.Pages
 
         protected override string GetHeadder()
         {
-            string headder = settings.Browser.Window.FindElement<GenericElement>(By.XPath(headerLocator))
-                                   .WaitForDisplayed<GenericElement>(timeout).InnerHTML;
+            string headder = settings.Browser.Window.FindElement<Text>(By.XPath(headerLocator))
+                                   .WaitForDisplayed<Text>(timeout).InnerHTML;
 
             return headder.Replace("<br>"," ");
-        }
-    }
-
-    class GenericElement : BaseElement
-    {
-        public GenericElement(WebElementKeeper element) : base(element)
-        {
         }
     }
 }

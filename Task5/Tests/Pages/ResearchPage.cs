@@ -55,8 +55,8 @@ namespace Tests.Pages
 
         protected override string GetHeadder()
         {
-            string header = settings.Browser.Window.FindElement<GenericElement>(By.XPath(headerLocator))
-                                                    .WaitForDisplayed<GenericElement>(timeout).InnerHTML;
+            string header = settings.Browser.Window.FindElement<Text>(By.XPath(headerLocator))
+                                                    .WaitForDisplayed<Text>(timeout).InnerHTML;
             return header.Split("<span>")[0];
         }
     }

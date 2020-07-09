@@ -57,7 +57,7 @@ namespace Tests
 
                 loggers.Log(LogType.Info, "Open home page", method, testStep);
                 HomePage home = new HomePage(TimeSpan.FromSeconds(config.TimeautSeconds), loggers.loggers.ToArray());
-                Assert.AreEqual(home.Headder, headders.HomePage);
+                Assert.AreEqual(headders.HomePage,home.Headder);
 
                 loggers.Log(LogType.Info, "Select random cars", method, testStep);
                 var item = GetCarDetales(home, null, testStep);
@@ -67,11 +67,11 @@ namespace Tests
 
                 loggers.Log(LogType.Info, "Open Research page", method, ++testStep);
                 ResearchPage research = home.MainMenue.Research;
-                Assert.AreEqual(research.Headder, headders.ResearchPage);
+                Assert.AreEqual(headders.ResearchPage, research.Headder);
 
                 loggers.Log(LogType.Info, "Open side by side page", method, testStep);
                 SideBySidePage sideBySide = research.SideBySide;
-                Assert.AreEqual(sideBySide.Headder, headders.SideBySide);
+                Assert.AreEqual(headders.SideBySide,sideBySide.Headder);
 
                 loggers.Log(LogType.Info, "Select first car ans open conparation page", method, testStep);
                 SelectCar(sideBySide.CarsSelector,
@@ -79,12 +79,11 @@ namespace Tests
                         carsKeeper.ElementAt(0).Value.Model,
                         carsKeeper.ElementAt(0).Value.Year);
                 ComparationPage comparationPage = sideBySide.StartComparing();
-                Assert.AreEqual(comparationPage.Headder, headders.ComparationPage);
+                Assert.AreEqual(headders.ComparationPage, comparationPage.Headder);
                 Assert.True(comparationPage.ComparationDetales.Keys.Contains(carsKeeper.ElementAt(0).Key));
 
                 loggers.Log(LogType.Info, "Add second car", method, testStep);
                 ComparationPage.CarSelectPopUp carSelector = comparationPage.AddNewCar();
-                carSelector.WaitForOpen();
 
                 SelectCar(carSelector.CarSelector,
                         carsKeeper.ElementAt(1).Value.Make,
@@ -121,7 +120,7 @@ namespace Tests
 
             loggers.Log(LogType.Info, "Open Research page", method, testStep);
             ResearchPage research = home.MainMenue.Research;
-            Assert.AreEqual(research.Headder,headders.ResearchPage);
+            Assert.AreEqual(headders.ResearchPage, research.Headder);
 
             string selectCar(int n = 0)
             {
@@ -164,13 +163,13 @@ namespace Tests
             
             loggers.Log(LogType.Info, "Open Trim page", method, testStep);
             TrimsPage trim = carPage.Compare2Trim;
-            Assert.AreEqual(trim, headders.TrimsPage(carPageHeadder));
+            Assert.AreEqual(headders.TrimsPage(carPageHeadder), trim.Headder);
 
             loggers.Log(LogType.Info, "Select cars detales", method, testStep);
             var ans = new KeyValuePair<string, ModelDetales>(carPageHeadder, (ModelDetales)trim);
 
             loggers.Log(LogType.Info, "Go to the Home page", method, testStep);
-            Assert.AreEqual(trim.MainMenue.Home, headders.HomePage);
+            Assert.AreEqual(headders.HomePage, trim.MainMenue.Home.Headder);
 
             return ans;
         }

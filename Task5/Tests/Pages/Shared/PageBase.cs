@@ -11,6 +11,7 @@ namespace Tests.Pages.Shared
     {
         protected PageBase(TimeSpan timeout, Logger[] loggers, MenuLocators mainMenueLocators = null) : base(null,true, loggers)
         {
+            this.timeout = timeout;
             Headder = GetHeadder();
             MainMenue = new Menue(mainMenueLocators?? new MenuLocators(), settings.Browser,timeout,loggers);
         }

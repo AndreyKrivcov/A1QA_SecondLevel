@@ -35,7 +35,7 @@ namespace Tests
         [XmlElement("ResearchPage")]
         public string ResearchPage { get; set; } = "Make Smart Choices";
         [XmlElement("SideBySidePage")]
-        public string SideBySide { get; set; } = "Compare Cars Side-by-Side";
+        public string SideBySide { get; set; } = " Compare Cars Side-by-Side ";
         public string TrimsPage(string carPageHeadder)
         {
             return $"Compare Trims on the {carPageHeadder}";

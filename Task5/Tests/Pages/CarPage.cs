@@ -1,4 +1,7 @@
 using System;
+
+using OpenQA.Selenium;
+using SeleniumWrapper.Elements;
 using SeleniumWrapper.Logging;
 using Tests.Pages.Shared;
 
@@ -12,14 +15,42 @@ namespace Tests.Pages
             Make = make;
             Model = model;
         }
+
+        private readonly string trimsLocator = "//a[@data-linkname=\"trim-compare\"]";
+        private readonly string headderLocator = "//h1[@class=\"cui-page-section__title\"]";
+
         public int Year { get; }
         public string Make { get; }
         public string Model { get; }
-        public bool IsTrimAvailible => throw new NotImplementedException(); // Compare is Compare2Trim link availible or not. If not, return and try again
-        public TrimsPage Compare2Trim => throw new NotImplementedException();
+
+        private Link Trims => settings.Browser.Window.FindElement<Link>(By.XPath(trimsLocator));
+
+        public bool IsTrimAvailible 
+        {
+            get
+            {
+                try
+                {
+                    return Trims.IsExists;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+        public TrimsPage Compare2Trim 
+        {
+            get
+            {
+                Trims.Click();
+                return new TrimsPage(Year,Make,Model,timeout,loggers.loggers.ToArray());
+            }
+        }
         protected override string GetHeadder()
         {
-            throw new NotImplementedException();
+            return settings.Browser.Window.FindElement<Text>(By.XPath(headderLocator))
+                                          .WaitForDisplayed<Text>(timeout).InnerHTML;
         }
     }
 }

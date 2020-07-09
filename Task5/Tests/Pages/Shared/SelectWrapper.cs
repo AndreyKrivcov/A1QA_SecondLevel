@@ -19,6 +19,9 @@ namespace Tests.Pages.Shared
             get => select.SelectedOption.InnerHTML;
             set => select.SelectByText(value);
         }
+
+        public bool Displayed => select.Disabled;
+
         public ReadOnlyCollection<string> PossibleValues =>
             select.Options.Select(x=>x.InnerHTML).ToList().AsReadOnly();
     }
