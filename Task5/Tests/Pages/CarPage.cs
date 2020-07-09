@@ -16,8 +16,10 @@ namespace Tests.Pages
             Model = model;
         }
 
+#region Locators
         private readonly string trimsLocator = "//a[@data-linkname=\"trim-compare\"]";
         private readonly string headderLocator = "//h1[@class=\"cui-page-section__title\"]";
+#endregion
 
         public int Year { get; }
         public string Make { get; }

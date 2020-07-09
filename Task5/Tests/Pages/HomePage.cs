@@ -13,7 +13,9 @@ namespace Tests.Pages
         {
         }
 
+#region Locators
         private readonly string headerLocator = "//*[@id=\"root\"]/div[2]/section[1]//h1";
+#endregion
 
         protected override string GetHeadder()
         {

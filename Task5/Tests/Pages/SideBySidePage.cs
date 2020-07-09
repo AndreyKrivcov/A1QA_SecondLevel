@@ -19,12 +19,14 @@ namespace Tests.Pages
             );
         }
 
-
+#region Locators
         private readonly string headdersLocator = "//h1[@class=\"cui-alpha compare-head-h1-semi\"]";
         private readonly string makeLocator = "//select[@id=\"make-dropdown\"]";
         private readonly string modelLocator = "//select[@id=\"model-dropdown\"]";
         private readonly string yearLocator = "//select[@id=\"year-dropdown\"]";
         private readonly string doneLocator = "//button[@class=\"done-button\"]";
+#endregion
+
         private readonly ForbiddenValues selectorsForbiddenValues = new ForbiddenValues
         {
             Make = "",

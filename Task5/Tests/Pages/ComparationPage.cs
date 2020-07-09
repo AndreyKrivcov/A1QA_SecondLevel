@@ -25,14 +25,14 @@ namespace Tests.Pages
             carSelector.SelectedCar-=AddNewDetales;
         }
 
+#region Locators
         private readonly string headderLocator = "//h1[@id=\"main-headline\"]";
         private readonly string addNewCarLocator = "//a[@id=\"add-from-your-favorite-cars-link\"]";
-
         private readonly string genericLocator = "(//div[@class=\"header-column\"]//p[contains(text(), \"{0}\")]/../following::div[1]//div)[last()-1]//p";
         private readonly string engineLocator;
         private readonly string transmissionLocator;
         private readonly string carNameLocator = "(//div[@ng-switch-when=\"research-car-mmyt\"]//h4)[last()]";
-
+#endregion
         protected override string GetHeadder()
         {
             return settings.Browser.Window.FindElement<Text>(By.XPath(headderLocator))

@@ -15,9 +15,11 @@ namespace Tests.Pages
             Model = model;
         }
 
+#region Locators
         private readonly string headderLocator = "//div[@class=\"trim-header__title\"]/h1";
         private readonly string engineLocator = "(//div[@class=\"trim-card\"])[2]/div[4]";
         private readonly string transmissionLocator = "(//div[@class=\"trim-card\"])[2]/div[5]";
+#endregion
 
         public int Year { get; }
         public string Make { get; }
