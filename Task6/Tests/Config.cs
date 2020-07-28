@@ -12,11 +12,9 @@ namespace Tests
         [XmlElement("PathToFileWithExpectedResults")]
         public string ExpectedAnswersAndTitles {get;set;} = "ExpectedResults.xml";
         [XmlElement("BrowserType")]
-        public BrowserType Browser { get; set;} = BrowserType.Chrome;
+        public BrowserType Browser { get; set;} = BrowserType.FireFox;
         [XmlElement("UrlOfMainPage")]
-        public string MainUrl { get; set;} = "http://the-internet.herokuapp.com/javascript_alerts";
-        [XmlElement("WaitForSeconds")]
-        public uint TimeautSeconds { get; set;} = 60;        
+        public string Url { get; set;} = "http://the-internet.herokuapp.com/javascript_alerts";
     }
 
     public class ExpectedResults : Serializer<ExpectedResults>

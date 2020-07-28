@@ -20,10 +20,17 @@ namespace Tests
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
 
-            browser = BrowserFabric.GetBrowser(config.Browser);
-            browser.Window.Maximize();
-            browser.Window.Url = config.MainUrl;
-           
+            try
+            {
+                browser = BrowserFabric.GetBrowser(config.Browser);
+                browser.Window.Maximize();
+                browser.Window.Url = config.Url;
+            }
+            catch(Exception e)
+            {
+                loggers.Log(e,"Test before",null);
+                Assert.Fail();
+            }
         }
 
         [TearDown]
@@ -47,7 +54,7 @@ namespace Tests
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
-                MainPage page = new MainPage(loggers.loggers.ToArray());
+                AlertsPage page = new AlertsPage(loggers.loggers.ToArray());
                 
                 loggers.Log(LogType.Info,"Alert",method,1);
                 SimpleAlert simpleAlert = page.SimpleAlert();
@@ -72,14 +79,18 @@ namespace Tests
             catch(Exception e)
             {
                 loggers.Log(e,method,0);
+                Assert.Fail();
             }
 
             loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
         }
 
-        private string RandomMessage()
+        Random random = new Random();
+        private string RandomMessage(int length = 50)
         {
-            throw new System.NotImplementedException();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }
