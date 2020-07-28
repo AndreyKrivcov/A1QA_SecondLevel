@@ -15,6 +15,7 @@ namespace Tests
         public void Setup()
         {
             config = Config.InstanceOrDeserialize(fileWithSettings);
+            expectedResults = ExpectedResults.InstanceOrDeserialize(config.ExpectedAnswersAndTitles);
 
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
@@ -36,6 +37,7 @@ namespace Tests
         readonly LoggersCollection loggers = new LoggersCollection();
         readonly string fileWithSettings = "TestConfigurationFile.txt";
         private Config config;
+        private ExpectedResults expectedResults;
 #endregion
 
         [Test]
@@ -45,7 +47,27 @@ namespace Tests
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
-               
+                MainPage page = new MainPage(loggers.loggers.ToArray());
+                
+                loggers.Log(LogType.Info,"Alert",method,1);
+                SimpleAlert simpleAlert = page.SimpleAlert();
+                Assert.AreEqual(expectedResults.AlertTitle, simpleAlert.Text);
+                simpleAlert.Confirm();
+                Assert.AreEqual(expectedResults.AlertAnswer, page.Answer);
+
+                loggers.Log(LogType.Info, "Confirm", method, 2);
+                ConfirmAlert confirmAlert = page.ConfirmAlert();
+                Assert.AreEqual(expectedResults.ConfirmTitle,confirmAlert.Text);
+                confirmAlert.Confirm();
+                Assert.AreEqual(expectedResults.ConfirmPositiveAnswer, page.Answer);
+
+                loggers.Log(LogType.Info, "Prompt", method, 3);
+                PromtAlert promtAlert = page.PromtAlert();
+                Assert.AreEqual(expectedResults.PromptTitle, promtAlert.Text);
+                string msg = RandomMessage();
+                promtAlert.Message = msg;
+                promtAlert.Confirm();
+                Assert.AreEqual(expectedResults.PromptAnswer(msg), page.Answer);
             }
             catch(Exception e)
             {
@@ -53,6 +75,11 @@ namespace Tests
             }
 
             loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
+        }
+
+        private string RandomMessage()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
