@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
@@ -28,6 +30,17 @@ namespace SeleniumWrapper.Browser
 
         IMouseActions MouseActions { get; }
         IKeyActions KeyActions { get; }
+        ICookieManager Cookie { get; }
+    }
+
+    public interface ICookieManager : System.Collections.Generic.IEnumerable<Cookie>
+    {
+        ReadOnlyCollection<Cookie> AsReadonly();
+        void Add(Cookie cookie);
+        void Clear();
+        void Delete(Cookie cookie);
+        void Delete(string name);
+        Cookie this[string name] { get; }
     }
 
     public interface IMouseActions  : IAction
