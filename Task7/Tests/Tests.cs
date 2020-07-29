@@ -15,14 +15,21 @@ namespace Tests
         public void Setup()
         {
             config = Config.InstanceOrDeserialize(fileWithSettings);
+            cookieData = CookieData.InstanceOrDeserialize(config.CookieDataFile);
 
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
 
-            browser = BrowserFabric.GetBrowser(config.Browser);
-            browser.Window.Maximize();
-            browser.Window.Url = config.MainUrl;
-           
+            try
+            {
+                browser = BrowserFabric.GetBrowser(config.Browser);
+                browser.Window.Maximize();
+                browser.Window.Url = config.MainUrl;
+            }
+            catch(Exception e)
+            {
+                loggers.Log(e,"TestBefore",null);
+            }
         }
 
         [TearDown]
@@ -36,6 +43,7 @@ namespace Tests
         readonly LoggersCollection loggers = new LoggersCollection();
         readonly string fileWithSettings = "TestConfigurationFile.txt";
         private Config config;
+        private CookieData cookieData;
 #endregion
 
         [Test]
@@ -45,7 +53,8 @@ namespace Tests
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
-               
+               var page = new ExamplePage();
+               page.Cookies.Max(x=> x.Name);
             }
             catch(Exception e)
             {
