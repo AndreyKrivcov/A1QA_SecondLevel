@@ -33,14 +33,14 @@ namespace SeleniumWrapper.Browser
         ICookieManager Cookie { get; }
     }
 
-    public interface ICookieManager : System.Collections.Generic.IEnumerable<Cookie>
+    public interface ICookieManager
     {
         ReadOnlyCollection<Cookie> AsReadonly();
         void Add(Cookie cookie);
         void Clear();
         void Delete(Cookie cookie);
         void Delete(string name);
-        Cookie this[string name] { get; }
+        Cookie this[string name] { get; set; }
     }
 
     public interface IMouseActions  : IAction
