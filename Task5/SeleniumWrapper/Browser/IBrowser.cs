@@ -33,7 +33,7 @@ namespace SeleniumWrapper.Browser
         ICookieManager Cookie { get; }
     }
 
-    public interface ICookieManager : System.Collections.Generic.IEnumerable<Cookie>
+    public interface ICookieManager
     {
         ReadOnlyCollection<Cookie> AsReadonly();
         void Add(Cookie cookie);

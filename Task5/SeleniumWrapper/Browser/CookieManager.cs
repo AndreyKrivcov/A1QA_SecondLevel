@@ -25,9 +25,6 @@ namespace SeleniumWrapper.Browser
             public void Delete(Cookie cookie) => this.cookie.DeleteCookie(cookie);
 
             public void Delete(string name) => cookie.DeleteCookieNamed(name);
-            public IEnumerator<Cookie> GetEnumerator() => cookie.AllCookies.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => cookie.AllCookies.GetEnumerator();
         }
     }
 }
