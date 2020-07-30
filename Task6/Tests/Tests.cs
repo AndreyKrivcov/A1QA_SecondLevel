@@ -48,7 +48,7 @@ namespace Tests
 #endregion
 
         [Test]
-        public void Test_Cars()
+        public void Test_ModalWindows()
         {
             string method = System.Reflection.MethodBase.GetCurrentMethod().Name;
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
