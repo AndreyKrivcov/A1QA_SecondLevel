@@ -13,7 +13,7 @@ namespace Tests
         public string LogFileName { get; set;} = "MyLogs.csv";
         public string CookieDataFile {get;set;} = "CookiData.xml";
         [XmlElement("BrowserType")]
-        public BrowserType Browser { get; set;} = BrowserType.FireFox;
+        public BrowserType Browser { get; set;} = BrowserType.Chrome;
         [XmlElement("UrlOfMainPage")]
         public string MainUrl { get; set;} = "http://example.com";
     }
