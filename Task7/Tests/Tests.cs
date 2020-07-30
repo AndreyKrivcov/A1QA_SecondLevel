@@ -53,6 +53,7 @@ namespace Tests
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
+                loggers.Log(LogType.Info, "Add cookie", method, 1);
                 var page = new ExamplePage();
                 page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.First.Key, cookieData.First.Value));
                 page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.Second.Key, cookieData.Second.Value));
@@ -63,13 +64,16 @@ namespace Tests
                 Assert.True(cookies.Any(x=>x.Name == cookieData.Second.Key && x.Value == cookieData.Second.Value));
                 Assert.True(cookies.Any(x=>x.Name == cookieData.Third.Key && x.Value == cookieData.Third.Value));
 
+                loggers.Log(LogType.Info, "Delete first cookie", method, 2);
                 page.Cookies.Delete(cookieData.First.Key);
                 cookies = page.Cookies.AsReadonly();
                 Assert.False(cookies.Any(x=>x.Name == cookieData.First.Key));
 
+                loggers.Log(LogType.Info, "Update third cookie", method, 3);
                 page.Cookies[cookieData.Third.Key] = new OpenQA.Selenium.Cookie(cookieData.Third.Key, cookieData.NewCookie3Value);
                 Assert.AreEqual(cookieData.NewCookie3Value, page.Cookies[cookieData.Third.Key].Value);
 
+                loggers.Log(LogType.Info, "Clear cookie", method, 4);
                 page.Cookies.Clear();
                 Assert.AreEqual(page.Cookies.AsReadonly().Count, 0);
 
