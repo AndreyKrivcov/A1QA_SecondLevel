@@ -19,9 +19,16 @@ namespace Tests
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
 
-            browser = BrowserFabric.GetBrowser(config.Browser);
-            browser.Window.Maximize();
-            browser.Window.Url = config.MainUrl;
+            try
+            {
+                browser = BrowserFabric.GetBrowser(config.Browser);
+                browser.Window.Maximize();
+                browser.Window.Url = config.MainUrl;
+            }
+            catch(Exception e)
+            {
+                loggers.Log(e,"Test before", null);
+            }
            
         }
 
@@ -39,17 +46,17 @@ namespace Tests
 #endregion
 
         [Test]
-        public void Test_Cars()
+        public void Test()
         {
             string method = System.Reflection.MethodBase.GetCurrentMethod().Name;
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
-               
+             
             }
             catch(Exception e)
             {
-                loggers.Log(e,method,0);
+                loggers.Log(e,method,null);
             }
 
             loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
