@@ -12,8 +12,12 @@ namespace Tests
         [XmlElement("BrowserType")]
         public BrowserType Browser { get; set;} = BrowserType.Chrome;
         [XmlElement("UrlOfMainPage")]
-        public string MainUrl { get; set;} = "";
-        [XmlElement("WaitForSeconds")]
-        public uint TimeautSeconds { get; set;} = 60;        
+        public string MainUrl { get; set;} = "http://the-internet.herokuapp.com/iframe";
+        public string FileWithExpectedValues {get;set;} = "ExpectedValues.xml";
+    }
+
+    public class ExpectedValues : Serializer<ExpectedValues>
+    {
+        public string Title {get;set;} = "An iFrame containing the TinyMCE WYSIWYG Editor";
     }
 }

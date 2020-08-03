@@ -14,8 +14,6 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            config = Config.InstanceOrDeserialize(fileWithSettings);
-
             loggers.Add(new [] {LoggerCreator.GetLogger(LoggerTypes.ConsoleLogger, null),
                                 LoggerCreator.GetLogger(LoggerTypes.FileLogger,null,config.LogFileName)});
 
@@ -40,9 +38,10 @@ namespace Tests
 
 #region Settings
         IBrowser browser;
-        readonly LoggersCollection loggers = new LoggersCollection();
-        readonly string fileWithSettings = "TestConfigurationFile.txt";
-        private Config config;
+        private readonly LoggersCollection loggers = new LoggersCollection();
+        private readonly static string fileWithSettings = "TestConfigurationFile.txt";
+        private readonly static Config config = Config.InstanceOrDeserialize(fileWithSettings);
+        private readonly static ExpectedValues expectedValues = ExpectedValues.InstanceOrDeserialize(config.FileWithExpectedValues);
 #endregion
 
         [Test]
@@ -52,7 +51,7 @@ namespace Tests
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
-
+                
             }
             catch(Exception e)
             {
