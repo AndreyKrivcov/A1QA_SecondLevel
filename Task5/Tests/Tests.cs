@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 using NUnit.Framework;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Logging;
 using SeleniumWrapper.BrowserFabrics;
+
+using LogType = SeleniumWrapper.Logging.LogType;
 
 namespace Tests
 {
@@ -52,13 +52,13 @@ namespace Tests
             loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
             try
             {
-             
+
             }
             catch(Exception e)
             {
                 loggers.Log(e,method,null);
+                Assert.Fail();
             }
-
             loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
         }
     }
