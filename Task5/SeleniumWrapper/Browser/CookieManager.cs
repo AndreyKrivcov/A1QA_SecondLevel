@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,10 @@ namespace SeleniumWrapper.Browser
             public Cookie this[string name] => cookie.GetCookieNamed(name);
 
             public void Add(Cookie cookie) => this.cookie.AddCookie(cookie);
+            public void Add(string name, string value) => Add(new Cookie(name, value));
+            public void Add(string name, string value, string path) => Add(new Cookie(name, value, path));
+            public void Add(string name, string value, string path, DateTime? expiry) => Add(new Cookie(name, value, path, expiry));
+            public void Add(string name, string value, string domain, string path, DateTime? expiry) => Add(new Cookie(name, value, domain, path, expiry));
 
             public ReadOnlyCollection<Cookie> AsReadonly() =>  cookie.AllCookies;
 
