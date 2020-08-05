@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<Localisation>
-    <Item Name="Language">
-        <Param Language="Ru">Русский (Russian)</Param>
-        <Param Language="En">English (английский)</Param>
-    </Item>
-</Localisation>
