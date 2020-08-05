@@ -55,9 +55,9 @@ namespace Tests
             {
                 loggers.Log(LogType.Info, "Add cookie", method, 1);
                 var page = new ExamplePage();
-                page.Cookies.Add("",""); //( cookieData.First.Key, cookieData.First.Value));
-                page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.Second.Key, cookieData.Second.Value));
-                page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.Third.Key, cookieData.Third.Value));
+                page.Cookies.Add( cookieData.First.Key, cookieData.First.Value);
+                page.Cookies.Add(cookieData.Second.Key, cookieData.Second.Value);
+                page.Cookies.Add(cookieData.Third.Key, cookieData.Third.Value);
 
                 var cookies = page.Cookies.AsReadonly();
                 Assert.True(cookies.Any(x=>x.Name == cookieData.First.Key && x.Value == cookieData.First.Value));
