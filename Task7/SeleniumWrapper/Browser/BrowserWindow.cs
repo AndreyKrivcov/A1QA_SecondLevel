@@ -65,6 +65,12 @@ namespace SeleniumWrapper.Browser
         {
             DriverKeeper.GetDriver.JavaScriptExecutor.ExecuteScript($"window.scrollBy({x},{y})");
         }
+
+        public void ToFrame(int frameIndex) => DriverKeeper.GetDriver.SwitchTo().Frame(frameIndex);
+        public void ToFrame(string frameName) => DriverKeeper.GetDriver.SwitchTo().Frame(frameName);
+        public void ToFrame(BaseElement element) => DriverKeeper.GetDriver.SwitchTo().Frame(element.IWebElement);
+        public void ToParentFrame() => DriverKeeper.GetDriver.SwitchTo().ParentFrame();
+
         public void WaitForLoading(TimeSpan timeout, TimeSpan? sleep = null, params Type[] ignoringExceptions)
         {
             WebDriverWait wait = (sleep.HasValue ? new WebDriverWait(new SystemClock(), DriverKeeper.GetDriver,timeout, sleep.Value)
