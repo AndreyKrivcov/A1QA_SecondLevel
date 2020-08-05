@@ -52,7 +52,7 @@ namespace Tests
         public void Test()
         {
             string method = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
+            loggers.StartTest(method);
             try
             {
                 loggers.Log(LogType.Info, "Try to Login", method,1);
@@ -68,7 +68,7 @@ namespace Tests
                 Assert.Fail();
             }
 
-            loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
+            loggers.EndTest(method);
         }
     }
 }
