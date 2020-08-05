@@ -101,7 +101,6 @@ namespace SeleniumWrapper.Logging
             }
         }
 
-
         public void Log(Exception ex, string testName, int? testStep)
         {
             Log(LogType.Error, ExceprionMsg(ex),testName, testStep);
@@ -115,6 +114,25 @@ namespace SeleniumWrapper.Logging
         {
             return $"Message : {ex.Message} + || Stack trace : {ex.StackTrace}";
         }
+
+        public void StartTest(string testName)
+        {
+            Log(LogType.Info, $"================================ {testName} Started ================================", testName,null);
+        } 
+        public void EndTest(string testName)
+        {
+            Log(LogType.Info, $"================================ {testName} Finished ================================", testName,null);
+        } 
+        public void ThreadSaveStartTest(string testName)
+        {
+            lock(locker)
+                StartTest(testName);
+        } 
+        public void ThreadSaveEndTest(string testName)
+        {
+            lock(locker)
+                EndTest(testName);
+        } 
 
     }
 }

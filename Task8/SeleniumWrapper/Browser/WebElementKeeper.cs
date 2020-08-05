@@ -30,7 +30,7 @@ namespace SeleniumWrapper.Browser
                 {
                     element = creator();
                 }
-                catch(Exception e)
+                catch
                 {
                     element = null;
                 }
