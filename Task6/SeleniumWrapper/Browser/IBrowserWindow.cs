@@ -27,5 +27,10 @@ namespace SeleniumWrapper.Browser
 
         void Scroll(int x, int y);
         void WaitForLoading(TimeSpan timeout, TimeSpan? sleep = null, params Type[] ignoringExceptions);
+
+        void ToFrame(int frameIndex);
+        void ToFrame(string frameName);
+        void ToFrame(BaseElement element);
+        void ToParentFrame();
     } 
 }

@@ -48,7 +48,9 @@ namespace SeleniumWrapper.Browser
 #region Actions
         public IKeyActions KeyActions => new KeyActionsManager();
         public IMouseActions MouseActions => new MouseActionsManager();
-#endregion
+        public ICookieManager Cookie => new CookieManager();
+
+        #endregion
         public event Action<string> WindowChanged;
         public event Action<string> WindowClosed;
         public event Action BrowserClosed;
