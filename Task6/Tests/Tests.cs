@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SeleniumWrapper.Browser;
 using SeleniumWrapper.Logging;
 using SeleniumWrapper.BrowserFabrics;
+using SeleniumWrapper.Utils;
 
 namespace Tests
 {
@@ -51,7 +52,7 @@ namespace Tests
         public void Test_ModalWindows()
         {
             string method = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
+            loggers.StartTest(method);
             try
             {
                 AlertsPage page = new AlertsPage(loggers.loggers.ToArray());
@@ -71,7 +72,7 @@ namespace Tests
                 loggers.Log(LogType.Info, "Prompt", method, 3);
                 PromtAlert promtAlert = page.PromtAlert();
                 Assert.AreEqual(expectedResults.PromptTitle, promtAlert.Text);
-                string msg = RandomMessage();
+                string msg = StringUtils.RandomString();
                 promtAlert.Message = msg;
                 promtAlert.Confirm();
                 Assert.AreEqual(expectedResults.PromptAnswer(msg), page.Answer);
@@ -82,15 +83,7 @@ namespace Tests
                 Assert.Fail();
             }
 
-            loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
-        }
-
-        Random random = new Random();
-        private string RandomMessage(int length = 50)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+            loggers.EndTest(method); 
         }
     }
 }
