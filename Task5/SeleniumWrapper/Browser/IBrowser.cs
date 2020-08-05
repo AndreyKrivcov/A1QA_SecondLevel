@@ -40,7 +40,7 @@ namespace SeleniumWrapper.Browser
         void Clear();
         void Delete(Cookie cookie);
         void Delete(string name);
-        Cookie this[string name] { get; }
+        Cookie this[string name] { get; set; }
     }
 
     public interface IMouseActions  : IAction
