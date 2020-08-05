@@ -8,7 +8,5 @@ namespace Tests
         public ExamplePage(params SeleniumWrapper.Logging.Logger[] loggersCollection) : base(null,true,loggersCollection)
         {
         }
-
-        public ICookieManager Cookies => settings.Browser.Cookie;
     }
 }
