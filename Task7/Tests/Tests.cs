@@ -50,12 +50,12 @@ namespace Tests
         public void Test_Cookeis()
         {
             string method = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            loggers.Log(LogType.Info, $"================================ {method} Started ================================", method,null);
+            loggers.StartTest(method);
             try
             {
                 loggers.Log(LogType.Info, "Add cookie", method, 1);
                 var page = new ExamplePage();
-                page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.First.Key, cookieData.First.Value));
+                page.Cookies.Add("",""); //( cookieData.First.Key, cookieData.First.Value));
                 page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.Second.Key, cookieData.Second.Value));
                 page.Cookies.Add(new OpenQA.Selenium.Cookie(cookieData.Third.Key, cookieData.Third.Value));
 
@@ -81,9 +81,10 @@ namespace Tests
             catch(Exception e)
             {
                 loggers.Log(e,method,0);
+                Assert.Fail();
             }
 
-            loggers.Log(LogType.Info, $"================================ {method} Finished ================================",method,null); 
+            loggers.EndTest(method);
         }
     }
 }
