@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -40,5 +41,12 @@ namespace SeleniumWrapper.Utils
                 return ans;
             }
         }
+    }
+
+    [Serializable]
+    public struct KeyValuePair
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
     }
 }
